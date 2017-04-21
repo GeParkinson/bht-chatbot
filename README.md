@@ -1,6 +1,15 @@
 # bht-chatbot
 Master-Projekt SS2017 Medieninformatik
 
+## Table of Content
+<!-- MarkdownTOC -->
+
+- [Requirements](#requirements)
+- [Run and stop the application](#run-and-stop-the-application)
+- [Used online sources](#used-online-sources)
+
+<!-- /MarkdownTOC -->
+
 ## Requirements
 You need a running docker daemon to start the application.
 
@@ -26,3 +35,4 @@ If all went well, you should see the application appearing at [localhost:8080/bh
 * [Markdown CheetSheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
 * [base WildFly application server image](https://hub.docker.com/r/jboss/wildfly/)
 * [docker-maven-plugin documentation](https://dmp.fabric8.io/#start-logging)
+* [maven-checkstyle-plugin configuration properties](https://maven.apache.org/plugins/maven-checkstyle-plugin/check-mojo.html)
