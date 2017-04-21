@@ -8,7 +8,7 @@ You need a running docker daemon to start the application.
 
 Just executes the following maven commands to start/stop the application:
 ```maven
-    mvn deploy
+    mvn war:war
     mvn docker:start
     
     mvn docker:stop
