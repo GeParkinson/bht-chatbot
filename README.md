@@ -7,10 +7,14 @@ You need a running docker daemon to start the application.
 ## Run and stop the application
 
 Just executes the following maven commands to start/stop the application:
-```maven
-    mvn war:war
-    mvn docker:start
+```bash
+    # build and start
+    mvn compile war:war docker:start
     
+    # show and follow logs
+    mvn compile war:war docker:start docker:logs -Ddocker.follow
+    
+    # stop running container
     mvn docker:stop
 ```
 The following ports are mapped to host: 
