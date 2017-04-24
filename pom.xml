@@ -46,7 +46,7 @@
                 <configuration>
                     <images>
                         <image>
-                            <name>wildfly</name>
+                            <name>bht-chatbot/wildfly</name>
                             <build>
                                 <dockerFileDir>wildfly</dockerFileDir>
                             </build>
