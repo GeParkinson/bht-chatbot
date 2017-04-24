@@ -14,6 +14,10 @@ Master-Projekt SS2017 Medieninformatik
 You need a running docker daemon to start the application.
 
 ## Run and stop the application
+Before starting the application the first time, you need to build the container:
+ ```bash
+    mvn docker:build
+ ```
 
 Just executes the following maven commands to start/stop the application:
 ```bash
