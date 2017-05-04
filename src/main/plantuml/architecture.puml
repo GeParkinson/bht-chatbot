@@ -1,0 +1,23 @@
+@startuml
+
+package "Adapter" {
+[FacebookMessenger] -- AdapterService
+[Telegram] -- AdapterService
+}
+
+package "Message Interpreter" {
+   [Text <--> Speech] -- MessageService
+   [Image recognition] -- MessageService
+   AdapterService -- MessageService
+   [Translation] - MessageService
+   [Translation]
+}
+
+package "MainBot" {
+[UserManagement]
+MessageService - [Answer Generator]
+[Answer Generator] - Tagger
+[Answer Generator] -- [WebServices]
+}
+
+@enduml
