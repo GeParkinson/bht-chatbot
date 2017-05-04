@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  app-server:
+    build: ./wildfly
+    container_name: chatbot-wildfly
+    image: bht-chatbot:latest
+    ports:
+      - "8080:8080"
+      - "8787:8787"
+      - "9990:9990"
+    volumes:
+      - ./wildfly/volumes/deployments/:/opt/jboss/wildfly/standalone/deployments/
+    command: /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0 --debug
