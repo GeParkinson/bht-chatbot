@@ -4,14 +4,16 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
+*.war.deployed
 *.ear
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
 **/.DS_Store
-.idea/
+.idea
+.gradle
 bht-chatbot.iml
 target/
+build
