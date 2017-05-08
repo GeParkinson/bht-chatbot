@@ -18,3 +18,9 @@ task wrapper(type: Wrapper) {
 sourceCompatibility = 1.8
 
 war.destinationDir file("./src/main/docker/wildfly/volumes/deployments/")
+
+task chatbotRun(type:Exec, dependsOn: war) {
+    workingDir 'src/main/docker'
+
+    commandLine 'docker-compose', 'up'
+}
