@@ -21,7 +21,7 @@ Master-Projekt SS2017 Medieninformatik
 - WildFly 10
 
 ## Project documention
-You can find the whole project documentation under [project_documentation](documentation/project_documentation).
+You can find the whole project documentation under [project_documentation](documentation/project_documentation.md).
 
 ## Run and stop the application
 Go to project path and executes the following gradle tasks to start/stop the application:
