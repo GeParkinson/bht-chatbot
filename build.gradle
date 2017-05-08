@@ -25,7 +25,7 @@ task chatbotRun(type:Exec, dependsOn: war) {
     commandLine 'docker-compose', 'up'
 }
 
-task chatbotStop(type:Exec, dependsOn: war) {
+task chatbotStop(type:Exec) {
     workingDir 'src/main/docker'
 
     commandLine 'docker-compose', 'down'
