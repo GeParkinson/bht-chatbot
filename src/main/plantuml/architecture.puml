@@ -1,23 +1,27 @@
 @startuml
 
-package "Adapter" {
-[FacebookMessenger] -- AdapterService
-[Telegram] -- AdapterService
+package stage1 as "Adapter" {
+[FacebookMessenger]
+[Telegram]
 }
 
-package "Message Interpreter" {
-   [Text <--> Speech] -- MessageService
-   [Image recognition] -- MessageService
-   AdapterService -- MessageService
-   [Translation] - MessageService
+package stage2 as "Message Interpreter" {
+   [Text <--> Speech]
+   [Image recognition]
+   [Translation]
    [Translation]
 }
 
-package "MainBot" {
+package stage3 as "MainBot" {
 [UserManagement]
-MessageService - [Answer Generator]
 [Answer Generator] - Tagger
 [Answer Generator] -- [WebServices]
 }
+
+queue queue as "JMS Message Queue"
+
+queue -up- stage1
+queue -left- stage2
+queue -down- stage3
 
 @enduml

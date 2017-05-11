@@ -1,7 +1,5 @@
-# bht-chatbot
+# BHT-Chatbot
 Master-Projekt SS2017 Medieninformatik
-
-## Table of Content
 <!-- MarkdownTOC -->
 
 - [Requirements](#requirements)
@@ -22,7 +20,7 @@ Master-Projekt SS2017 Medieninformatik
 - WildFly 10
 
 ## Project documention
-You can find the whole project documentation under [project_documentation](documentation/project_documentation.md).
+You can find the whole project documentation under [project_documentation](docu/project_documentation.md).
 
 ## Run and stop the application
 Go to project path and executes the following gradle tasks to start/stop the application:
@@ -43,7 +41,11 @@ The following ports are mapped to host:
 
 If all went well, you should see the application appearing at [localhost:8080/bht-chatbot](http://localhost:8080/bht-chatbot) 
 
+## Known issues
+- The usage of `./gradlew chatbotRun` is not working under Mac OSX
+
 ## Used online sources
 - [Markdown CheetSheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
 - [Docker base image for WildFly application server](https://hub.docker.com/r/jboss/wildfly/)
 - [Gradle 3.5 User Guide](https://docs.gradle.org/3.5/userguide/userguide.html)
+

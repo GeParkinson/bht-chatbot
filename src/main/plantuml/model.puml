@@ -1,32 +1,16 @@
 @startuml
+enum Messenger
 
-abstract class MessengerUser {
-    id
-    Address
-    Language
-    Settings
-    messengers:Messenger[]
+class Message {
+    ID: Long
+    messageID: String
+    senderID: String
+    messenger: Messenger
+    text: String
+    attechments: Attachment[]
 }
 
-class Messenger {
-    telephone
-    email
-    username
-}
-
-abstract class Message {
-    messageID
-    userID
-}
-
-class Answer
-
-Answer --|> Message
-
-class Request
-
-Request --|> Message
-
-MessengerUser -- Messenger
+Message - Messenger
+Message -- Attachment
 
 @enduml
