@@ -5,10 +5,7 @@ import com.pengrad.telegrambot.TelegramBotAdapter;
 import com.pengrad.telegrambot.request.SetWebhook;
 import com.pengrad.telegrambot.response.BaseResponse;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Properties;
 
 /**
@@ -37,19 +34,17 @@ public class TelegramBotService {
     }
 
     private Properties getProperties(){
-        //FIXME: not working - FileNotFoundException - include config.properties into build
-        File propertiesFile = new File("./config.properties");
         Properties properties = new Properties();
 
-        BufferedInputStream bis = null;
+        InputStream inputStream = null;
         try {
-            bis = new BufferedInputStream(new FileInputStream(propertiesFile));
-            properties.load(bis);
+            inputStream = TelegramBotService.class.getResourceAsStream("/config.properties");
+            properties.load(inputStream);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
-                bis.close();
+                inputStream.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
