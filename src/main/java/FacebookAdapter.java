@@ -18,38 +18,52 @@ import java.util.Map;
 public class FacebookAdapter {
 
 
+    //---------------------------------------
+    //Testing:
+    //install localtunnel (npm install -g localtunnel) and connect via 'lt --port 8080' *
+    //*doesnt work in some networks like eduroam
+    //
+    //get your accessToken in the messenger product of your facebook app
+    //
+    //create webhook with:
+    //URL:  https://XXXXXXXXXXXXX.localtunnel.me/bht-chatbot/rest/webhook/Facebook
+    //token: webhookToken you set below
+    //---------------------------------------
+    String accessToken="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+    String webhookToken = "test";
+
     @POST
     @Path("/Facebook")
     @Consumes("application/json")
-    public String consumeJSON(String test) throws IOException {
+    public String ReceiveMessage(String InputMessage) throws IOException {
 
-        String accessToken="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+        //System.out.println(InputMessage);
 
-        String pageName ;
+        String sender ;
         String message;
         Boolean isEcho;
+        JSONObject obj;
         try {
-            JSONObject obj = new JSONObject(test);
-            pageName = obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("sender").getString("id");
+            obj = new JSONObject(InputMessage);
+            sender = obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("sender").getString("id");
             message = obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("message").getString("text");
+            }
+        catch(Exception ex){
+            message="";
+            sender="";
+        }
+        try{
+            obj = new JSONObject(InputMessage);
             isEcho=obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("message").getBoolean("is_echo");
         }
         catch(Exception ex){
-            message="";
-            pageName="";
-            isEcho=true;
+            isEcho=false;
         }
 
         if(message.length()>0&&isEcho==false) {
-            String payload = "{\"recipient\": {\"id\": \"" + pageName + "\"}, \"message\": { \"text\": \""+message+"\"}}";
-            String requestUrl = "https://graph.facebook.com/v2.6/me/messages?access_token=" + accessToken;
-            try {
-                sendPostRequest(requestUrl, payload);
-            }
-            catch(Exception ex){}
-            System.out.println(payload+"------"+test);
+            sendTextMessage(sender,message,accessToken);
         }
-        return "";
+        return "\nReceived\n";
 
     }
 
@@ -58,8 +72,6 @@ public class FacebookAdapter {
     @Produces("text/plain")
     public String verification(@Context HttpServletRequest request){
 
-        //URL: adressToYourPC:8080/bht-chatbot/rest/webhook/Facebook
-        String webhookToken = "test";
 
         System.out.println("request: " + request);
         Map<String, String[]> parametersMap = request.getParameterMap();
@@ -71,6 +83,21 @@ public class FacebookAdapter {
             if("subscribe".equals(request.getParameter("hub.mode")) &&
                     webhookToken.equals(request.getParameter("hub.verify_token"))){
                 System.out.println("VERIFIED");
+
+                //Start function to activate webhook
+                Runnable activation = new Runnable() {
+                    public void run() {
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            //e.printStackTrace();
+                        }
+                        sendPostRequest("https://graph.facebook.com/v2.9/me/subscribed_apps?access_token="+accessToken,"");
+                    }
+                };
+
+                new Thread(activation).start();//Call it when you need to run the function
+
                 return request.getParameter("hub.challenge");
             }
         }else{
@@ -81,6 +108,18 @@ public class FacebookAdapter {
     }
 
 
+
+    public static void sendTextMessage(String recipient, String message, String accessToken){
+        String payload = "{\"recipient\": {\"id\": \"" + recipient + "\"}, \"message\": { \"text\": \""+message+"\"}}";
+        String requestUrl = "https://graph.facebook.com/v2.6/me/messages?access_token=" + accessToken;
+        try {
+            sendPostRequest(requestUrl, payload);
+        }
+        catch(Exception ex){
+            //System.out.println(ex.getMessage()+" ERROR");
+        }
+        //System.out.println(payload+"------"+requestUrl);
+    }
 
 
     public static String sendPostRequest(String requestUrl, String payload) {
@@ -104,6 +143,9 @@ public class FacebookAdapter {
                 jsonString.append(line);
             }
             br.close();
+
+            //System.out.println(connection.getResponseMessage());
+
             connection.disconnect();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
