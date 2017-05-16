@@ -12,13 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 
-/**
- * A simple REST service which is able to say hello to someone using HelloService Please take a look at the web.xml where JAX-RS
- * is enabled
- *
- * @author gbrey@redhat.com
- *
- */
+
 
 @Path("/webhook")
 public class FacebookAdapter {
@@ -27,20 +21,36 @@ public class FacebookAdapter {
     @POST
     @Path("/Facebook")
     @Consumes("application/json")
-    public String consumeJSON(String test ) throws IOException {
+    public String consumeJSON(String test) throws IOException {
 
-        String accessToken="accessTOKEN";
+        String accessToken="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
-        JSONObject obj = new JSONObject(test);
-        String pageName = obj.getJSONObject("sender").getString("id");
+        String pageName ;
+        String message;
+        Boolean isEcho;
+        try {
+            JSONObject obj = new JSONObject(test);
+            pageName = obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("sender").getString("id");
+            message = obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("message").getString("text");
+            isEcho=obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("message").getBoolean("is_echo");
+        }
+        catch(Exception ex){
+            message="";
+            pageName="";
+            isEcho=true;
+        }
 
+        if(message.length()>0&&isEcho==false) {
+            String payload = "{\"recipient\": {\"id\": \"" + pageName + "\"}, \"message\": { \"text\": \""+message+"\"}}";
+            String requestUrl = "https://graph.facebook.com/v2.6/me/messages?access_token=" + accessToken;
+            try {
+                sendPostRequest(requestUrl, payload);
+            }
+            catch(Exception ex){}
+            System.out.println(payload+"------"+test);
+        }
+        return "";
 
-        String payload="{\"recipient\": {\"id\": \""+pageName+"\"}, \"message\": { \"text\": \"hello, world!\"}}";
-        String requestUrl="https://graph.facebook.com/v2.6/me/messages?access_token="+accessToken;
-        sendPostRequest(requestUrl, payload);
-
-        System.out.println(test);
-        return "";//pageName+"\n";
     }
 
     @GET
@@ -49,7 +59,7 @@ public class FacebookAdapter {
     public String verification(@Context HttpServletRequest request){
 
         //URL: adressToYourPC:8080/bht-chatbot/rest/webhook/Facebook
-        String webhookToken = "YourWebhookToken";
+        String webhookToken = "test";
 
         System.out.println("request: " + request);
         Map<String, String[]> parametersMap = request.getParameterMap();
@@ -67,7 +77,7 @@ public class FacebookAdapter {
             System.out.println("No request parameters were given.");
         }
 
-        return "Webhook verification FAILED.";
+        return "Webhook FAILED";
     }
 
 
