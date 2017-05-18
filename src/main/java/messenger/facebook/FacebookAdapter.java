@@ -1,6 +1,8 @@
+package messenger.facebook;
+
+import messenger.utils.MessengerUtils;
 import org.json.JSONObject;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -12,7 +14,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 
-
+/**
+ * Created by Oliver on 5/14/2017.
+ */
 
 @Path("/webhook")
 public class FacebookAdapter {
@@ -26,18 +30,19 @@ public class FacebookAdapter {
     //get your accessToken in the messenger product of your facebook app
     //
     //create webhook with:
-    //URL:  https://XXXXXXXXXXXXX.localtunnel.me/bht-chatbot/rest/webhook/Facebook
-    //token: webhookToken you set below
+    //URL:  https://XXXXXXXXXXXXX.localtunnel.me/bht-chatbot/rest/webhook/facebook
+    //token: set in config.properties
     //---------------------------------------
-    String accessToken="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
-    String webhookToken = "test";
+    String accessToken= MessengerUtils.getProperties().getProperty("FACEBOOK_BOT_TOKEN");
+    String webhookToken = MessengerUtils.getProperties().getProperty("FACEBOOK_WEBHOOK_TOKEN");
 
     @POST
-    @Path("/Facebook")
+    @Path("/facebook")
     @Consumes("application/json")
     public String ReceiveMessage(String InputMessage) throws IOException {
 
-        //System.out.println(InputMessage);
+        System.out.println(InputMessage);
+        System.out.println(accessToken);
 
         String sender ;
         String message;
@@ -68,7 +73,7 @@ public class FacebookAdapter {
     }
 
     @GET
-    @Path("/Facebook")
+    @Path("/facebook")
     @Produces("text/plain")
     public String verification(@Context HttpServletRequest request){
 
