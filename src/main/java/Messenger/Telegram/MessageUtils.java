@@ -1,7 +1,7 @@
-package Messenger.Telegram;
+package messenger.telegram;
 
-import Message.*;
-import Message.Message;
+import message.*;
+import message.Message;
 
 /**
  * Created by Chris on 5/18/2017.

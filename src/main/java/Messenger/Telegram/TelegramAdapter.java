@@ -1,4 +1,4 @@
-package Messenger.Telegram;
+package messenger.telegram;
 
 import com.pengrad.telegrambot.BotUtils;
 import com.pengrad.telegrambot.model.Message;
@@ -32,19 +32,19 @@ public class TelegramAdapter {
     public void getUpdates(String msg) {
         Update update = BotUtils.parseUpdate(msg);
         Message message = update.message();
-        System.out.println("Got new Message from: " + message.from());
+        System.out.println("Got new message from: " + message.from());
 
-        //TODO: process Message
+        //TODO: process message
 
         // sendMessage(message);
     }
 
-    /** Send Message Types */
+    /** Send message Types */
 
     public void sendMessage(Message msg) {
         SendMessage request = new SendMessage(msg.chat().id(),msg.text());
         SendResponse sendResponse = bot.getBot().execute(request);
-        System.out.println("Send Message: " + sendResponse.isOk());
+        System.out.println("Send message: " + sendResponse.isOk());
     }
     public void sendPhoto(Message msg){
         SendPhoto request = new SendPhoto(msg.chat().id(), msg.photo()[0].fileId());
