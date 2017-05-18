@@ -1,9 +1,10 @@
-package Messenger.Telegram;
+package messenger.telegram;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.TelegramBotAdapter;
 import com.pengrad.telegrambot.request.SetWebhook;
 import com.pengrad.telegrambot.response.BaseResponse;
+import messenger.utils.MessengerUtils;
 
 import java.io.*;
 import java.util.Properties;
@@ -16,8 +17,8 @@ public class TelegramBotService {
     private TelegramBot bot;
 
     public TelegramBotService(){
-        Properties properties = getProperties();
-        bot = TelegramBotAdapter.build(properties.getProperty("BOT_TOKEN"));
+        Properties properties = MessengerUtils.getProperties();
+        bot = TelegramBotAdapter.build(properties.getProperty("TELEGRAM_BOT_TOKEN"));
     }
 
     public TelegramBot getBot(){
@@ -25,30 +26,11 @@ public class TelegramBotService {
     }
 
     public void verifyWebhook() {
-        Properties properties = getProperties();
-        SetWebhook webhook = new SetWebhook().url(properties.getProperty("WEBHOOK_URL"));
+        Properties properties = MessengerUtils.getProperties();
+        SetWebhook webhook = new SetWebhook().url(properties.getProperty("TELEGRAM_WEBHOOK_URL"));
         BaseResponse response = bot.execute(webhook);
 
         boolean ok = response.isOk();
         System.out.println("Set Webhook: " + ok);
-    }
-
-    private Properties getProperties(){
-        Properties properties = new Properties();
-
-        InputStream inputStream = null;
-        try {
-            inputStream = TelegramBotService.class.getResourceAsStream("/config.properties");
-            properties.load(inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                inputStream.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return properties;
     }
 }
