@@ -1,6 +1,7 @@
 package messenger.utils;
 
-import messenger.telegram.TelegramBotService;
+import message.Message;
+import messenger.telegram.TelegramSendAdapter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,12 +12,30 @@ import java.util.Properties;
  */
 public class MessengerUtils {
 
+    /***
+     * Static method to send a Message. Distinguishes between different messenger types based on MessengerEnum.
+     * @param message to send
+     */
+    public static void sendMessage(Message message){
+        switch(message.getMessenger()){
+            case TELEGRAM:
+                TelegramSendAdapter.sendMessage(message);
+                break;
+            case FACEBOOK:
+                //sendMessage
+                break;
+        }
+    }
+
+    /***
+     * Simple method to get properties in resources folder.
+     * @return config.properties
+     */
     public static Properties getProperties(){
         Properties properties = new Properties();
-
         InputStream inputStream = null;
         try {
-            inputStream = TelegramBotService.class.getResourceAsStream("/config.properties");
+            inputStream = MessengerUtils.class.getResourceAsStream("/config.properties");
             properties.load(inputStream);
         } catch (IOException e) {
             e.printStackTrace();
