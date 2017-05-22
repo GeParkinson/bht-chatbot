@@ -13,7 +13,7 @@ import javax.ws.rs.Path;
  */
 
 @Path("/telegram")
-public class TelegramAdapter {
+public class TelegramReceiveAdapter {
 
     @POST
     @Path("/getUpdates")
