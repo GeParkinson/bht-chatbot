@@ -3,13 +3,8 @@ package messenger.telegram;
 import com.pengrad.telegrambot.BotUtils;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.request.SendAudio;
-import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.request.SendPhoto;
-import com.pengrad.telegrambot.response.SendResponse;
+import message.Messenger;
 
-import javax.inject.Inject;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
@@ -20,13 +15,6 @@ import javax.ws.rs.Path;
 @Path("/telegram")
 public class TelegramAdapter {
 
-    @Inject
-    TelegramBotService bot;
-
-    @GET
-    @Path("/verifyWebhook")
-    public void verifyWebhook(){ bot.verifyWebhook(); }
-
     @POST
     @Path("/getUpdates")
     public void getUpdates(String msg) {
@@ -35,25 +23,17 @@ public class TelegramAdapter {
         System.out.println("Got new message from: " + message.from());
 
         //TODO: process message
-
-        // sendMessage(message);
     }
 
-    /** Send message Types */
+    private message.Message toMessage(com.pengrad.telegrambot.model.Message message) {
+        message.Message msg = new message.Message();
 
-    public void sendMessage(Message msg) {
-        SendMessage request = new SendMessage(msg.chat().id(),msg.text());
-        SendResponse sendResponse = bot.getBot().execute(request);
-        System.out.println("Send message: " + sendResponse.isOk());
-    }
-    public void sendPhoto(Message msg){
-        SendPhoto request = new SendPhoto(msg.chat().id(), msg.photo()[0].fileId());
-        SendResponse sendResponse = bot.getBot().execute(request);
-        System.out.println("Send Photo: " + sendResponse.isOk());
-    }
-    public void sendAudio(Message msg){
-        SendAudio request = new SendAudio(msg.chat().id(), msg.audio().fileId());
-        SendResponse sendResponse = bot.getBot().execute(request);
-        System.out.println("Send Audio: " + sendResponse.isOk());
+        //TODO: Check IDs - String or LONG?
+        msg.setText(message.text());
+        msg.setMessenger(Messenger.TELEGRAM);
+        msg.setMessageID(message.messageId().longValue());
+        msg.setSenderID(message.chat().id());
+
+        return msg;
     }
 }
