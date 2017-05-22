@@ -18,6 +18,12 @@ public class Attachment {
     Integer duration;
     String caption;
 
+    public Attachment(Long fileID, AttachmentType attachmentType, FileType fileType){
+        this.fileID = fileID;
+        this.attachmentType = attachmentType;
+        this.fileType = fileType;
+    }
+
     /** Getter & Setter*/
     public Long getId() {
         return id;
