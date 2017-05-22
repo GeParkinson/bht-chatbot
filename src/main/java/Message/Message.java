@@ -5,8 +5,8 @@ package message;
  */
 public class Message {
     Long id;
-    String messageID;
-    String senderID;
+    Long messageID;
+    Long senderID;
     Messenger messenger;
     String text;
     Attachment[] attachements;
@@ -20,19 +20,19 @@ public class Message {
         this.id = id;
     }
 
-    public String getMessageID() {
+    public Long getMessageID() {
         return messageID;
     }
 
-    public void setMessageID(String messageID) {
+    public void setMessageID(Long messageID) {
         this.messageID = messageID;
     }
 
-    public String getSenderID() {
+    public Long getSenderID() {
         return senderID;
     }
 
-    public void setSenderID(String senderID) {
+    public void setSenderID(Long senderID) {
         this.senderID = senderID;
     }
 
