@@ -1,4 +1,6 @@
 import jms.MessageQueue;
+import message.Message;
+import message.Messenger;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -24,7 +26,11 @@ public class HelloWorld {
     @Path("/json")
     @Produces({"application/json"})
     public String getHelloWorldJSON() {
-        messageQueue.addMessage("New request has arrived!");
+        Message emptyMessage = new Message();
+        emptyMessage.setId(1L);
+        emptyMessage.setText(helloService.createHelloMessage("World"));
+        emptyMessage.setMessenger(Messenger.TELEGRAM);
+        messageQueue.addInMessage(emptyMessage);
         return "{\"result\":\"" + helloService.createHelloMessage("World") + "\"}";
     }
 
