@@ -1,4 +1,4 @@
-import jms.Producer;
+import jms.MessageQueue;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -18,13 +18,13 @@ public class HelloWorld {
     HelloService helloService;
 
     @Inject
-    Producer producer;
+    MessageQueue messageQueue;
 
     @GET
     @Path("/json")
     @Produces({"application/json"})
     public String getHelloWorldJSON() {
-        producer.sendNewTextMessage("New request has arrived!");
+        messageQueue.addMessage("New request has arrived!");
         return "{\"result\":\"" + helloService.createHelloMessage("World") + "\"}";
     }
 
