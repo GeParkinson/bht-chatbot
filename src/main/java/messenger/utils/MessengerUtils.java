@@ -1,7 +1,7 @@
 package messenger.utils;
 
 import message.Message;
-import messenger.telegram.TelegramSendAdapter;
+// import messenger.telegram.TelegramSendAdapter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,21 +11,6 @@ import java.util.Properties;
  * Created by Chris on 5/18/2017.
  */
 public class MessengerUtils {
-
-    /***
-     * Static method to send a Message. Distinguishes between different messenger types based on MessengerEnum.
-     * @param message to send
-     */
-    public static void sendMessage(Message message){
-        switch(message.getMessenger()){
-            case TELEGRAM:
-                TelegramSendAdapter.sendMessage(message);
-                break;
-            case FACEBOOK:
-                //sendMessage
-                break;
-        }
-    }
 
     /***
      * Simple method to get properties in resources folder.
