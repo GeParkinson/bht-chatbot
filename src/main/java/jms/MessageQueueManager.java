@@ -13,7 +13,7 @@ import javax.jms.*;
  */
 @Startup
 @Singleton
-public class JMSManager {
+public class MessageQueueManager {
 
     @Resource(lookup = "java:/jboss/DefaultJMSConnectionFactory")
     private ConnectionFactory connectionFactory;
