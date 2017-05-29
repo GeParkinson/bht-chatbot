@@ -125,7 +125,7 @@ public class FacebookAdapter {
                     msg.setMessageID(Long.valueOf("85753757347"));
                     msg.setSenderID(Long.valueOf(sender));
 
-                    MessengerUtils.sendMessage(msg);
+                    FacebookSendAdapter.sendMessage(msg);
                 }
             }
 

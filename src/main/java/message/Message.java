@@ -1,15 +1,26 @@
 package message;
 
+import attachments.AttachmentStore;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
+
+import javax.inject.Inject;
+import java.io.Serializable;
+
 /**
  * Created by Chris on 5/14/2017.
  */
-public class Message {
-    Long id;
-    Long messageID;
-    Long senderID;
-    Messenger messenger;
-    String text;
-    Attachment[] attachements;
+public class Message implements Serializable {
+    private Long id;
+    private Long messageID;
+    private Long senderID;
+    private Messenger messenger;
+    private String text;
+    private Long[] attachements;
+
+    @Inject
+    private transient AttachmentStore attachmentStore;
 
 
     public Long getId() {
@@ -53,10 +64,28 @@ public class Message {
     }
 
     public Attachment[] getAttachements() {
-        return attachements;
+        try {
+            Attachment[] fileAttachments = new Attachment[attachements.length];
+            for (int i = 0; i < attachements.length; i++) {
+                fileAttachments[i] = attachmentStore.loadAttachment(attachements[i]);
+            }
+            return fileAttachments;
+        }
+        catch(Exception ex){
+            return null;
+        }
     }
 
-    public void setAttachements(Attachment[] attachements) {
-        this.attachements = attachements;
+    public void setAttachements(final Attachment[] attachements) {
+        this.attachements = new Long[attachements.length];
+        for (int i = 0; i < attachements.length; i++) {
+            this.attachements[i] = attachmentStore.storeAttachment(attachements[i]);
+        }
+    }
+
+    @Override
+    public String toString() {
+        Gson gson = new GsonBuilder().create();
+        return gson.toJson(this);
     }
 }
