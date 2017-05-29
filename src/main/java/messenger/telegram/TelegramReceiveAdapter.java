@@ -3,11 +3,13 @@ package messenger.telegram;
 import com.pengrad.telegrambot.BotUtils;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
+import jms.MessageQueue;
 import message.Attachment;
 import message.AttachmentType;
 import message.FileType;
 import message.Messenger;
 
+import javax.inject.Inject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import java.util.ArrayList;
@@ -19,14 +21,15 @@ import java.util.ArrayList;
 @Path("/telegram")
 public class TelegramReceiveAdapter {
 
+    @Inject
+    private MessageQueue messageQueue;
+
     @POST
     @Path("/getUpdates")
     public void getUpdates(String msg) {
         Update update = BotUtils.parseUpdate(msg);
         Message message = update.message();
-        System.out.println("Got new message from: " + message.from());
-
-        //TODO: process message
+        messageQueue.addInMessage(toMessage(message));
     }
 
     private message.Message toMessage(com.pengrad.telegrambot.model.Message message) {
@@ -38,11 +41,15 @@ public class TelegramReceiveAdapter {
 
         ArrayList<Attachment> attachments = new ArrayList<>();
 
-        if(message.audio() != null) attachments.add(new Attachment(Long.valueOf(message.audio().fileId()), AttachmentType.AUDIO, FileType.FILE_ID));
-        if(message.video() != null) attachments.add(new Attachment(Long.valueOf(message.video().fileId()), AttachmentType.VIDEO, FileType.FILE_ID));
-        if(message.voice() != null) attachments.add(new Attachment(Long.valueOf(message.voice().fileId()), AttachmentType.VOICE, FileType.FILE_ID));
-        if(message.document() != null) attachments.add(new Attachment(Long.valueOf(message.document().fileId()), AttachmentType.DOCUMENT, FileType.FILE_ID));
-        if(message.text() != null) msg.setText(message.text());
+        if (message.audio() != null)
+            attachments.add(new Attachment(Long.valueOf(message.audio().fileId()), AttachmentType.AUDIO, FileType.FILE_ID));
+        if (message.video() != null)
+            attachments.add(new Attachment(Long.valueOf(message.video().fileId()), AttachmentType.VIDEO, FileType.FILE_ID));
+        if (message.voice() != null)
+            attachments.add(new Attachment(Long.valueOf(message.voice().fileId()), AttachmentType.VOICE, FileType.FILE_ID));
+        if (message.document() != null)
+            attachments.add(new Attachment(Long.valueOf(message.document().fileId()), AttachmentType.DOCUMENT, FileType.FILE_ID));
+        if (message.text() != null) msg.setText(message.text());
 
         msg.setAttachements((Attachment[]) attachments.toArray());
 
