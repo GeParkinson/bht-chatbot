@@ -33,7 +33,6 @@ import java.util.Properties;
             @ActivationConfigProperty(
                     propertyName = "messageSelector", propertyValue = "Telegram = 'out'"
             )
-
     }
 )
 public class TelegramSendAdapter implements MessageListener {
@@ -44,9 +43,8 @@ public class TelegramSendAdapter implements MessageListener {
     public void startUp(){
         Properties properties = MessengerUtils.getProperties();
         bot = TelegramBotAdapter.build(properties.getProperty("TELEGRAM_BOT_TOKEN"));
-        System.out.println("TelegramBotService - Konstruktor");
 
-    //    verifyWebhook();
+        verifyWebhook();
     }
 
     private void verifyWebhook() {
@@ -54,8 +52,16 @@ public class TelegramSendAdapter implements MessageListener {
         SetWebhook webhook = new SetWebhook().url(properties.getProperty("TELEGRAM_WEBHOOK_URL"));
         BaseResponse response = bot.execute(webhook);
 
-        if(!response.isOk()) verifyWebhook(); //TODO: add ErrorHandling
-        System.out.print("webhook successful set");
+        if(!response.isOk()) {
+            int count = 0;
+            int maxTries = 3;
+            while (!response.isOk()){
+                response = bot.execute(webhook);
+                if (count++ <= maxTries) continue;
+            }
+            verifyWebhook();
+        }
+        System.out.print("Webhook set: " + response);
     }
 
     @Override
@@ -63,7 +69,7 @@ public class TelegramSendAdapter implements MessageListener {
         // TODO Chris: refactoring/implementing message sending
     }
 
-    public static void sendMessage(message.Message message){
+    private void sendMessage(message.Message message){
         switch(message.getAttachements()[0].getAttachmentType()){
             case AUDIO:
                 sendAudio(message);
@@ -87,14 +93,14 @@ public class TelegramSendAdapter implements MessageListener {
     }
 
     /** Send Text Message */
-    private static void sendMessage(Long chatId, String message) {
+    private void sendMessage(Long chatId, String message) {
         SendMessage request = new SendMessage(chatId, message);
         SendResponse sendResponse = bot.execute(request);
         System.out.println("Send message: " + sendResponse.isOk());
     }
 
     /** Send Photo Method */
-    private static void sendPhoto(message.Message message){
+    private void sendPhoto(message.Message message){
         SendPhoto request;
 
         // check & send each attachement
@@ -114,7 +120,7 @@ public class TelegramSendAdapter implements MessageListener {
     }
 
     /** Send Audio Method */
-    private static void sendAudio(message.Message message){
+    private void sendAudio(message.Message message){
         SendAudio request;
 
         // check & send each attachement
@@ -138,7 +144,7 @@ public class TelegramSendAdapter implements MessageListener {
     }
 
     /** Send Voice Method */
-    private static void sendVoice(message.Message message){
+    private void sendVoice(message.Message message){
         SendVoice request;
 
         for (Attachment attachment : message.getAttachements()) {
@@ -159,7 +165,7 @@ public class TelegramSendAdapter implements MessageListener {
     }
 
     /** Send Document Method */
-    private static void sendDocument(message.Message message){
+    private void sendDocument(message.Message message){
         SendDocument request;
 
         for (Attachment attachment : message.getAttachements()) {
@@ -178,7 +184,7 @@ public class TelegramSendAdapter implements MessageListener {
     }
 
     /** Send Video Method */
-    private static void sendVideo(message.Message message){
+    private void sendVideo(message.Message message){
         SendVideo request;
 
         for (Attachment attachment : message.getAttachements()) {
