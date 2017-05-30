@@ -10,6 +10,8 @@ import message.Attachment;
 import message.BotMessage;
 import message.FileType;
 import messenger.utils.MessengerUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
@@ -42,6 +44,8 @@ public class TelegramSendAdapter implements MessageListener {
 
     private static TelegramBot bot;
 
+    private Logger logger = LoggerFactory.getLogger(TelegramSendAdapter.class);
+
     @PostConstruct
     public void startUp(){
         Properties properties = MessengerUtils.getProperties();
@@ -57,12 +61,12 @@ public class TelegramSendAdapter implements MessageListener {
         bot.execute(webhook, new Callback<SetWebhook, BaseResponse>() {
             @Override
             public void onResponse(SetWebhook request, BaseResponse response) {
-                System.out.println("No Errors while setting webhook");
+                logger.debug("No errors while setting Telegram webhook.");
                 //TODO: Check if webhook is really set
             }
             @Override
             public void onFailure(SetWebhook request, IOException e) {
-                System.out.println("Error occured while setting webhook");
+                logger.warn("An Error occured while setting Telegram webhook. BOT_TOKEN: " + properties.getProperty("TELEGRAM_BOT_TOKEN") + " - WEBHOOK_URL: " + properties.getProperty("TELEGRAM_WEBHOOK_URL"));
             }
         });
     }
@@ -118,7 +122,7 @@ public class TelegramSendAdapter implements MessageListener {
                 request.caption(attachment.getCaption());
 
             SendResponse sendResponse = bot.execute(request);
-            System.out.println("Send Photo: " + sendResponse.isOk());
+            logger.debug("Send Photo: " + sendResponse.isOk());
         }
     }
 
@@ -142,7 +146,7 @@ public class TelegramSendAdapter implements MessageListener {
             //TODO: performer & title
 
             SendResponse sendResponse = bot.execute(request);
-            System.out.println("Send Audio: " + sendResponse.isOk());
+            logger.debug("Send Audio: " + sendResponse.isOk());
         }
     }
 
@@ -163,7 +167,7 @@ public class TelegramSendAdapter implements MessageListener {
                 request.duration(attachment.getDuration());
 
             SendResponse sendResponse = bot.execute(request);
-            System.out.println("Send Voice: " + sendResponse.isOk());
+            logger.debug("Send Voice: " + sendResponse.isOk());
         }
     }
 
@@ -182,7 +186,7 @@ public class TelegramSendAdapter implements MessageListener {
                 request.caption(attachment.getCaption());
 
             SendResponse sendResponse = bot.execute(request);
-            System.out.println("Send Voice: " + sendResponse.isOk());
+            logger.debug("Send Voice: " + sendResponse.isOk());
         }
     }
 
@@ -205,7 +209,7 @@ public class TelegramSendAdapter implements MessageListener {
             //TODO: width & heigth
 
             SendResponse sendResponse = bot.execute(request);
-            System.out.println("Send Voice: " + sendResponse.isOk());
+            logger.debug("Send Voice: " + sendResponse.isOk());
         }
     }
 }

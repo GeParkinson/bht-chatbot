@@ -29,7 +29,7 @@ public class TelegramReceiveAdapter {
         messageQueue.addInMessage(toMessage(message));
     }
 
-    private BotMessage toMessage(com.pengrad.telegrambot.model.Message message) {
+    private BotMessage toMessage(Message message) {
         BotMessage msg = new BotMessage();
 
         msg.setMessenger(Messenger.TELEGRAM);
