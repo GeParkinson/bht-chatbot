@@ -7,21 +7,28 @@ ENV RASA_NLU_DOCKER="YES" \
 # - build-essential: Compile specific dependencies
 # - git-core and ssh: Checkout git repos
 RUN apt-get update -qq && \
-    apt-get install -y --no-install-recommends build-essential git-core && \
+    apt-get install -y --no-install-recommends build-essential git-core wget && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 WORKDIR ${RASA_NLU_HOME}
 
-RUN git clone https://github.com/golastmile/rasa_nlu.git ${RASA_NLU_HOME} && \
-    git checkout tags/0.8.5
+RUN pip install git+https://github.com/mit-nlp/MITIE.git
+RUN pip install rasa_nlu
 
-# Split into pre-requirements, so as to allow for Docker build caching
-RUN pip install -r dev-requirements.txt
+# RUN wget https://github.com/mit-nlp/MITIE/releases/download/v0.4/MITIE-models-v0.2-German.tar.bz2
+# RUN tar xvjf MITIE-models-v0.2-German.tar.bz2
+# RUN mkdir -p data/de && mv MITIE-models/german/total_word_feature_extractor.dat data/de/
 
-RUN python setup.py install
+
+RUN wget https://github.com/mit-nlp/MITIE/releases/download/v0.4/MITIE-models-v0.2.tar.bz2
+RUN tar xvjf MITIE-models-v0.2.tar.bz2
+RUN mkdir -p data/en && mv MITIE-models/english/total_word_feature_extractor.dat data/en/
+
+# train the model
+COPY rasa_config.json config/chatbot_config.json
+COPY training_data.json data/training_data.json
+RUN python -m rasa_nlu.train -c config/chatbot_config.json
+RUN mv models/model_* models/default
 
 EXPOSE 5000
-
-ENTRYPOINT ["./entrypoint.sh"]
-CMD ["help"]
