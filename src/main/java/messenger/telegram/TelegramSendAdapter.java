@@ -1,5 +1,6 @@
 package messenger.telegram;
 
+import com.pengrad.telegrambot.Callback;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.TelegramBotAdapter;
 import com.pengrad.telegrambot.request.*;
@@ -15,6 +16,7 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -51,18 +53,18 @@ public class TelegramSendAdapter implements MessageListener {
     private void verifyWebhook() {
         Properties properties = MessengerUtils.getProperties();
         SetWebhook webhook = new SetWebhook().url(properties.getProperty("TELEGRAM_WEBHOOK_URL"));
-        BaseResponse response = bot.execute(webhook);
 
-        if(!response.isOk()) {
-            int count = 0;
-            int maxTries = 3;
-            while (!response.isOk()){
-                response = bot.execute(webhook);
-                if (count++ <= maxTries) continue;
+        bot.execute(webhook, new Callback<SetWebhook, BaseResponse>() {
+            @Override
+            public void onResponse(SetWebhook request, BaseResponse response) {
+                System.out.println("No Errors while setting webhook");
+                //TODO: Check if webhook is really set
             }
-            verifyWebhook();
-        }
-        System.out.print("Webhook set: " + response);
+            @Override
+            public void onFailure(SetWebhook request, IOException e) {
+                System.out.println("Error occured while setting webhook");
+            }
+        });
     }
 
     @Override
