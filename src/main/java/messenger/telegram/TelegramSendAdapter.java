@@ -6,6 +6,7 @@ import com.pengrad.telegrambot.request.*;
 import com.pengrad.telegrambot.response.BaseResponse;
 import com.pengrad.telegrambot.response.SendResponse;
 import message.Attachment;
+import message.BotMessage;
 import message.FileType;
 import messenger.utils.MessengerUtils;
 
@@ -69,30 +70,30 @@ public class TelegramSendAdapter implements MessageListener {
         // TODO Chris: refactoring/implementing message sending
     }
 
-    private void sendMessage(message.Message message){
-        switch(message.getAttachements()[0].getAttachmentType()){
+    private void sendMessage(BotMessage botMessage){
+        switch(botMessage.getAttachements()[0].getAttachmentType()){
             case AUDIO:
-                sendAudio(message);
+                sendAudio(botMessage);
                 break;
             case VOICE:
-                sendVoice(message);
+                sendVoice(botMessage);
                 break;
             case VIDEO:
-                sendVideo(message);
+                sendVideo(botMessage);
                 break;
             case DOCUMENT:
-                sendDocument(message);
+                sendDocument(botMessage);
                 break;
             case PHOTO:
-                sendPhoto(message);
+                sendPhoto(botMessage);
                 break;
             default:
-                sendMessage(message.getMessageID(), message.getText());
+                sendMessage(botMessage.getMessageID(), botMessage.getText());
                 break;
         }
     }
 
-    /** Send Text Message */
+    /** Send Text BotMessage */
     private void sendMessage(Long chatId, String message) {
         SendMessage request = new SendMessage(chatId, message);
         SendResponse sendResponse = bot.execute(request);
@@ -100,15 +101,15 @@ public class TelegramSendAdapter implements MessageListener {
     }
 
     /** Send Photo Method */
-    private void sendPhoto(message.Message message){
+    private void sendPhoto(BotMessage botMessage){
         SendPhoto request;
 
         // check & send each attachement
-        for (Attachment attachment : message.getAttachements()){
+        for (Attachment attachment : botMessage.getAttachements()){
             /** distinguish between FileTypes */
-            if (attachment.getFileType() == FileType.FILE) request = new SendPhoto(message.getSenderID(), attachment.getFile());
-            else if (attachment.getFileType() == FileType.BYTE) request = new SendPhoto(message.getSenderID(), attachment.getFileArray());
-            else if (attachment.getFileType() == FileType.FILE_ID) request = new SendPhoto(message.getSenderID(), attachment.getFileUrl());
+            if (attachment.getFileType() == FileType.FILE) request = new SendPhoto(botMessage.getSenderID(), attachment.getFile());
+            else if (attachment.getFileType() == FileType.BYTE) request = new SendPhoto(botMessage.getSenderID(), attachment.getFileArray());
+            else if (attachment.getFileType() == FileType.FILE_ID) request = new SendPhoto(botMessage.getSenderID(), attachment.getFileUrl());
             else continue;
 
             if (attachment.getCaption() != null)
@@ -120,15 +121,15 @@ public class TelegramSendAdapter implements MessageListener {
     }
 
     /** Send Audio Method */
-    private void sendAudio(message.Message message){
+    private void sendAudio(BotMessage botMessage){
         SendAudio request;
 
         // check & send each attachement
-        for (Attachment attachment : message.getAttachements()) {
+        for (Attachment attachment : botMessage.getAttachements()) {
             /** distinguish between FileTypes */
-            if(attachment.getFileType() == FileType.FILE) request = new SendAudio(message.getSenderID(), attachment.getFile());
-            else if(attachment.getFileType() == FileType.BYTE) request = new SendAudio(message.getSenderID(), attachment.getFileArray());
-            else if(attachment.getFileType() == FileType.FILE_ID) request = new SendAudio(message.getSenderID(), attachment.getFileUrl());
+            if(attachment.getFileType() == FileType.FILE) request = new SendAudio(botMessage.getSenderID(), attachment.getFile());
+            else if(attachment.getFileType() == FileType.BYTE) request = new SendAudio(botMessage.getSenderID(), attachment.getFileArray());
+            else if(attachment.getFileType() == FileType.FILE_ID) request = new SendAudio(botMessage.getSenderID(), attachment.getFileUrl());
             else continue;
 
             if (attachment.getCaption() != null)
@@ -144,14 +145,14 @@ public class TelegramSendAdapter implements MessageListener {
     }
 
     /** Send Voice Method */
-    private void sendVoice(message.Message message){
+    private void sendVoice(BotMessage botMessage){
         SendVoice request;
 
-        for (Attachment attachment : message.getAttachements()) {
+        for (Attachment attachment : botMessage.getAttachements()) {
             /** distinguish between FileTypes */
-            if (attachment.getFileType() == FileType.FILE) request = new SendVoice(message.getSenderID(), attachment.getFile());
-            else if (attachment.getFileType() == FileType.BYTE) request = new SendVoice(message.getSenderID(), attachment.getFileArray());
-            else if (attachment.getFileType() == FileType.FILE_ID) request = new SendVoice(message.getSenderID(), attachment.getFileUrl());
+            if (attachment.getFileType() == FileType.FILE) request = new SendVoice(botMessage.getSenderID(), attachment.getFile());
+            else if (attachment.getFileType() == FileType.BYTE) request = new SendVoice(botMessage.getSenderID(), attachment.getFileArray());
+            else if (attachment.getFileType() == FileType.FILE_ID) request = new SendVoice(botMessage.getSenderID(), attachment.getFileUrl());
             else continue;
 
             if (attachment.getCaption() != null)
@@ -165,14 +166,14 @@ public class TelegramSendAdapter implements MessageListener {
     }
 
     /** Send Document Method */
-    private void sendDocument(message.Message message){
+    private void sendDocument(BotMessage botMessage){
         SendDocument request;
 
-        for (Attachment attachment : message.getAttachements()) {
+        for (Attachment attachment : botMessage.getAttachements()) {
             /** distinguish between FileTypes */
-            if (attachment.getFileType() == FileType.FILE) request = new SendDocument(message.getSenderID(), attachment.getFile());
-            else if (attachment.getFileType() == FileType.BYTE) request = new SendDocument(message.getSenderID(), attachment.getFileArray());
-            else if (attachment.getFileType() == FileType.FILE_ID) request = new SendDocument(message.getSenderID(), attachment.getFileUrl());
+            if (attachment.getFileType() == FileType.FILE) request = new SendDocument(botMessage.getSenderID(), attachment.getFile());
+            else if (attachment.getFileType() == FileType.BYTE) request = new SendDocument(botMessage.getSenderID(), attachment.getFileArray());
+            else if (attachment.getFileType() == FileType.FILE_ID) request = new SendDocument(botMessage.getSenderID(), attachment.getFileUrl());
             else continue;
 
             if (attachment.getCaption() != null)
@@ -184,14 +185,14 @@ public class TelegramSendAdapter implements MessageListener {
     }
 
     /** Send Video Method */
-    private void sendVideo(message.Message message){
+    private void sendVideo(BotMessage botMessage){
         SendVideo request;
 
-        for (Attachment attachment : message.getAttachements()) {
+        for (Attachment attachment : botMessage.getAttachements()) {
             /** distinguish between FileTypes */
-            if (attachment.getFileType() == FileType.FILE) request = new SendVideo(message.getSenderID(), attachment.getFile());
-            else if (attachment.getFileType() == FileType.BYTE) request = new SendVideo(message.getSenderID(), attachment.getFileArray());
-            else if (attachment.getFileType() == FileType.FILE_ID) request = new SendVideo(message.getSenderID(), attachment.getFileUrl());
+            if (attachment.getFileType() == FileType.FILE) request = new SendVideo(botMessage.getSenderID(), attachment.getFile());
+            else if (attachment.getFileType() == FileType.BYTE) request = new SendVideo(botMessage.getSenderID(), attachment.getFileArray());
+            else if (attachment.getFileType() == FileType.FILE_ID) request = new SendVideo(botMessage.getSenderID(), attachment.getFileUrl());
             else continue;
 
             if (attachment.getCaption() != null)

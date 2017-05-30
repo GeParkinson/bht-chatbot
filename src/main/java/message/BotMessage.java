@@ -11,7 +11,7 @@ import java.io.Serializable;
 /**
  * Created by Chris on 5/14/2017.
  */
-public class Message implements Serializable {
+public class BotMessage implements Serializable {
     private Long id;
     private Long messageID;
     private Long senderID;

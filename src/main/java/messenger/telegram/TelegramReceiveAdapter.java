@@ -4,10 +4,7 @@ import com.pengrad.telegrambot.BotUtils;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import jms.MessageQueue;
-import message.Attachment;
-import message.AttachmentType;
-import message.FileType;
-import message.Messenger;
+import message.*;
 
 import javax.inject.Inject;
 import javax.ws.rs.POST;
@@ -32,8 +29,8 @@ public class TelegramReceiveAdapter {
         messageQueue.addInMessage(toMessage(message));
     }
 
-    private message.Message toMessage(com.pengrad.telegrambot.model.Message message) {
-        message.Message msg = new message.Message();
+    private BotMessage toMessage(com.pengrad.telegrambot.model.Message message) {
+        BotMessage msg = new BotMessage();
 
         msg.setMessenger(Messenger.TELEGRAM);
         msg.setMessageID(message.messageId().longValue());
