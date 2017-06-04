@@ -28,7 +28,7 @@ public class HelloWorld {
     public String getHelloWorldJSON() {
         Message emptyMessage = new Message();
         emptyMessage.setId(1L);
-        emptyMessage.setText(helloService.createHelloMessage("World"));
+        emptyMessage.setText("show me chinese restaurants");
         emptyMessage.setMessenger(Messenger.TELEGRAM);
         messageQueue.addInMessage(emptyMessage);
         return "{\"result\":\"" + helloService.createHelloMessage("World") + "\"}";
