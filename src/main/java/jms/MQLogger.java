@@ -8,33 +8,34 @@ import javax.ejb.MessageDriven;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.TextMessage;
 
 /**
  * @author: georg.parkinson@adesso.de
  * Date: 22.05.17
  */
 @MessageDriven(
-        name = "InboxProcessor",
+        name = "InboxLogger",
         activationConfig = {
                 @ActivationConfigProperty(
                         propertyName = "destinationType",
                         propertyValue = "javax.jms.Topic"),
                 @ActivationConfigProperty(
                         propertyName = "destination",
-                        propertyValue = "jms/messages/inbox")
+                        propertyValue = "jms/messages/inbox"),
+                @ActivationConfigProperty(
+                        propertyName = "maxSession", propertyValue = "1")
         }
 )
-public class Consumer implements MessageListener {
+public class MQLogger implements MessageListener {
 
-    Logger logger = LoggerFactory.getLogger(Consumer.class);
+    private Logger logger = LoggerFactory.getLogger(MQLogger.class);
 
     @Override
     public void onMessage(final Message message) {
          try {
-             logger.info(((TextMessage) message).getText());
+             logger.info("Inbox receive message [{}]: {}", message.getJMSMessageID(), message.getBody(message.Message.class));
          } catch (JMSException e) {
-             logger.error("Could not receive message.", e);
+             logger.error("Error while interpreting message.", e);
          }
     }
 }
