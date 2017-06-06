@@ -90,6 +90,7 @@ public class FacebookSendAdapter {
     }
 
     //CURL
+    //TODO: Replace with Unirest to make things easier
     public static String sendPostRequest(String requestUrl, String payload) {
         StringBuffer jsonString = new StringBuffer();
         try {
