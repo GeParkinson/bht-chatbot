@@ -1,9 +1,11 @@
 package messenger.facebook;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
 import message.Attachment;
 import message.AttachmentType;
 import message.Messenger;
 import messenger.utils.MessengerUtils;
+import nlp.APIai;
 import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,13 +46,10 @@ public class FacebookAdapter {
     @POST
     @Path("/facebook")
     @Consumes("application/json")
-    public String ReceiveMessage(String InputMessage) throws IOException {
+    public String ReceiveMessage(String InputMessage) throws IOException, UnirestException {
 
         System.out.println("Input:"+InputMessage);
 
-        String sender ="";
-        String message="";
-        Attachment attach = null;
         Boolean isEcho;
         JSONObject obj;
 
@@ -60,55 +59,26 @@ public class FacebookAdapter {
         obj = new JSONObject(InputMessage);
 
         //check if message
-        if(obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("message")!=null) {
+        if(obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).has("message")) {
 
+            //set object to message node
+            JSONObject inputMsg=obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("message");
 
-                //sender
-                try {
+            if(inputMsg.has("attachments")){
+            JSONObject attachmentNode=inputMsg.getJSONArray("attachments").getJSONObject(0);
+            msg.setAttachements(getAttachments(attachmentNode));
+            }
+            if(inputMsg.has("text")) {
+                msg.setText(getMessage(inputMsg));
+            }
 
-                    sender = obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("sender").getString("id");
-                } catch (Exception ex) {}
+            if(obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("sender").has("id")) {
+                msg.setSenderID(Long.valueOf(getSender(obj)));
+            }
 
-                //message text
-            try {
-
-                message = obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("message").getString("text");
-            } catch (Exception ex) {}
-
-            //attachements
-            try {
-                String attType = obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("message").getJSONArray("attachments").getJSONObject(0).getString("type");
-                String url = obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("message").getJSONArray("attachments").getJSONObject(0).getJSONObject("payload").getString("url");
-
-                attach=new Attachment();
-                attach.setFileUrl(url);
-
-                switch (attType) {
-                    case "image":
-                        attach.setAttachmentType(AttachmentType.PHOTO);
-                        break;
-                    case "audio":
-                        attach.setAttachmentType(AttachmentType.AUDIO);
-                        break;
-                    case "fallback":
-                        break;
-                    case "file":
-                        attach.setAttachmentType(AttachmentType.DOCUMENT);
-                        break;
-                    case "location":
-                        break;
-                    case "video":
-                        attach.setAttachmentType(AttachmentType.VIDEO);
-                        break;
-                }
-
-                message="attached "+attType;
-
-                Attachment[] atts= new Attachment[1];
-                atts[0]=attach;
-                msg.setAttachements(atts);
-
-                } catch (Exception ex) {}
+            //TODO: ID
+            msg.setMessageID(Long.valueOf("85753757347"));
+            msg.setMessenger(Messenger.FACEBOOK);
 
             //is echo? --> echo message for send messages
                 try {
@@ -118,13 +88,9 @@ public class FacebookAdapter {
                     isEcho = false;
                 }
 
-                if ((message.length() > 0) && isEcho == false) {
+                if (isEcho == false) {
 
-                    msg.setText(message);
-                    msg.setMessenger(Messenger.FACEBOOK);
-                    msg.setMessageID(Long.valueOf("85753757347"));
-                    msg.setSenderID(Long.valueOf(sender));
-
+                    //TODO: SEND MESSAGE VIA JMS....
                     FacebookSendAdapter.sendMessage(msg);
                 }
             }
@@ -159,6 +125,57 @@ public class FacebookAdapter {
         }
 
         return "Webhook FAILED";
+    }
+
+    String getSender(JSONObject obj) {
+        //sender
+        String sender = obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("sender").getString("id");
+        System.out.println(sender);
+        return sender;
+    }
+
+    String getMessage(JSONObject obj) {
+        //message text
+        String message = obj.getString("text");
+        System.out.println(message);
+        return message;
+    }
+
+    Attachment[] getAttachments(JSONObject obj) {
+        //attachements
+        Attachment attach;
+
+            String attType = obj.getString("type");
+            String url = obj.getJSONObject("payload").getString("url");
+
+            attach = new Attachment();
+            attach.setFileUrl(url);
+
+            switch (attType) {
+                case "image":
+                    attach.setAttachmentType(AttachmentType.PHOTO);
+                    break;
+                case "audio":
+                    attach.setAttachmentType(AttachmentType.AUDIO);
+                    break;
+                case "fallback":
+                    break;
+                case "file":
+                    attach.setAttachmentType(AttachmentType.DOCUMENT);
+                    break;
+                case "location":
+                    break;
+                case "video":
+                    attach.setAttachmentType(AttachmentType.VIDEO);
+                    break;
+            }
+
+
+            Attachment[] atts = new Attachment[1];
+            atts[0] = attach;
+        System.out.println(attType+"-"+url);
+        return atts;
+
     }
 
 
