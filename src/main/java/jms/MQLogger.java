@@ -1,5 +1,6 @@
 package jms;
 
+import message.BotMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,7 @@ public class MQLogger implements MessageListener {
     @Override
     public void onMessage(final Message message) {
          try {
-             logger.info("Inbox receive message [{}]: {}", message.getJMSMessageID(), message.getBody(message.Message.class));
+             logger.info("Inbox receive message [{}]: {}", message.getJMSMessageID(), message.getBody(BotMessage.class));
          } catch (JMSException e) {
              logger.error("Error while interpreting message.", e);
          }

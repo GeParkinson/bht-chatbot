@@ -1,6 +1,5 @@
 package messenger.utils;
 
-import message.Message;
 // import messenger.telegram.TelegramSendAdapter;
 
 import java.io.IOException;

@@ -1,5 +1,6 @@
 package jms;
 
+import message.BotMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,14 +22,14 @@ public class MessageQueue {
 
     /**
      * Add new arrived message to system inbox queue
-     * @param messageObject message from Telegram or Facebook
+     * @param botMessageObject message from Telegram or Facebook
      * @return
      */
-    public boolean addInMessage(final message.Message messageObject) {
+    public boolean addInMessage(final BotMessage botMessageObject) {
         final JMSContext context = messageQueueManager.getContext();
-        Message message = context.createObjectMessage(messageObject);
+        Message message = context.createObjectMessage(botMessageObject);
         try {
-            switch (messageObject.getMessenger()) {
+            switch (botMessageObject.getMessenger()) {
                 case TELEGRAM:
                     message.setStringProperty("Telegram", "in");
                     break;
@@ -36,27 +37,27 @@ public class MessageQueue {
                     message.setStringProperty("Facebook", "in");
                     break;
                 default:
-                    logger.error("Message isn't assign to a messenger: {}", messageObject);
+                    logger.error("BotMessage isn't assign to a messenger: {}", botMessageObject);
                     return false;
             }
             context.createProducer().send(messageQueueManager.getTopic(), message);
             return true;
         } catch (JMSException e) {
-            logger.error("Could not add message to inbox: {}", messageObject, e);
+            logger.error("Could not add message to inbox: {}", botMessageObject, e);
             return false;
         }
     }
 
     /**
      * Add message to system outbox queue
-     * @param messageObject message to Telegram or Facebook
+     * @param botMessageObject message to Telegram or Facebook
      * @return
      */
-    public boolean addOutMessage(final message.Message messageObject) {
+    public boolean addOutMessage(final BotMessage botMessageObject) {
         final JMSContext context = messageQueueManager.getContext();
-        Message message = context.createObjectMessage(messageObject);
+        Message message = context.createObjectMessage(botMessageObject);
         try {
-            switch (messageObject.getMessenger()) {
+            switch (botMessageObject.getMessenger()) {
                 case TELEGRAM:
                     message.setStringProperty("Telegram", "out");
                     break;
@@ -64,13 +65,13 @@ public class MessageQueue {
                     message.setStringProperty("Facebook", "out");
                     break;
                 default:
-                    logger.error("Message isn't assign to a messenger: {}", messageObject);
+                    logger.error("BotMessage isn't assign to a messenger: {}", botMessageObject);
                     return false;
             }
             context.createProducer().send(messageQueueManager.getTopic(), message);
             return true;
         } catch (JMSException e) {
-            logger.error("Could not add message to outbox: {}", messageObject, e);
+            logger.error("Could not add message to outbox: {}", botMessageObject, e);
             return false;
         }
     }
