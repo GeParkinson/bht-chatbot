@@ -64,17 +64,22 @@ public class Message implements Serializable {
     }
 
     public Attachment[] getAttachements() {
-        Attachment[] fileAttachments = new Attachment[attachements.length];
-        for (int i = 0; i < attachements.length; i++) {
-            fileAttachments[i] = attachmentStore.loadAttachment(attachements[i]);
+        try {
+            Attachment[] fileAttachments = new Attachment[attachements.length];
+            for (int i = 0; i < attachements.length; i++) {
+                fileAttachments[i] = attachmentStore.loadAttachment(attachements[i]);
+            }
+            return fileAttachments;
         }
-        return fileAttachments;
+        catch(Exception ex){
+            return null;
+        }
     }
 
     public void setAttachements(final Attachment[] attachements) {
         this.attachements = new Long[attachements.length];
         for (int i = 0; i < attachements.length; i++) {
-            this.attachements[i] = attachmentStore.storeAttachment(attachements[i]);
+            //this.attachements[i] = attachmentStore.storeAttachment(attachements[i]);
         }
     }
 
