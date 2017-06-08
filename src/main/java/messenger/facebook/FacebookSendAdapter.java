@@ -1,8 +1,8 @@
 package messenger.facebook;
 
-import message.Attachment;
-import message.FileType;
+import com.mashape.unirest.http.Unirest;
 import messenger.utils.MessengerUtils;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -90,8 +90,9 @@ public class FacebookSendAdapter {
     }
 
     //CURL
-    //TODO: Replace with Unirest to make things easier
+    //TODO: Replace with RESTeasy to make things easier
     public static String sendPostRequest(String requestUrl, String payload) {
+
         StringBuffer jsonString = new StringBuffer();
         try {
             URL url = new URL(requestUrl);
@@ -120,6 +121,7 @@ public class FacebookSendAdapter {
             throw new RuntimeException(e.getMessage());
         }
         return jsonString.toString();
+
     }
 
 }

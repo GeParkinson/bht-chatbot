@@ -5,24 +5,17 @@ import message.Attachment;
 import message.AttachmentType;
 import message.Messenger;
 import messenger.utils.MessengerUtils;
-import nlp.APIai;
 import org.json.JSONObject;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Map;
 
 import static messenger.facebook.FacebookSendAdapter.activateWebhook;
 
 /**
- * Created by Oliver on 5/14/2017.
+ * Created by Oliver on 14.05.2017.
  */
 
 @Path("/webhook")
@@ -40,6 +33,7 @@ public class FacebookAdapter {
     //URL:  https://XXXXXXXXXXXXX.localtunnel.me/bht-chatbot/rest/webhook/facebook
     //token: set in config.properties
     //---------------------------------------
+
     String accessToken= MessengerUtils.getProperties().getProperty("FACEBOOK_BOT_TOKEN");
     String webhookToken = MessengerUtils.getProperties().getProperty("FACEBOOK_WEBHOOK_TOKEN");
 

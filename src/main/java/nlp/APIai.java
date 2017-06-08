@@ -1,15 +1,11 @@
 package nlp;
 
-import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import messenger.utils.MessengerUtils;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.Properties;
-
-import static messenger.utils.MessengerUtils.readJsonFromUrl;
 
 /**
  * Created by oliver on 06.06.2017.
@@ -33,6 +29,7 @@ public class APIai {
             reqURL=reqURL+"&contexts="+context;
         }
 
+        //TODO: Replace Unirest with RESTeasy
         JSONObject resultJson =  Unirest.get(reqURL).header("Authorization","Bearer "+token).asJson().getBody().getObject();
 
         return resultJson.getJSONObject("result");
