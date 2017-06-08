@@ -3,9 +3,11 @@ package messenger.facebook;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import message.Attachment;
 import message.AttachmentType;
+import message.BotMessage;
 import message.Messenger;
 import messenger.utils.MessengerUtils;
 import org.json.JSONObject;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -48,7 +50,7 @@ public class FacebookAdapter {
         JSONObject obj;
 
         //message object
-        message.Message msg = new message.Message();
+        BotMessage msg = new BotMessage();
 
         obj = new JSONObject(InputMessage);
 

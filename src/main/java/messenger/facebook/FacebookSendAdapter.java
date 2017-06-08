@@ -1,8 +1,7 @@
 package messenger.facebook;
 
-import com.mashape.unirest.http.Unirest;
+import message.BotMessage;
 import messenger.utils.MessengerUtils;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -37,7 +36,7 @@ public class FacebookSendAdapter {
     }
 
 
-    public static void sendMessage(message.Message message){
+    public static void sendMessage(BotMessage message){
         if(message.getAttachements()!=null) {
             switch (message.getAttachements()[0].getAttachmentType()) {
                 case AUDIO:
@@ -76,7 +75,7 @@ public class FacebookSendAdapter {
     }
 
     /** Send Photo Method */
-    private static void sendMedia(message.Message message,String mediaType){
+    private static void sendMedia(BotMessage message,String mediaType){
         String payload = "{recipient: { id: "+message.getSenderID()+" }, message: { attachment: { type: \""+mediaType+"\", payload: { url: \""+message.getAttachements()[0].getFileUrl()+"\"  } }   }} ";
         System.out.println("Output:"+payload);
         String requestUrl = "https://graph.facebook.com/v2.6/me/messages?access_token=" + token();

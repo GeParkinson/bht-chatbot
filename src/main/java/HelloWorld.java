@@ -1,5 +1,5 @@
 import jms.MessageQueue;
-import message.Message;
+import message.BotMessage;
 import message.Messenger;
 
 import javax.inject.Inject;
@@ -26,7 +26,7 @@ public class HelloWorld {
     @Path("/json")
     @Produces({"application/json"})
     public String getHelloWorldJSON() {
-        Message emptyMessage = new Message();
+        BotMessage emptyMessage = new BotMessage();
         emptyMessage.setId(1L);
         emptyMessage.setText("show me chinese restaurants");
         emptyMessage.setMessenger(Messenger.TELEGRAM);
