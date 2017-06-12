@@ -1,6 +1,7 @@
 package messenger.facebook;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
+import jms.MessageQueue;
 import message.Attachment;
 import message.AttachmentType;
 import message.BotMessage;
@@ -8,6 +9,7 @@ import message.Messenger;
 import messenger.utils.MessengerUtils;
 import org.json.JSONObject;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -23,6 +25,8 @@ import static messenger.facebook.FacebookSendAdapter.activateWebhook;
 @Path("/webhook")
 public class FacebookAdapter {
 
+    @Inject
+    private MessageQueue messageQueue;
 
     //---------------------------------------
     //Testing:
@@ -44,7 +48,7 @@ public class FacebookAdapter {
     @Consumes("application/json")
     public String ReceiveMessage(String InputMessage) throws IOException, UnirestException {
 
-        System.out.println("Input:"+InputMessage);
+        System.out.println("FACEBOOK_RECEIVE:Input:"+InputMessage);
 
         Boolean isEcho;
         JSONObject obj;
@@ -86,8 +90,7 @@ public class FacebookAdapter {
 
                 if (isEcho == false) {
 
-                    //TODO: SEND MESSAGE VIA JMS....
-                    FacebookSendAdapter.sendMessage(msg);
+                    messageQueue.addInMessage(msg);
                 }
             }
 
@@ -101,23 +104,23 @@ public class FacebookAdapter {
     public String verification(@Context HttpServletRequest request){
 
 
-        System.out.println("request: " + request);
+        System.out.println("FACEBOOK_WEBHOOK:request: " + request);
         Map<String, String[]> parametersMap = request.getParameterMap();
         if (parametersMap.size() > 0) {
-            System.out.println("HUB_MODE: " + request.getParameter("hub.mode"));
-            System.out.println("HUB_VERIFY_TOKEN: " + request.getParameter("hub.verify_token"));
-            System.out.println("HUB_CHALLENGE: " + request.getParameter("hub.challenge"));
+            System.out.println("FACEBOOK_WEBHOOK:HUB_MODE: " + request.getParameter("hub.mode"));
+            System.out.println("FACEBOOK_WEBHOOK:HUB_VERIFY_TOKEN: " + request.getParameter("hub.verify_token"));
+            System.out.println("FACEBOOK_WEBHOOK:HUB_CHALLENGE: " + request.getParameter("hub.challenge"));
 
             if("subscribe".equals(request.getParameter("hub.mode")) &&
                     webhookToken.equals(request.getParameter("hub.verify_token"))){
-                System.out.println("VERIFIED");
+                System.out.println("FACEBOOK_WEBHOOK:VERIFIED");
 
                 activateWebhook();
 
                 return request.getParameter("hub.challenge");
             }
         }else{
-            System.out.println("No request parameters were given.");
+            System.out.println("FACEBOOK_WEBHOOK:No request parameters were given.");
         }
 
         return "Webhook FAILED";
@@ -126,14 +129,14 @@ public class FacebookAdapter {
     String getSender(JSONObject obj) {
         //sender
         String sender = obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("sender").getString("id");
-        System.out.println(sender);
+        System.out.println("FACEBOOK_RECEIVE:sender:"+sender);
         return sender;
     }
 
     String getMessage(JSONObject obj) {
         //message text
         String message = obj.getString("text");
-        System.out.println(message);
+        System.out.println("FACEBOOK_RECEIVE:message:"+message);
         return message;
     }
 
@@ -169,7 +172,7 @@ public class FacebookAdapter {
 
             Attachment[] atts = new Attachment[1];
             atts[0] = attach;
-        System.out.println(attType+"-"+url);
+        System.out.println("FACEBOOK_RECEIVE:attachment:"+attType+"-"+url);
         return atts;
 
     }

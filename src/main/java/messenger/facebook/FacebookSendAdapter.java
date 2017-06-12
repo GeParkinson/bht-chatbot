@@ -2,7 +2,18 @@ package messenger.facebook;
 
 import message.BotMessage;
 import messenger.utils.MessengerUtils;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.MessageDriven;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.MediaType;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -13,7 +24,23 @@ import java.util.Properties;
 /**
  * Created by oliver on 22.05.2017.
  */
-public class FacebookSendAdapter {
+@MessageDriven(
+        name = "OutboxTelegramProcessor",
+        activationConfig = {
+                @ActivationConfigProperty(
+                        propertyName = "destinationType",
+                        propertyValue = "javax.jms.Topic"),
+                @ActivationConfigProperty(
+                        propertyName = "destination",
+                        propertyValue = "jms/messages/inbox"),
+                @ActivationConfigProperty(
+                        propertyName = "maxSession", propertyValue = "1"),
+                @ActivationConfigProperty(
+                        propertyName = "messageSelector", propertyValue = "Facebook = 'out'"
+                )
+        }
+)
+public class FacebookSendAdapter implements MessageListener {
     static String token(){
         Properties properties = MessengerUtils.getProperties();
         return properties.getProperty("FACEBOOK_BOT_TOKEN");
@@ -36,7 +63,50 @@ public class FacebookSendAdapter {
     }
 
 
-    public static void sendMessage(BotMessage message){
+    /** Send Text Message */
+    private static void sendMessage(Long recipient, String messageJson) {
+        String payload = "{\"recipient\": {\"id\": \"" + recipient + "\"}, \"message\": { \"text\": \""+messageJson+"\"}}";
+        String requestUrl = "https://graph.facebook.com/v2.6/me/messages?access_token=" + token();
+        try {
+            sendPostRequest(requestUrl, payload);
+        }
+        catch(Exception ex){
+        }
+    }
+
+    /** Send Photo Method */
+    private static void sendMedia(BotMessage message,String mediaType){
+        String payload = "{recipient: { id: "+message.getSenderID()+" }, message: { attachment: { type: \""+mediaType+"\", payload: { url: \""+message.getAttachements()[0].getFileUrl()+"\"  } }   }} ";
+        System.out.println("FACEBOOK_SEND:Output:"+payload);
+        String requestUrl = "https://graph.facebook.com/v2.6/me/messages?access_token=" + token();
+        try {
+            sendPostRequest(requestUrl, payload);
+        }
+        catch(Exception ex){
+        }
+    }
+
+    public static String sendPostRequest(String requestUrl, String payload) {
+
+        Entity<String> jsonInput = Entity.entity(payload, MediaType.APPLICATION_JSON);
+
+        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyWebTarget target = client.target(requestUrl);
+
+        Invocation.Builder invocationBuilder = target.request("text/plain").header("Accept", "application/json").header("Content-Type", "application/json; charset=UTF-8");
+        Invocation invocation = invocationBuilder.buildPost(jsonInput);
+        invocation.invoke();
+
+        return "";
+
+    }
+
+    @Override
+    public void onMessage(Message messageIn) {
+        BotMessage message = null;
+        try {
+            message = messageIn.getBody(BotMessage.class);
+
         if(message.getAttachements()!=null) {
             switch (message.getAttachements()[0].getAttachmentType()) {
                 case AUDIO:
@@ -57,70 +127,10 @@ public class FacebookSendAdapter {
             }
         }
         else{
-                sendMessage(message.getSenderID(), message.getText());
+            sendMessage(message.getSenderID(), message.getText());
+        }
+        } catch (JMSException e) {
+            e.printStackTrace();
         }
     }
-
-    /** Send Text Message */
-    private static void sendMessage(Long recipient, String messageJson) {
-        String payload = "{\"recipient\": {\"id\": \"" + recipient + "\"}, \"message\": { \"text\": \""+messageJson+"\"}}";
-        String requestUrl = "https://graph.facebook.com/v2.6/me/messages?access_token=" + token();
-        try {
-            sendPostRequest(requestUrl, payload);
-        }
-        catch(Exception ex){
-            //System.out.println(ex.getMessage()+" ERROR");
-        }
-        //System.out.println(payload+"------"+requestUrl);
-    }
-
-    /** Send Photo Method */
-    private static void sendMedia(BotMessage message,String mediaType){
-        String payload = "{recipient: { id: "+message.getSenderID()+" }, message: { attachment: { type: \""+mediaType+"\", payload: { url: \""+message.getAttachements()[0].getFileUrl()+"\"  } }   }} ";
-        System.out.println("Output:"+payload);
-        String requestUrl = "https://graph.facebook.com/v2.6/me/messages?access_token=" + token();
-        try {
-            sendPostRequest(requestUrl, payload);
-        }
-        catch(Exception ex){
-            //System.out.println(ex.getMessage()+" ERROR");
-        }
-        //System.out.println(payload+"------"+requestUrl);
-    }
-
-    //CURL
-    //TODO: Replace with RESTeasy to make things easier
-    public static String sendPostRequest(String requestUrl, String payload) {
-
-        StringBuffer jsonString = new StringBuffer();
-        try {
-            URL url = new URL(requestUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Accept", "application/json");
-            connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), "UTF-8");
-            writer.write(payload);
-            writer.close();
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                jsonString.append(line);
-            }
-            br.close();
-
-            //System.out.println(connection.getResponseMessage());
-
-            connection.disconnect();
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
-        return jsonString.toString();
-
-    }
-
 }
