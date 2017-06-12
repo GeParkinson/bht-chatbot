@@ -26,11 +26,11 @@ public class HelloWorld {
     @Path("/json")
     @Produces({"application/json"})
     public String getHelloWorldJSON() {
-        BotMessage emptyBotMessage = new BotMessage();
-        emptyBotMessage.setId(1L);
-        emptyBotMessage.setText(helloService.createHelloMessage("World"));
-        emptyBotMessage.setMessenger(Messenger.TELEGRAM);
-        messageQueue.addInMessage(emptyBotMessage);
+        BotMessage emptyMessage = new BotMessage();
+        emptyMessage.setId(1L);
+        emptyMessage.setText("show me chinese restaurants");
+        emptyMessage.setMessenger(Messenger.TELEGRAM);
+        messageQueue.addInMessage(emptyMessage);
         return "{\"result\":\"" + helloService.createHelloMessage("World") + "\"}";
     }
 

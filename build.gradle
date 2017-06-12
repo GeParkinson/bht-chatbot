@@ -12,8 +12,7 @@ repositories {
 /* Dependencies
 ---------------------------------*/
 dependencies {
-    compile "org.jboss.spec:jboss-javaee-7.0:1.1.0.Final"
-    compile 'com.github.pengrad:java-telegram-bot-api:3.0.0'
+
     compile 'org.jboss.resteasy:resteasy-jaxrs-all:3.1.3.Final'
 
     compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.3.1'
@@ -21,7 +20,18 @@ dependencies {
     compile 'org.jboss.resteasy:resteasy-client:3.1.3.Final'
     compile 'org.jboss.resteasy:resteasy-multipart-provider:3.1.3.Final'
 
-    providedCompile "org.slf4j:slf4j-api:1.7.25"
+    compile "org.jboss.spec:jboss-javaee-7.0:1.1.0.Final",
+            "org.json:json:20160810",
+            "com.github.pengrad:java-telegram-bot-api:3.0.0",
+            "com.mashape.unirest:unirest-java:1.4.9"
+
+    providedCompile "org.slf4j:slf4j-api:1.7.25",
+                    "org.jboss.resteasy:resteasy-client:3.1.3.Final"
+
+    testCompile "org.jboss.arquillian.junit:arquillian-junit-container:1.1.13.Final",
+                "junit:junit:4.12"
+
+    testRuntime "org.wildfly.arquillian:wildfly-arquillian-container-remote:2.0.2.Final"
 }
 
 
@@ -39,12 +49,12 @@ task wrapper(type: Wrapper) {
 }
 
 
-task chatbotRun(type:Exec, dependsOn: war) {
+task chatbotRun(type: Exec, dependsOn: war) {
     workingDir 'src/main/docker'
     commandLine 'docker-compose', 'up'
 }
 
-task chatbotStop(type:Exec) {
+task chatbotStop(type: Exec) {
     workingDir 'src/main/docker'
     commandLine 'docker-compose', 'down'
 }
