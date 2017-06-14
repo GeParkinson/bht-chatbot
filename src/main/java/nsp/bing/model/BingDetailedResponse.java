@@ -32,6 +32,8 @@ public class BingDetailedResponse implements NSPResponse {
         return recognitionStatus;
     }
 
+    public void setRecognitionStatus(String recognitionStatus){this.recognitionStatus = recognitionStatus;}
+
     public Long getOffset() {
         return offset;
     }

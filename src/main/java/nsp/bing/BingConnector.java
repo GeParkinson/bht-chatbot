@@ -1,10 +1,13 @@
 package nsp.bing;
 
+import com.google.gson.Gson;
 import jms.MessageQueue;
 import message.Attachment;
 import message.BotMessage;
 import message.Messenger;
 import messenger.utils.MessengerUtils;
+import nsp.bing.model.BingDetailedResponse;
+import nsp.bing.model.BingSimpleResponse;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -25,10 +28,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.ws.rs.core.MediaType;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -57,6 +57,8 @@ public class BingConnector implements MessageListener {
     private String accessToken = "";
     private String locale = "";
     private String guid = "";
+    //TODO: distinguish between formats (simple or detailed)
+    private String format = "simple";
 
     @Inject
     MessageQueue messageQueue;
@@ -70,7 +72,7 @@ public class BingConnector implements MessageListener {
                 sendAudioRequest(attachment.getFileUrl(), "en-US", botMessage.getMessenger());
             }
         } catch (JMSException e) {
-            logger.error("Error while getting BotMessage-Object on BingConnector: " + e.toString());
+            logger.error("Error while getting BotMessage-Object on BingConnector: ", e);
         }
     }
 
@@ -108,18 +110,23 @@ public class BingConnector implements MessageListener {
                 result.append(line);
             }
 
-            accessToken = result.toString();
-
-            logger.debug("new AccessToken: " + accessToken);
+            if (responseCode == 200) {
+                accessToken = result.toString();
+                logger.debug("new AccessToken: " + accessToken);
+            } else {
+                logger.warn("Could not generate new Bing Speech AccessToken");
+            }
         } catch (Exception e) {
-            logger.error("Exception while getting new AccessToken: " + e.toString());
+            logger.error("Exception while getting new AccessToken: ", e);
         }
     }
 
     private void sendAudioRequest(String fileDir, String language, Messenger messenger){
+        generateAccesToken();
         try {
             HttpClient client = HttpClientBuilder.create().build();
-            String url = "https://speech.platform.bing.com/speech/recognition/interactive/cognitiveservices/v1?language=" + language + "&locale=" + locale + "&requestid=" + guid;
+            String url = "https://speech.platform.bing.com/speech/recognition/interactive/cognitiveservices/v1?language="
+                    + language + "&locale=" + locale + "&requestid=" + guid + "&format=" + format;
             HttpPost httpPost = new HttpPost(url);
 
             // HEADERS
@@ -132,6 +139,7 @@ public class BingConnector implements MessageListener {
             }
 
             // WAV FILE
+            //TODO: implement fileDirectory
             File file = new File(fileDir);
             FileBody bin = new FileBody(file, ContentType.DEFAULT_BINARY);
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -153,30 +161,45 @@ public class BingConnector implements MessageListener {
             httpPost.setEntity(bArrEntity);
 
             // send request
-            HttpResponse response = client.execute(httpPost);
-            int responseCode = response.getStatusLine().getStatusCode();
+            HttpResponse httpResponse = client.execute(httpPost);
+            int responseCode = httpResponse.getStatusLine().getStatusCode();
 
             logger.debug("Send Audio request returns: Response Code - " + String.valueOf(responseCode));
 
-            BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
 
             StringBuilder result = new StringBuilder();
             String line = "";
-            while ((line = rd.readLine()) != null) {
+            while ((line = bufferedReader.readLine()) != null) {
                 result.append(line);
             }
 
             logger.debug("Audio request returns: " + result.toString());
 
+            String response = "";
+            // process response message
+            //FIXME: untested!
+            try {
+                if (format == "simple") {
+                    BingSimpleResponse bingSimpleResponse = new Gson().fromJson(httpResponse.toString(), BingSimpleResponse.class);
+                    response = bingSimpleResponse.getText();
+                } else if (format == "detailed") {
+                    BingDetailedResponse bingDetailedResponse = new Gson().fromJson(httpResponse.toString(), BingDetailedResponse.class);
+                    response = bingDetailedResponse.getText();
+                }
+            } catch (Exception e){
+                logger.error("Error while parsing BingResponse: ", e);
+            }
+
             // return message
             BotMessage emptyBotMessage = new BotMessage();
             emptyBotMessage.setId(1L);
-            emptyBotMessage.setText(result.toString());
+            emptyBotMessage.setText(response);
             emptyBotMessage.setMessenger(messenger);
             messageQueue.addInMessage(emptyBotMessage);
 
         } catch (Exception e){
-            logger.error("Exception while audio request: " + e.toString());
+            logger.error("Exception while audio request: ", e);
         }
     }
 }
