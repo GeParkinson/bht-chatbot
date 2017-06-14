@@ -1,5 +1,6 @@
 package jms;
 
+import message.Attachment;
 import message.BotMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,16 +30,13 @@ public class MessageQueue {
         final JMSContext context = messageQueueManager.getContext();
         Message message = context.createObjectMessage(botMessageObject);
         try {
-            switch (botMessageObject.getMessenger()) {
-                case TELEGRAM:
-                    message.setStringProperty("Telegram", "in");
-                    break;
-                case FACEBOOK:
-                    message.setStringProperty("Facebook", "in");
+            Attachment attachment = botMessageObject.getAttachements()[0];
+            switch (attachment.getAttachmentType()){
+                case AUDIO:
+                    message.setStringProperty("SpeechProcessor", "in");
                     break;
                 default:
-                    logger.error("BotMessage isn't assign to a messenger: {}", botMessageObject);
-                    return false;
+                    message.setStringProperty("NLU", "in");
             }
             context.createProducer().send(messageQueueManager.getTopic(), message);
             return true;
