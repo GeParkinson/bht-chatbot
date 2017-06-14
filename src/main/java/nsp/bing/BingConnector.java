@@ -1,4 +1,4 @@
-package nsp;
+package nsp.bing;
 
 import jms.MessageQueue;
 import message.Attachment;
@@ -7,9 +7,7 @@ import message.Messenger;
 import messenger.utils.MessengerUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
@@ -17,7 +15,6 @@ import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +35,7 @@ import java.util.*;
  * @Author: Christopher Kümmel on 6/12/2017.
  */
 @MessageDriven(
-        name = "OutboxSpeechProcessor",
+        name = "BingConnector",
         activationConfig = {
                 @ActivationConfigProperty(
                         propertyName = "destinationType",
@@ -49,13 +46,13 @@ import java.util.*;
                 @ActivationConfigProperty(
                         propertyName = "maxSession", propertyValue = "1"),
                 @ActivationConfigProperty(
-                        propertyName = "messageSelector", propertyValue = "SpeechProcessor = 'in'"
+                        propertyName = "messageSelector", propertyValue = "BingConnector = 'in'"
                 )
         }
 )
-public class SpeechProcessor implements MessageListener {
+public class BingConnector implements MessageListener {
 
-    private static Logger logger = LoggerFactory.getLogger(SpeechProcessor.class);
+    private static Logger logger = LoggerFactory.getLogger(BingConnector.class);
 
     private String accessToken = "";
     private String locale = "";
@@ -73,7 +70,7 @@ public class SpeechProcessor implements MessageListener {
                 sendAudioRequest(attachment.getFileUrl(), "en-US", botMessage.getMessenger());
             }
         } catch (JMSException e) {
-            logger.error("Error while getting BotMessage-Object on SpeechProcessor: " + e.toString());
+            logger.error("Error while getting BotMessage-Object on BingConnector: " + e.toString());
         }
     }
 
@@ -152,7 +149,7 @@ public class SpeechProcessor implements MessageListener {
             bArrEntity.setContentEncoding(reqEntity.getContentEncoding());
             bArrEntity.setContentType(reqEntity.getContentType());
 
-            // Set ByteArrayEntity to HttpPost
+            // set ByteArrayEntity to HttpPost
             httpPost.setEntity(bArrEntity);
 
             // send request
