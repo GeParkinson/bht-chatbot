@@ -38,8 +38,11 @@ public class MessageQueue {
                     case AUDIO:
                         message.setStringProperty("BingConnector", "in");
                         break;
+                    case VOICE:
+                        message.setStringProperty("BingConnector", "in");
+                        break;
                     default:
-                        logger.error("InMessage has Attachements but no defined case.");
+                        logger.error("new InMessage has Attachements but no defined case.");
                 }
             } else {
                 message.setStringProperty("NLU", "in");
