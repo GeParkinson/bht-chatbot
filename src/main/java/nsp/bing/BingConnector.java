@@ -140,7 +140,9 @@ public class BingConnector implements MessageListener {
                 httpPost.setHeader(entry.getKey(), entry.getValue());
             }
 
+            //TODO: distinguish between different Attachementtypes
             // AUDIO FILE
+
             HttpGet get = new HttpGet(fileURI);
             CloseableHttpResponse execute = HttpClientBuilder.create().build().execute(get);
             HttpEntity entity = execute.getEntity();

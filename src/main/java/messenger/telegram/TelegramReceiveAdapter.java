@@ -71,14 +71,12 @@ public class TelegramReceiveAdapter {
             File file = getFileResponse.file();
             String fullPath = bot.getFullFilePath(file);
 
-            if (message.audio() != null) attachments[0] = new Attachment(fileID,AttachmentType.AUDIO,FileType.SERVER_URL,fullPath);
-            if (message.video() != null) attachments[0] = new Attachment(fileID,AttachmentType.VIDEO,FileType.SERVER_URL,fullPath);
-            if (message.voice() != null) attachments[0] = new Attachment(fileID,AttachmentType.VOICE,FileType.SERVER_URL,fullPath);
-            if (message.document() != null) attachments[0] = new Attachment(fileID,AttachmentType.DOCUMENT,FileType.SERVER_URL,fullPath);
+            if (message.audio() != null) attachments[0] = new Attachment(fileID,AttachmentType.AUDIO,FileType.SERVER_URI,fullPath);
+            if (message.video() != null) attachments[0] = new Attachment(fileID,AttachmentType.VIDEO,FileType.SERVER_URI,fullPath);
+            if (message.voice() != null) attachments[0] = new Attachment(fileID,AttachmentType.VOICE,FileType.SERVER_URI,fullPath);
+            if (message.document() != null) attachments[0] = new Attachment(fileID,AttachmentType.DOCUMENT,FileType.SERVER_URI,fullPath);
             msg.setAttachements(attachments);
         }
-
-
         return msg;
     }
 }

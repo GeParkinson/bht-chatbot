@@ -13,5 +13,5 @@ public enum FileType {
     /***
      * URL on own/external Server
      */
-    SERVER_URL
+    SERVER_URI
 }
