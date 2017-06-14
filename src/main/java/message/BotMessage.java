@@ -19,6 +19,9 @@ public class BotMessage implements Serializable {
     private String text;
     private Long[] attachements;
 
+    //TODO: remove and implement AttachementStorage
+    private Attachment[] testAttachements;
+
     @Inject
     private transient AttachmentStore attachmentStore;
 
@@ -63,19 +66,25 @@ public class BotMessage implements Serializable {
         this.text = text;
     }
 
+    public boolean hasAttachements(){
+        if (attachements != null || testAttachements != null) return true;
+        else return false;
+    }
     public Attachment[] getAttachements() {
-        Attachment[] fileAttachments = new Attachment[attachements.length];
-        for (int i = 0; i < attachements.length; i++) {
-            fileAttachments[i] = attachmentStore.loadAttachment(attachements[i]);
-        }
-        return fileAttachments;
+        return testAttachements;
+//        Attachment[] fileAttachments = new Attachment[attachements.length];
+//        for (int i = 0; i < attachements.length; i++) {
+//            fileAttachments[i] = attachmentStore.loadAttachment(attachements[i]);
+//        }
+//        return fileAttachments;
     }
 
     public void setAttachements(final Attachment[] attachements) {
-        this.attachements = new Long[attachements.length];
-        for (int i = 0; i < attachements.length; i++) {
-            this.attachements[i] = attachmentStore.storeAttachment(attachements[i]);
-        }
+        this.testAttachements = attachements;
+//        this.attachements = new Long[attachements.length];
+//        for (int i = 0; i < attachements.length; i++) {
+//            this.attachements[i] = attachmentStore.storeAttachment(attachements[i]);
+//        }
     }
 
     @Override

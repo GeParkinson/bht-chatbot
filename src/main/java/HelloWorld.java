@@ -1,6 +1,5 @@
 import jms.MessageQueue;
-import message.BotMessage;
-import message.Messenger;
+import message.*;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -29,7 +28,6 @@ public class HelloWorld {
         BotMessage emptyMessage = new BotMessage();
         emptyMessage.setId(1L);
         emptyMessage.setText("show me chinese restaurants");
-        emptyMessage.setMessenger(Messenger.TELEGRAM);
         messageQueue.addInMessage(emptyMessage);
         return "{\"result\":\"" + helloService.createHelloMessage("World") + "\"}";
     }
@@ -39,6 +37,17 @@ public class HelloWorld {
     @Produces({"application/xml"})
     public String getHelloWorldXML() {
         return "<xml><result>" + helloService.createHelloMessage("World") + "</result></xml>";
+    }
+
+    @GET
+    @Path("/sp")
+    @Produces({"application/json"})
+    public String getSP() {
+        BotMessage emptyBotMessage = new BotMessage();
+        emptyBotMessage.setId(1L);
+        emptyBotMessage.setAttachements(new Attachment[]{new Attachment(1L, AttachmentType.AUDIO, FileType.SERVER_URL, "/test.wav")});
+        messageQueue.addInMessage(emptyBotMessage);
+        return "{\"result\":\"" + helloService.createHelloMessage("World") + "\"}";
     }
 
 }

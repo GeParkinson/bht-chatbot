@@ -30,13 +30,19 @@ public class MessageQueue {
         final JMSContext context = messageQueueManager.getContext();
         Message message = context.createObjectMessage(botMessageObject);
         try {
-            Attachment attachment = botMessageObject.getAttachements()[0];
-            switch (attachment.getAttachmentType()){
-                case AUDIO:
-                    message.setStringProperty("SpeechProcessor", "in");
-                    break;
-                default:
-                    message.setStringProperty("NLU", "in");
+            if (botMessageObject.hasAttachements()) {
+                //TODO: iterate attachements
+                Attachment attachment = botMessageObject.getAttachements()[0];
+                //TODO: different Attachementtypes
+                switch (attachment.getAttachmentType()) {
+                    case AUDIO:
+                        message.setStringProperty("BingConnector", "in");
+                        break;
+                    default:
+                        logger.error("InMessage has Attachements but no defined case.");
+                }
+            } else {
+                message.setStringProperty("NLU", "in");
             }
             context.createProducer().send(messageQueueManager.getTopic(), message);
             return true;

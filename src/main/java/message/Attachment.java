@@ -2,14 +2,15 @@ package message;
 
 import javax.ws.rs.core.MediaType;
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * Created by Chris on 5/14/2017.
  */
-public class Attachment {
+public class Attachment implements Serializable{
     Long id;
     String fileUrl;
-    Long fileID;
+    String fileID;
     File file;
     byte[] fileArray;
     AttachmentType attachmentType;
@@ -20,10 +21,16 @@ public class Attachment {
 
     public Attachment(){}
 
-    public Attachment(Long fileID, AttachmentType attachmentType, FileType fileType){
+    public Attachment(String fileID, AttachmentType attachmentType, FileType fileType){
         this.fileID = fileID;
         this.attachmentType = attachmentType;
         this.fileType = fileType;
+    }
+    public Attachment(String fileID, AttachmentType attachmentType, FileType fileType, String fileUrl){
+        this.fileID = fileID;
+        this.attachmentType = attachmentType;
+        this.fileType = fileType;
+        this.fileUrl = fileUrl;
     }
 
     /** Getter & Setter*/
@@ -43,11 +50,11 @@ public class Attachment {
         this.fileUrl = fileUrl;
     }
 
-    public Long getFileID() {
+    public String getFileID() {
         return fileID;
     }
 
-    public void setFileID(Long fileID) {
+    public void setFileID(String fileID) {
         this.fileID = fileID;
     }
 
