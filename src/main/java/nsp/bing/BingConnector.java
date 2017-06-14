@@ -11,6 +11,8 @@ import nsp.bing.model.BingSimpleResponse;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
@@ -69,10 +71,10 @@ public class BingConnector implements MessageListener {
             BotMessage botMessage = message.getBody(BotMessage.class);
             for(Attachment attachment : botMessage.getAttachements()){
                 //TODO: distinguish between different languages
-                sendAudioRequest(attachment.getFileUrl(), "en-US", botMessage.getMessenger());
+                sendAudioRequest(attachment.getFileUrl(), "en-US", botMessage.getMessenger(), botMessage.getSenderID());
             }
         } catch (JMSException e) {
-            logger.error("Error while getting BotMessage-Object on BingConnector: ", e);
+            logger.error("Error on receiving BotMessage-Object on BingConnector: ", e);
         }
     }
 
@@ -121,7 +123,7 @@ public class BingConnector implements MessageListener {
         }
     }
 
-    private void sendAudioRequest(String fileDir, String language, Messenger messenger){
+    private void sendAudioRequest(String fileURI, String language, Messenger messenger, Long senderID){
         generateAccesToken();
         try {
             HttpClient client = HttpClientBuilder.create().build();
@@ -138,24 +140,38 @@ public class BingConnector implements MessageListener {
                 httpPost.setHeader(entry.getKey(), entry.getValue());
             }
 
-            // WAV FILE
-            //TODO: implement fileDirectory
-            File file = new File(fileDir);
-            FileBody bin = new FileBody(file, ContentType.DEFAULT_BINARY);
-            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-            builder.addPart("bin", bin);
-            HttpEntity reqEntity = builder.build();
+            // AUDIO FILE
+            HttpGet get = new HttpGet(fileURI);
+            CloseableHttpResponse execute = HttpClientBuilder.create().build().execute(get);
+            HttpEntity entity = execute.getEntity();
 
             ByteArrayOutputStream bArrOS = new ByteArrayOutputStream();
-            reqEntity.writeTo(bArrOS);
+            entity.writeTo(bArrOS);
             bArrOS.flush();
             ByteArrayEntity bArrEntity = new ByteArrayEntity(bArrOS.toByteArray());
             bArrOS.close();
 
             bArrEntity.setChunked(true);
-            bArrEntity.setContentEncoding(reqEntity.getContentEncoding());
-            bArrEntity.setContentType(reqEntity.getContentType());
+            bArrEntity.setContentEncoding(HttpMultipartMode.BROWSER_COMPATIBLE.toString());
+            bArrEntity.setContentType(ContentType.DEFAULT_BINARY.toString());
+
+            //TODO: implement fileDirectory
+            //File file = new File(fileURI);
+            //FileBody bin = new FileBody(file, ContentType.DEFAULT_BINARY);
+            //MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            //builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+            //builder.addPart("bin", bin);
+            //HttpEntity reqEntity = builder.build();
+
+            //ByteArrayOutputStream bArrOS = new ByteArrayOutputStream();
+            //reqEntity.writeTo(bArrOS);
+            //bArrOS.flush();
+            //ByteArrayEntity bArrEntity = new ByteArrayEntity(bArrOS.toByteArray());
+            //bArrOS.close();
+
+            //bArrEntity.setChunked(true);
+            //bArrEntity.setContentEncoding(reqEntity.getContentEncoding());
+            //bArrEntity.setContentType(reqEntity.getContentType());
 
             // set ByteArrayEntity to HttpPost
             httpPost.setEntity(bArrEntity);
@@ -178,13 +194,13 @@ public class BingConnector implements MessageListener {
 
             String response = "";
             // process response message
-            //FIXME: untested!
+            //FIXME: not working!
             try {
                 if (format == "simple") {
-                    BingSimpleResponse bingSimpleResponse = new Gson().fromJson(httpResponse.toString(), BingSimpleResponse.class);
+                    BingSimpleResponse bingSimpleResponse = new Gson().fromJson(result.toString(), BingSimpleResponse.class);
                     response = bingSimpleResponse.getText();
                 } else if (format == "detailed") {
-                    BingDetailedResponse bingDetailedResponse = new Gson().fromJson(httpResponse.toString(), BingDetailedResponse.class);
+                    BingDetailedResponse bingDetailedResponse = new Gson().fromJson(result.toString(), BingDetailedResponse.class);
                     response = bingDetailedResponse.getText();
                 }
             } catch (Exception e){
@@ -194,9 +210,10 @@ public class BingConnector implements MessageListener {
             // return message
             BotMessage emptyBotMessage = new BotMessage();
             emptyBotMessage.setId(1L);
-            emptyBotMessage.setText(response);
+            emptyBotMessage.setText(result.toString());
             emptyBotMessage.setMessenger(messenger);
-            messageQueue.addInMessage(emptyBotMessage);
+            emptyBotMessage.setSenderID(senderID);
+            messageQueue.addOutMessage(emptyBotMessage);
 
         } catch (Exception e){
             logger.error("Exception while audio request: ", e);
