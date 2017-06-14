@@ -7,6 +7,7 @@ import com.google.gson.annotations.Expose;
 
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Created by Chris on 5/14/2017.
@@ -18,6 +19,9 @@ public class BotMessage implements Serializable {
     private Messenger messenger;
     private String text;
     private Long[] attachements;
+    private String intent;
+    private Map<String, String> entities;
+    private String answer;
 
     @Inject
     private transient AttachmentStore attachmentStore;
@@ -76,6 +80,30 @@ public class BotMessage implements Serializable {
         for (int i = 0; i < attachements.length; i++) {
             this.attachements[i] = attachmentStore.storeAttachment(attachements[i]);
         }
+    }
+
+    public String getIntent() {
+        return intent;
+    }
+
+    public void setIntent(String intent) {
+        this.intent = intent;
+    }
+
+    public Map<String, String> getEntities() {
+        return entities;
+    }
+
+    public void setEntities(Map<String, String> entities) {
+        this.entities = entities;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 
     @Override
