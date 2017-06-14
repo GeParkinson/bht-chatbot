@@ -39,15 +39,4 @@ public class HelloWorld {
         return "<xml><result>" + helloService.createHelloMessage("World") + "</result></xml>";
     }
 
-    @GET
-    @Path("/sp")
-    @Produces({"application/json"})
-    public String getSP() {
-        BotMessage emptyBotMessage = new BotMessage();
-        emptyBotMessage.setId(1L);
-        emptyBotMessage.setAttachements(new Attachment[]{new Attachment(1L, AttachmentType.AUDIO, FileType.SERVER_URL, "/test.wav")});
-        messageQueue.addInMessage(emptyBotMessage);
-        return "{\"result\":\"" + helloService.createHelloMessage("World") + "\"}";
-    }
-
 }
