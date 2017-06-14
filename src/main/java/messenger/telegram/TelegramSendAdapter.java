@@ -6,9 +6,7 @@ import com.pengrad.telegrambot.TelegramBotAdapter;
 import com.pengrad.telegrambot.request.*;
 import com.pengrad.telegrambot.response.BaseResponse;
 import com.pengrad.telegrambot.response.SendResponse;
-import message.Attachment;
-import message.BotMessage;
-import message.FileType;
+import message.*;
 import messenger.utils.MessengerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import java.io.IOException;
@@ -42,16 +41,16 @@ import java.util.Properties;
 )
 public class TelegramSendAdapter implements MessageListener {
 
-    private static TelegramBot bot;
-
     private Logger logger = LoggerFactory.getLogger(TelegramSendAdapter.class);
+
+    private TelegramBot bot;
 
     @PostConstruct
     public void startUp(){
         Properties properties = MessengerUtils.getProperties();
         bot = TelegramBotAdapter.build(properties.getProperty("TELEGRAM_BOT_TOKEN"));
 
-        verifyWebhook();
+        //verifyWebhook();
     }
 
     private void verifyWebhook() {
@@ -73,29 +72,36 @@ public class TelegramSendAdapter implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
-        // TODO Chris: refactoring/implementing message sending
-    }
-
-    private void sendMessage(BotMessage botMessage){
-        switch(botMessage.getAttachements()[0].getAttachmentType()){
-            case AUDIO:
-                sendAudio(botMessage);
-                break;
-            case VOICE:
-                sendVoice(botMessage);
-                break;
-            case VIDEO:
-                sendVideo(botMessage);
-                break;
-            case DOCUMENT:
-                sendDocument(botMessage);
-                break;
-            case PHOTO:
-                sendPhoto(botMessage);
-                break;
-            default:
-                sendMessage(botMessage.getMessageID(), botMessage.getText());
-                break;
+        try {
+            BotMessage botMessage = message.getBody(BotMessage.class);
+            startUp();
+            if (botMessage.hasAttachements()){
+            switch(botMessage.getAttachements()[0].getAttachmentType()){
+                case AUDIO:
+                    sendAudio(botMessage);
+                    break;
+                case VOICE:
+                    sendVoice(botMessage);
+                    break;
+                case VIDEO:
+                    sendVideo(botMessage);
+                    break;
+                case DOCUMENT:
+                    sendDocument(botMessage);
+                    break;
+                case PHOTO:
+                    sendPhoto(botMessage);
+                    break;
+                default:
+                    logger.warn("new OutMessage has Attachements but no defined AttachementType Case.");
+                    break;
+            }
+            } else {
+                sendMessage(botMessage.getSenderID(), botMessage.getText());
+            }
+        }
+        catch (JMSException e) {
+            logger.error("Error on receiving BotMessage-Object on TelegramSendAdapter: ", e);
         }
     }
 
