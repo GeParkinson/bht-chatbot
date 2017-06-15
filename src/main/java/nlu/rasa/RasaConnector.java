@@ -32,7 +32,7 @@ import javax.ws.rs.core.UriBuilder;
                         propertyName = "destination",
                         propertyValue = "jms/messages/inbox"),
                 @ActivationConfigProperty(
-                        propertyName = "messageSelector", propertyValue = "Telegram = 'in'")
+                        propertyName = "messageSelector", propertyValue = "NLU = 'in'")
         }
 )
 public class RasaConnector implements MessageListener {

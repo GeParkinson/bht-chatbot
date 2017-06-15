@@ -1,6 +1,5 @@
 import jms.MessageQueue;
-import message.BotMessage;
-import message.Messenger;
+import message.*;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -29,7 +28,6 @@ public class HelloWorld {
         BotMessage emptyMessage = new BotMessage();
         emptyMessage.setId(1L);
         emptyMessage.setText("show me chinese restaurants");
-        emptyMessage.setMessenger(Messenger.TELEGRAM);
         messageQueue.addInMessage(emptyMessage);
         return "{\"result\":\"" + helloService.createHelloMessage("World") + "\"}";
     }

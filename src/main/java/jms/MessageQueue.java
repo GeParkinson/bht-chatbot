@@ -1,5 +1,6 @@
 package jms;
 
+import message.Attachment;
 import message.BotMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,16 +30,22 @@ public class MessageQueue {
         final JMSContext context = messageQueueManager.getContext();
         Message message = context.createObjectMessage(botMessageObject);
         try {
-            switch (botMessageObject.getMessenger()) {
-                case TELEGRAM:
-                    message.setStringProperty("Telegram", "in");
-                    break;
-                case FACEBOOK:
-                    message.setStringProperty("Facebook", "in");
-                    break;
-                default:
-                    logger.error("BotMessage isn't assign to a messenger: {}", botMessageObject);
-                    return false;
+            if (botMessageObject.hasAttachements()) {
+                //TODO: iterate attachements
+                Attachment attachment = botMessageObject.getAttachements()[0];
+                //TODO: different Attachementtypes
+                switch (attachment.getAttachmentType()) {
+                    case AUDIO:
+                        message.setStringProperty("BingConnector", "in");
+                        break;
+                    case VOICE:
+                        message.setStringProperty("BingConnector", "in");
+                        break;
+                    default:
+                        logger.error("new InMessage has Attachements but no defined case.");
+                }
+            } else {
+                message.setStringProperty("NLU", "in");
             }
             context.createProducer().send(messageQueueManager.getTopic(), message);
             return true;
