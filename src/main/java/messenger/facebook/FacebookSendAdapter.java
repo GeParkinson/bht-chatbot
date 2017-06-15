@@ -6,6 +6,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.jms.JMSException;
@@ -14,6 +15,8 @@ import javax.jms.MessageListener;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -25,7 +28,7 @@ import java.util.Properties;
  * Created by oliver on 22.05.2017.
  */
 @MessageDriven(
-        name = "OutboxTelegramProcessor",
+        name = "OutboxFacebookProcessor",
         activationConfig = {
                 @ActivationConfigProperty(
                         propertyName = "destinationType",
@@ -56,7 +59,7 @@ public class FacebookSendAdapter implements MessageListener {
                 } catch (InterruptedException e) {
                     //e.printStackTrace();
                 }
-                sendPostRequest("https://graph.facebook.com/v2.9/me/subscribed_apps?access_token="+token(),"");
+                sendPostRequest("https://graph.facebook.com/v2.9/me/subscribed_apps","",token());
             }
         };
         new Thread(activation).start();//Call it when you need to run the function
@@ -66,11 +69,12 @@ public class FacebookSendAdapter implements MessageListener {
     /** Send Text Message */
     private static void sendMessage(Long recipient, String messageJson) {
         String payload = "{\"recipient\": {\"id\": \"" + recipient + "\"}, \"message\": { \"text\": \""+messageJson+"\"}}";
-        String requestUrl = "https://graph.facebook.com/v2.6/me/messages?access_token=" + token();
+        String requestUrl = "https://graph.facebook.com/v2.6/me/messages" ;
         try {
-            sendPostRequest(requestUrl, payload);
+            sendPostRequest(requestUrl, payload, token());
         }
         catch(Exception ex){
+            ex.printStackTrace();
         }
     }
 
@@ -78,28 +82,29 @@ public class FacebookSendAdapter implements MessageListener {
     private static void sendMedia(BotMessage message,String mediaType){
         String payload = "{recipient: { id: "+message.getSenderID()+" }, message: { attachment: { type: \""+mediaType+"\", payload: { url: \""+message.getAttachements()[0].getFileUrl()+"\"  } }   }} ";
         System.out.println("FACEBOOK_SEND:Output:"+payload);
-        String requestUrl = "https://graph.facebook.com/v2.6/me/messages?access_token=" + token();
+        String requestUrl = "https://graph.facebook.com/v2.6/me/messages" ;
         try {
-            sendPostRequest(requestUrl, payload);
+            sendPostRequest(requestUrl, payload,token());
         }
         catch(Exception ex){
+            ex.printStackTrace();
         }
     }
 
-    public static String sendPostRequest(String requestUrl, String payload) {
-
-        Entity<String> jsonInput = Entity.entity(payload, MediaType.APPLICATION_JSON);
+    public static String sendPostRequest(String requestUrl, String payload, String token) {
 
         ResteasyClient client = new ResteasyClientBuilder().build();
-        ResteasyWebTarget target = client.target(requestUrl);
+        ResteasyWebTarget target = client.target(UriBuilder.fromPath(requestUrl));
+        FacebookRESTServiceInterface facebookProxy = target.proxy(FacebookRESTServiceInterface.class);
 
-        Invocation.Builder invocationBuilder = target.request("text/plain").header("Accept", "application/json").header("Content-Type", "application/json; charset=UTF-8");
-        Invocation invocation = invocationBuilder.buildPost(jsonInput);
-        invocation.invoke();
+        Response response = facebookProxy.sendMessage(payload, token);
+        String responseAsString = response.readEntity(String.class);
 
-        return "";
+
+        return responseAsString;
 
     }
+
 
     @Override
     public void onMessage(Message messageIn) {
@@ -107,7 +112,8 @@ public class FacebookSendAdapter implements MessageListener {
         try {
             message = messageIn.getBody(BotMessage.class);
 
-        if(message.getAttachements()!=null) {
+
+        if(message.hasAttachements()) {
             switch (message.getAttachements()[0].getAttachmentType()) {
                 case AUDIO:
                     sendMedia(message, "audio");

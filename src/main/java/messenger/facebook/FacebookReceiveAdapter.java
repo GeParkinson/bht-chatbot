@@ -1,6 +1,5 @@
 package messenger.facebook;
 
-import com.mashape.unirest.http.exceptions.UnirestException;
 import jms.MessageQueue;
 import message.Attachment;
 import message.AttachmentType;
@@ -23,7 +22,7 @@ import static messenger.facebook.FacebookSendAdapter.activateWebhook;
  */
 
 @Path("/webhook")
-public class FacebookAdapter {
+public class FacebookReceiveAdapter {
 
     @Inject
     private MessageQueue messageQueue;
@@ -46,7 +45,7 @@ public class FacebookAdapter {
     @POST
     @Path("/facebook")
     @Consumes("application/json")
-    public String ReceiveMessage(String InputMessage) throws IOException, UnirestException {
+    public String ReceiveMessage(String InputMessage) throws IOException {
 
         System.out.println("FACEBOOK_RECEIVE:Input:"+InputMessage);
 
@@ -90,7 +89,10 @@ public class FacebookAdapter {
 
                 if (isEcho == false) {
 
-                    messageQueue.addInMessage(msg);
+                    //messageQueue.addInMessage(msg);
+
+                    //test out
+                    messageQueue.addOutMessage(msg);
                 }
             }
 

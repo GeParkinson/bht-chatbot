@@ -19,7 +19,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.util.Properties;
 
 /**
- * @authors: georg.glossmann@adesso.de + oliverdavid@hotmail.de
+ * @authors: georg.glossmann@adesso.de (template) + oliverdavid@hotmail.de (content)
  * Date: 04.06.17
  */
 @MessageDriven(
@@ -61,6 +61,8 @@ public class ApiAiConnector implements MessageListener {
 
             Response response = apiaiProxy.processText(botMessage.getText(), language, sessionID,"Context","Bearer " + token);
             String responseAsString = response.readEntity(String.class);
+
+            //TODO: Process response Message
         } catch (JMSException e) {
             logger.error("Could not process message.", e);
         }
