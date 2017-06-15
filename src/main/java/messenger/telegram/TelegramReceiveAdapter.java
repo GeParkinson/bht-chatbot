@@ -10,13 +10,14 @@ import com.pengrad.telegrambot.request.GetFile;
 import com.pengrad.telegrambot.response.GetFileResponse;
 import jms.MessageQueue;
 import message.*;
+import messenger.telegram.model.TelegramAttachment;
+import messenger.telegram.model.TelegramMessage;
 import messenger.utils.MessengerUtils;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import java.util.ArrayList;
 import java.util.Properties;
 
 /**
@@ -41,23 +42,16 @@ public class TelegramReceiveAdapter {
     @Path("/getUpdates")
     public void getUpdates(String msg) {
         Update update = BotUtils.parseUpdate(msg);
-        Message message = update.message();
-        messageQueue.addInMessage(toMessage(message));
+        TelegramMessage message = new TelegramMessage(update.message());
+        message.setTelegramAttachments(addAttachments(update.message()));
+        messageQueue.addInMessage(message);
     }
 
-    private BotMessage toMessage(Message message) {
+    private TelegramAttachment[] addAttachments(Message message) {
         startUp();
-        BotMessage msg = new BotMessage();
-
-        msg.setMessenger(Messenger.TELEGRAM);
-        msg.setMessageID(message.messageId().longValue());
-        msg.setSenderID(message.chat().id());
-
-        Attachment[] attachments = new Attachment[1];
+        TelegramAttachment[] telegramAttachments = new TelegramAttachment[1];
 
         String fileID = null;
-        if (message.text() != null) msg.setText(message.text());
-
         if (message.audio() != null) fileID = message.audio().fileId();
         if (message.video() != null) fileID = message.video().fileId();
         if (message.voice() != null) fileID = message.voice().fileId();
@@ -71,12 +65,12 @@ public class TelegramReceiveAdapter {
             File file = getFileResponse.file();
             String fullPath = bot.getFullFilePath(file);
 
-            if (message.audio() != null) attachments[0] = new Attachment(fileID,AttachmentType.AUDIO,FileType.SERVER_URI,fullPath);
-            if (message.video() != null) attachments[0] = new Attachment(fileID,AttachmentType.VIDEO,FileType.SERVER_URI,fullPath);
-            if (message.voice() != null) attachments[0] = new Attachment(fileID,AttachmentType.VOICE,FileType.SERVER_URI,fullPath);
-            if (message.document() != null) attachments[0] = new Attachment(fileID,AttachmentType.DOCUMENT,FileType.SERVER_URI,fullPath);
-            msg.setAttachements(attachments);
+            if (message.audio() != null) telegramAttachments[0] = new TelegramAttachment(fullPath,AttachmentType.AUDIO,message.caption());
+            if (message.video() != null) telegramAttachments[0] = new TelegramAttachment(fullPath,AttachmentType.VIDEO,message.caption());
+            if (message.voice() != null) telegramAttachments[0] = new TelegramAttachment(fullPath,AttachmentType.VOICE,message.caption());
+            if (message.document() != null) telegramAttachments[0] = new TelegramAttachment(fullPath,AttachmentType.DOCUMENT,message.caption());
+            return telegramAttachments;
         }
-        return msg;
+        return null;
     }
 }
