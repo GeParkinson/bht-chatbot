@@ -1,5 +1,6 @@
 package nsp.bing.model;
 
+import com.google.gson.annotations.SerializedName;
 import nsp.NSPResponse;
 
 /**
@@ -7,10 +8,14 @@ import nsp.NSPResponse;
  */
 public class BingSimpleResponse implements NSPResponse {
 
+    @SerializedName("RecognitionStatus")
     private String recognitionStatus;
+    @SerializedName("DisplayText")
     private String displayText;
-    private Long offset;
-    private Long duration;
+    @SerializedName("Offset")
+    private String offset;
+    @SerializedName("Duration")
+    private String duration;
 
     @Override
     public String getText() {
@@ -30,19 +35,19 @@ public class BingSimpleResponse implements NSPResponse {
         this.recognitionStatus = recognitionStatus;
     }
 
-    public Long getOffset() {
+    public String getOffset() {
         return offset;
     }
 
-    public void setOffset(Long offset) {
+    public void setOffset(String offset) {
         this.offset = offset;
     }
 
-    public Long getDuration() {
+    public String getDuration() {
         return duration;
     }
 
-    public void setDuration(Long duration) {
+    public void setDuration(String duration) {
         this.duration = duration;
     }
 }

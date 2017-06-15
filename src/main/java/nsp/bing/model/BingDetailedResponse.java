@@ -1,5 +1,6 @@
 package nsp.bing.model;
 
+import com.google.gson.annotations.SerializedName;
 import nsp.NSPResponse;
 
 import java.util.List;
@@ -9,20 +10,24 @@ import java.util.List;
  */
 public class BingDetailedResponse implements NSPResponse {
 
+    @SerializedName("RecognitionStatus")
     private String recognitionStatus;
-    private Long offset;
-    private Long duration;
-    private List<nBest> nBests;
+    @SerializedName("Offset")
+    private String offset;
+    @SerializedName("Duration")
+    private String duration;
+    @SerializedName("N-Best")
+    private List<BingNBest> nBest = null;
 
     @Override
     public String getText() {
         double highestValue = 0;
         //TODO: implement other way
-        for (nBest best : nBests){
-            if (best.getConfidence() > highestValue) highestValue = best.getConfidence();
+        for (BingNBest best : nBest){
+            if (Double.valueOf(best.getConfidence()) > highestValue) highestValue = Double.valueOf(best.getConfidence());
         }
-        for (nBest best : nBests){
-            if (best.getConfidence() == highestValue) return best.getDisplayText();
+        for (BingNBest best : nBest){
+            if (Double.valueOf(best.getConfidence()) == highestValue) return best.getConfidence();
         }
         return "";
     }
@@ -34,75 +39,28 @@ public class BingDetailedResponse implements NSPResponse {
 
     public void setRecognitionStatus(String recognitionStatus){this.recognitionStatus = recognitionStatus;}
 
-    public Long getOffset() {
+    public String getOffset() {
         return offset;
     }
 
-    public void setOffset(Long offset) {
+    public void setOffset(String offset) {
         this.offset = offset;
     }
 
-    public Long getDuration() {
+    public String getDuration() {
         return duration;
     }
 
-    public void setDuration(Long duration) {
+    public void setDuration(String duration) {
         this.duration = duration;
     }
 
-    public List<nBest> getnBests() {
-        return nBests;
+    public List<BingNBest> getnBests() {
+        return nBest;
     }
 
-    public void setnBests(List<nBest> nBests) {
-        this.nBests = nBests;
+    public void setnBests(List<BingNBest> nBests) {
+        this.nBest = nBests;
     }
 
-    public class nBest{
-        double confidence;
-        String lexical;
-        String itn;
-        String maskedITN;
-        String displayText;
-
-        public double getConfidence() {
-            return confidence;
-        }
-
-        public void setConfidence(double confidence) {
-            this.confidence = confidence;
-        }
-
-        public String getLexical() {
-            return lexical;
-        }
-
-        public void setLexical(String lexical) {
-            this.lexical = lexical;
-        }
-
-        public String getItn() {
-            return itn;
-        }
-
-        public void setItn(String itn) {
-            this.itn = itn;
-        }
-
-        public String getMaskedITN() {
-            return maskedITN;
-        }
-
-        public void setMaskedITN(String maskedITN) {
-            this.maskedITN = maskedITN;
-        }
-
-        public String getDisplayText() {
-            return displayText;
-        }
-
-        public void setDisplayText(String displayText) {
-            this.displayText = displayText;
-        }
-    }
 }

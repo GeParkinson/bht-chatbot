@@ -7,6 +7,7 @@ import message.BotMessage;
 import message.Messenger;
 import messenger.utils.MessengerUtils;
 import nsp.bing.model.BingDetailedResponse;
+import nsp.bing.model.BingMessage;
 import nsp.bing.model.BingSimpleResponse;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -71,7 +72,7 @@ public class BingConnector implements MessageListener {
             BotMessage botMessage = message.getBody(BotMessage.class);
             for(Attachment attachment : botMessage.getAttachements()){
                 //TODO: distinguish between different languages
-                sendAudioRequest(attachment.getFileUrl(), "en-US", botMessage.getMessenger(), botMessage.getSenderID());
+                sendAudioRequest(attachment.getFileURI(), "en-US", botMessage.getMessenger(), botMessage.getSenderID());
             }
         } catch (JMSException e) {
             logger.error("Error on receiving BotMessage-Object on BingConnector: ", e);
@@ -194,29 +195,26 @@ public class BingConnector implements MessageListener {
 
             logger.debug("Audio request returns: " + result.toString());
 
-            String response = "";
             // process response message
-            //FIXME: not working!
+            BingMessage bingMessage;
+            //FIXME: untested
             try {
                 if (format == "simple") {
                     BingSimpleResponse bingSimpleResponse = new Gson().fromJson(result.toString(), BingSimpleResponse.class);
-                    response = bingSimpleResponse.getText();
+                    bingMessage = new BingMessage(bingSimpleResponse);
                 } else if (format == "detailed") {
                     BingDetailedResponse bingDetailedResponse = new Gson().fromJson(result.toString(), BingDetailedResponse.class);
-                    response = bingDetailedResponse.getText();
+                    bingMessage = new BingMessage(bingDetailedResponse);
+                } else {
+                    logger.error("Could not parse BingSpeechResponse");
+                    return;
                 }
+                // return message
+                messageQueue.addOutMessage(bingMessage);
+
             } catch (Exception e){
-                logger.error("Error while parsing BingResponse: ", e);
+                logger.error("Error while parsing BingSpeecResponse: ", e);
             }
-
-            // return message
-            BotMessage emptyBotMessage = new BotMessage();
-            emptyBotMessage.setId(1L);
-            emptyBotMessage.setText(result.toString());
-            emptyBotMessage.setMessenger(messenger);
-            emptyBotMessage.setSenderID(senderID);
-            messageQueue.addOutMessage(emptyBotMessage);
-
         } catch (Exception e){
             logger.error("Exception while audio request: ", e);
         }
