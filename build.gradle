@@ -29,7 +29,7 @@ dependencies {
                 "junit:junit:4.12"
 
     testRuntime "org.wildfly.arquillian:wildfly-arquillian-container-remote:2.0.2.Final",
-                "org.slf4j:slf4j-api:1.7.25"
+                "org.slf4j:slf4j-simple:1.7.25"
 }
 
 
