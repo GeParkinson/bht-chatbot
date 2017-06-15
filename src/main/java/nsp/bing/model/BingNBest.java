@@ -2,10 +2,12 @@ package nsp.bing.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * @Author: Christopher Kümmel on 6/15/2017.
  */
-public class BingNBest {
+public class BingNBest implements Serializable{
     @SerializedName("Confidence")
     private String confidence;
     @SerializedName("Lexical")

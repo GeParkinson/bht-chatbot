@@ -49,7 +49,6 @@ public class TelegramReceiveAdapter {
 
     private TelegramAttachment[] addAttachments(Message message) {
         startUp();
-        TelegramAttachment[] telegramAttachments = new TelegramAttachment[1];
 
         String fileID = null;
         if (message.audio() != null) fileID = message.audio().fileId();
@@ -65,11 +64,22 @@ public class TelegramReceiveAdapter {
             File file = getFileResponse.file();
             String fullPath = bot.getFullFilePath(file);
 
-            if (message.audio() != null) telegramAttachments[0] = new TelegramAttachment(fullPath,AttachmentType.AUDIO,message.caption());
-            if (message.video() != null) telegramAttachments[0] = new TelegramAttachment(fullPath,AttachmentType.VIDEO,message.caption());
-            if (message.voice() != null) telegramAttachments[0] = new TelegramAttachment(fullPath,AttachmentType.VOICE,message.caption());
-            if (message.document() != null) telegramAttachments[0] = new TelegramAttachment(fullPath,AttachmentType.DOCUMENT,message.caption());
-            return telegramAttachments;
+            if (message.audio() != null) {
+                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(fullPath, AttachmentType.AUDIO, message.caption())};
+                return telegramAttachments;
+            }
+            if (message.video() != null){
+                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(fullPath, AttachmentType.VIDEO, message.caption())};
+                return telegramAttachments;
+            }
+            if (message.voice() != null){
+                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(fullPath, AttachmentType.VOICE, message.caption())};
+                return telegramAttachments;
+            }
+            if (message.document() != null){
+                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(fullPath, AttachmentType.DOCUMENT, message.caption())};
+                return telegramAttachments;
+            }
         }
         return null;
     }

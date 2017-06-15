@@ -70,9 +70,14 @@ public class BingConnector implements MessageListener {
     public void onMessage(Message message) {
         try {
             BotMessage botMessage = message.getBody(BotMessage.class);
-            for(Attachment attachment : botMessage.getAttachements()){
-                //TODO: distinguish between different languages
-                sendAudioRequest(attachment.getFileURI(), "en-US", botMessage.getMessenger(), botMessage.getSenderID());
+            if (botMessage.hasAttachements()) {
+                // Speech to Text Request
+                for (Attachment attachment : botMessage.getAttachements()) {
+                    sendSpeechToTextRequest(botMessage);
+                }
+            } else {
+                // Text to Speech Request
+                sendTextToSpeechRequest(botMessage);
             }
         } catch (JMSException e) {
             logger.error("Error on receiving BotMessage-Object on BingConnector: ", e);
@@ -124,8 +129,10 @@ public class BingConnector implements MessageListener {
         }
     }
 
-    private void sendAudioRequest(String fileURI, String language, Messenger messenger, Long senderID){
+    private void sendSpeechToTextRequest(BotMessage botMessage){
         generateAccesToken();
+        //TODO: different languages
+        String language = "en-US";
         try {
             HttpClient client = HttpClientBuilder.create().build();
             String url = "https://speech.platform.bing.com/speech/recognition/interactive/cognitiveservices/v1?language="
@@ -141,82 +148,85 @@ public class BingConnector implements MessageListener {
                 httpPost.setHeader(entry.getKey(), entry.getValue());
             }
 
-            //TODO: distinguish between different Attachementtypes
-            // AUDIO FILE
+            for (Attachment attachment : botMessage.getAttachements()) {
+                //TODO: implement Attachmentstorage
+                // AUDIO FILE DOWNLOAD
+                HttpGet get = new HttpGet(attachment.getFileURI());
+                CloseableHttpResponse execute = HttpClientBuilder.create().build().execute(get);
+                HttpEntity entity = execute.getEntity();
 
-            HttpGet get = new HttpGet(fileURI);
-            CloseableHttpResponse execute = HttpClientBuilder.create().build().execute(get);
-            HttpEntity entity = execute.getEntity();
+                ByteArrayOutputStream bArrOS = new ByteArrayOutputStream();
+                entity.writeTo(bArrOS);
+                bArrOS.flush();
+                ByteArrayEntity bArrEntity = new ByteArrayEntity(bArrOS.toByteArray());
+                bArrOS.close();
 
-            ByteArrayOutputStream bArrOS = new ByteArrayOutputStream();
-            entity.writeTo(bArrOS);
-            bArrOS.flush();
-            ByteArrayEntity bArrEntity = new ByteArrayEntity(bArrOS.toByteArray());
-            bArrOS.close();
+                bArrEntity.setChunked(true);
+                bArrEntity.setContentEncoding(HttpMultipartMode.BROWSER_COMPATIBLE.toString());
+                bArrEntity.setContentType(ContentType.DEFAULT_BINARY.toString());
 
-            bArrEntity.setChunked(true);
-            bArrEntity.setContentEncoding(HttpMultipartMode.BROWSER_COMPATIBLE.toString());
-            bArrEntity.setContentType(ContentType.DEFAULT_BINARY.toString());
+                //File file = new File(fileURI);
+                //FileBody bin = new FileBody(file, ContentType.DEFAULT_BINARY);
+                //MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+                //builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+                //builder.addPart("bin", bin);
+                //HttpEntity reqEntity = builder.build();
 
-            //TODO: implement fileDirectory
-            //File file = new File(fileURI);
-            //FileBody bin = new FileBody(file, ContentType.DEFAULT_BINARY);
-            //MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            //builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-            //builder.addPart("bin", bin);
-            //HttpEntity reqEntity = builder.build();
+                //ByteArrayOutputStream bArrOS = new ByteArrayOutputStream();
+                //reqEntity.writeTo(bArrOS);
+                //bArrOS.flush();
+                //ByteArrayEntity bArrEntity = new ByteArrayEntity(bArrOS.toByteArray());
+                //bArrOS.close();
 
-            //ByteArrayOutputStream bArrOS = new ByteArrayOutputStream();
-            //reqEntity.writeTo(bArrOS);
-            //bArrOS.flush();
-            //ByteArrayEntity bArrEntity = new ByteArrayEntity(bArrOS.toByteArray());
-            //bArrOS.close();
+                //bArrEntity.setChunked(true);
+                //bArrEntity.setContentEncoding(reqEntity.getContentEncoding());
+                //bArrEntity.setContentType(reqEntity.getContentType());
 
-            //bArrEntity.setChunked(true);
-            //bArrEntity.setContentEncoding(reqEntity.getContentEncoding());
-            //bArrEntity.setContentType(reqEntity.getContentType());
+                // set ByteArrayEntity to HttpPost
+                httpPost.setEntity(bArrEntity);
 
-            // set ByteArrayEntity to HttpPost
-            httpPost.setEntity(bArrEntity);
+                // send request
+                HttpResponse httpResponse = client.execute(httpPost);
+                int responseCode = httpResponse.getStatusLine().getStatusCode();
 
-            // send request
-            HttpResponse httpResponse = client.execute(httpPost);
-            int responseCode = httpResponse.getStatusLine().getStatusCode();
+                logger.debug("Send Audio request returns: Response Code - " + String.valueOf(responseCode));
 
-            logger.debug("Send Audio request returns: Response Code - " + String.valueOf(responseCode));
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
 
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
-
-            StringBuilder result = new StringBuilder();
-            String line = "";
-            while ((line = bufferedReader.readLine()) != null) {
-                result.append(line);
-            }
-
-            logger.debug("Audio request returns: " + result.toString());
-
-            // process response message
-            BingMessage bingMessage;
-            //FIXME: untested
-            try {
-                if (format == "simple") {
-                    BingSimpleResponse bingSimpleResponse = new Gson().fromJson(result.toString(), BingSimpleResponse.class);
-                    bingMessage = new BingMessage(bingSimpleResponse);
-                } else if (format == "detailed") {
-                    BingDetailedResponse bingDetailedResponse = new Gson().fromJson(result.toString(), BingDetailedResponse.class);
-                    bingMessage = new BingMessage(bingDetailedResponse);
-                } else {
-                    logger.error("Could not parse BingSpeechResponse");
-                    return;
+                StringBuilder result = new StringBuilder();
+                String line = "";
+                while ((line = bufferedReader.readLine()) != null) {
+                    result.append(line);
                 }
-                // return message
-                messageQueue.addOutMessage(bingMessage);
 
-            } catch (Exception e){
-                logger.error("Error while parsing BingSpeecResponse: ", e);
+                logger.debug("Audio request returns: " + result.toString());
+
+                // process response message
+                BingMessage bingMessage;
+                try {
+                    if (format == "simple") {
+                        BingSimpleResponse bingSimpleResponse = new Gson().fromJson(result.toString(), BingSimpleResponse.class);
+                        bingMessage = new BingMessage(bingSimpleResponse,botMessage);
+                    } else if (format == "detailed") {
+                        BingDetailedResponse bingDetailedResponse = new Gson().fromJson(result.toString(), BingDetailedResponse.class);
+                        bingMessage = new BingMessage(bingDetailedResponse,botMessage);
+                    } else {
+                        logger.error("Could not parse BingSpeechResponse");
+                        return;
+                    }
+                    // return message
+                    messageQueue.addOutMessage(bingMessage);
+
+                } catch (Exception e) {
+                    logger.error("Error while parsing BingSpeecResponse: ", e);
+                }
             }
         } catch (Exception e){
             logger.error("Exception while audio request: ", e);
         }
+    }
+
+    private void sendTextToSpeechRequest(BotMessage botMessage){
+        //TODO: implement
     }
 }

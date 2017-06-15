@@ -77,26 +77,28 @@ public class TelegramSendAdapter implements MessageListener {
             BotMessage botMessage = message.getBody(BotMessage.class);
             startUp();
             if (botMessage.hasAttachements()){
-            switch(botMessage.getAttachements()[0].getAttachmentType()){
-                case AUDIO:
-                    sendAudio(botMessage);
-                    break;
-                case VOICE:
-                    sendVoice(botMessage);
-                    break;
-                case VIDEO:
-                    sendVideo(botMessage);
-                    break;
-                case DOCUMENT:
-                    sendDocument(botMessage);
-                    break;
-                case PHOTO:
-                    sendPhoto(botMessage);
-                    break;
-                default:
-                    logger.warn("new OutMessage has Attachements but no defined AttachementType Case.");
-                    break;
-            }
+                for(Attachment attachment : botMessage.getAttachements()) {
+                    switch (attachment.getAttachmentType()) {
+                        case AUDIO:
+                            sendAudio(botMessage);
+                            break;
+                        case VOICE:
+                            sendVoice(botMessage);
+                            break;
+                        case VIDEO:
+                            sendVideo(botMessage);
+                            break;
+                        case DOCUMENT:
+                            sendDocument(botMessage);
+                            break;
+                        case PHOTO:
+                            sendPhoto(botMessage);
+                            break;
+                        default:
+                            logger.warn("new OutMessage has Attachements but no defined AttachementType Case.");
+                            break;
+                    }
+                }
             } else {
                 sendMessage(botMessage.getSenderID(), botMessage.getText());
             }
@@ -110,7 +112,7 @@ public class TelegramSendAdapter implements MessageListener {
     private void sendMessage(Long senderId, String message) {
         SendMessage request = new SendMessage(senderId, message);
         SendResponse sendResponse = bot.execute(request);
-        System.out.println("Send message: " + sendResponse.isOk());
+        logger.debug("Send message: " + sendResponse.isOk());
     }
 
     /** Send Photo Method */

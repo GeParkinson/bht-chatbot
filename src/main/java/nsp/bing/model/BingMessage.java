@@ -11,34 +11,40 @@ import nsp.NSPResponse;
 public class BingMessage implements BotMessage{
 
     private NSPResponse nspResponse;
+    private Long messageID;
+    private Long senderID;
+    private Messenger messenger;
 
-    public BingMessage(NSPResponse nspResponse){
+    public BingMessage(NSPResponse nspResponse, BotMessage botMessage){
         this.nspResponse = nspResponse;
+        this.messageID = botMessage.getMessageID();
+        this.senderID = botMessage.getSenderID();
+        this.messenger = botMessage.getMessenger();
     }
 
     @Override
     public Long getId() {
-        return null;
+        return 1L;
     }
 
     @Override
     public Long getMessageID() {
-        return null;
+        return messageID;
     }
 
     @Override
     public Long getSenderID() {
-        return null;
+        return senderID;
     }
 
     @Override
     public Messenger getMessenger() {
-        return null;
+        return messenger;
     }
 
     @Override
     public String getText() {
-        return null;
+        return nspResponse.getText();
     }
 
     @Override
@@ -48,6 +54,7 @@ public class BingMessage implements BotMessage{
 
     @Override
     public Attachment[] getAttachements() {
-        return new Attachment[0];
+        //TODO: is there a case for an Attachment?
+        return null;
     }
 }

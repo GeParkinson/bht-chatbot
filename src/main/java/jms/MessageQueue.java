@@ -31,18 +31,18 @@ public class MessageQueue {
         Message message = context.createObjectMessage(botMessageObject);
         try {
             if (botMessageObject.hasAttachements()) {
-                //TODO: iterate attachements
-                Attachment attachment = botMessageObject.getAttachements()[0];
-                //TODO: different Attachementtypes
-                switch (attachment.getAttachmentType()) {
-                    case AUDIO:
-                        message.setStringProperty("BingConnector", "in");
-                        break;
-                    case VOICE:
-                        message.setStringProperty("BingConnector", "in");
-                        break;
-                    default:
-                        logger.error("new InMessage has Attachements but no defined case.");
+                for (Attachment attachment : botMessageObject.getAttachements()) {
+                    //TODO: different Attachementtypes -> different botMessageObjects
+                    switch (attachment.getAttachmentType()) {
+                        case AUDIO:
+                            message.setStringProperty("BingConnector", "in");
+                            break;
+                        case VOICE:
+                            message.setStringProperty("BingConnector", "in");
+                            break;
+                        default:
+                            logger.error("new InMessage has Attachements but no defined case.");
+                    }
                 }
             } else {
                 message.setStringProperty("NLU", "in");

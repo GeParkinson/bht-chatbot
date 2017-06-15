@@ -22,7 +22,6 @@ public class BingDetailedResponse implements NSPResponse {
     @Override
     public String getText() {
         double highestValue = 0;
-        //TODO: implement other way
         for (BingNBest best : nBest){
             if (Double.valueOf(best.getConfidence()) > highestValue) highestValue = Double.valueOf(best.getConfidence());
         }
