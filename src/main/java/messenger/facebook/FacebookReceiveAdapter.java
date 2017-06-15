@@ -1,10 +1,14 @@
 package messenger.facebook;
 
+import com.google.gson.Gson;
 import jms.MessageQueue;
 import message.Attachment;
 import message.AttachmentType;
 import message.BotMessage;
 import message.Messenger;
+import messenger.facebook.model.FacebookBotMessage;
+import messenger.facebook.model.FacebookInput;
+import messenger.facebook.model.FacebookMessage;
 import messenger.utils.MessengerUtils;
 import org.json.JSONObject;
 
@@ -53,48 +57,12 @@ public class FacebookReceiveAdapter {
         JSONObject obj;
 
         //message object
-        BotMessage msg = new BotMessage();
+        FacebookInput gs=new Gson().fromJson(InputMessage, FacebookInput.class);
+        FacebookBotMessage msg = new FacebookBotMessage(gs.getEntry().get(0));
 
-        obj = new JSONObject(InputMessage);
-
-        //check if message
-        if(obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).has("message")) {
-
-            //set object to message node
-            JSONObject inputMsg=obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("message");
-
-            if(inputMsg.has("attachments")){
-            JSONObject attachmentNode=inputMsg.getJSONArray("attachments").getJSONObject(0);
-            msg.setAttachements(getAttachments(attachmentNode));
-            }
-            if(inputMsg.has("text")) {
-                msg.setText(getMessage(inputMsg));
-            }
-
-            if(obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("sender").has("id")) {
-                msg.setSenderID(Long.valueOf(getSender(obj)));
-            }
-
-            //TODO: ID
-            msg.setMessageID(Long.valueOf("85753757347"));
-            msg.setMessenger(Messenger.FACEBOOK);
-
-            //is echo? --> echo message for send messages
-                try {
-                    obj = new JSONObject(InputMessage);
-                    isEcho = obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("message").getBoolean("is_echo");
-                } catch (Exception ex) {
-                    isEcho = false;
-                }
-
-                if (isEcho == false) {
-
-                    //messageQueue.addInMessage(msg);
-
-                    //test out
-                    messageQueue.addOutMessage(msg);
-                }
-            }
+        if(!gs.getEntry().get(0).getMessaging().get(0).getMessage().getIsEcho()) {
+            messageQueue.addOutMessage(msg);
+        }
 
         return "\nReceived\n";
 
@@ -128,56 +96,7 @@ public class FacebookReceiveAdapter {
         return "Webhook FAILED";
     }
 
-    String getSender(JSONObject obj) {
-        //sender
-        String sender = obj.getJSONArray("entry").getJSONObject(0).getJSONArray("messaging").getJSONObject(0).getJSONObject("sender").getString("id");
-        System.out.println("FACEBOOK_RECEIVE:sender:"+sender);
-        return sender;
-    }
 
-    String getMessage(JSONObject obj) {
-        //message text
-        String message = obj.getString("text");
-        System.out.println("FACEBOOK_RECEIVE:message:"+message);
-        return message;
-    }
-
-    Attachment[] getAttachments(JSONObject obj) {
-        //attachements
-        Attachment attach;
-
-            String attType = obj.getString("type");
-            String url = obj.getJSONObject("payload").getString("url");
-
-            attach = new Attachment();
-            attach.setFileUrl(url);
-
-            switch (attType) {
-                case "image":
-                    attach.setAttachmentType(AttachmentType.PHOTO);
-                    break;
-                case "audio":
-                    attach.setAttachmentType(AttachmentType.AUDIO);
-                    break;
-                case "fallback":
-                    break;
-                case "file":
-                    attach.setAttachmentType(AttachmentType.DOCUMENT);
-                    break;
-                case "location":
-                    break;
-                case "video":
-                    attach.setAttachmentType(AttachmentType.VIDEO);
-                    break;
-            }
-
-
-            Attachment[] atts = new Attachment[1];
-            atts[0] = attach;
-        System.out.println("FACEBOOK_RECEIVE:attachment:"+attType+"-"+url);
-        return atts;
-
-    }
 
 
 

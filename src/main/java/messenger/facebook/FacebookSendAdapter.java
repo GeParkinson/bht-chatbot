@@ -80,7 +80,7 @@ public class FacebookSendAdapter implements MessageListener {
 
     /** Send Photo Method */
     private static void sendMedia(BotMessage message,String mediaType){
-        String payload = "{recipient: { id: "+message.getSenderID()+" }, message: { attachment: { type: \""+mediaType+"\", payload: { url: \""+message.getAttachements()[0].getFileUrl()+"\"  } }   }} ";
+        String payload = "{recipient: { id: "+message.getSenderID()+" }, message: { attachment: { type: \""+mediaType+"\", payload: { url: \""+message.getAttachements()[0].getFileURI()+"\"  } }   }} ";
         System.out.println("FACEBOOK_SEND:Output:"+payload);
         String requestUrl = "https://graph.facebook.com/v2.6/me/messages" ;
         try {
