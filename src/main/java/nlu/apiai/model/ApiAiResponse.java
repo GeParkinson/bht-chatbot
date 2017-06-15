@@ -1,7 +1,6 @@
 package nlu.apiai.model;
 
 import nlu.NLUResponse;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Map;
 
@@ -14,12 +13,14 @@ public class ApiAiResponse implements NLUResponse {
     @Override
     public String getIntent() {
         // TODO: implementation
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
+        return null;
     }
 
     @Override
     public Map<String, String> getEntities() {
         // TODO: implementation
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
+        return null;
     }
 }

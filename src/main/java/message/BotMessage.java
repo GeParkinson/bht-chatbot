@@ -3,7 +3,6 @@ package message;
 import attachments.AttachmentStore;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import messenger.telegram.model.TelegramAttachment;
 
 import javax.inject.Inject;
 import java.io.Serializable;
