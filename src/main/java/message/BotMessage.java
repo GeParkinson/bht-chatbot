@@ -3,7 +3,7 @@ package message;
 import attachments.AttachmentStore;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.Expose;
+import messenger.telegram.model.TelegramAttachment;
 
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -11,85 +11,32 @@ import java.io.Serializable;
 /**
  * Created by Chris on 5/14/2017.
  */
-public class BotMessage implements Serializable {
-    private Long id;
-    private Long messageID;
-    private Long senderID;
-    private Messenger messenger;
-    private String text;
-    private Long[] attachements;
+public interface BotMessage extends Serializable {
 
-    //TODO: remove and implement AttachementStorage
-    private Attachment[] testAttachements;
+    public Long getId();
 
-    @Inject
-    private transient AttachmentStore attachmentStore;
+    public void setId(Long id);
 
+    public Long getMessageID();
 
-    public Long getId() {
-        return id;
-    }
+    public void setMessageID(Long messageID);
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Long getSenderID();
 
-    public Long getMessageID() {
-        return messageID;
-    }
+    public void setSenderID(Long senderID);
 
-    public void setMessageID(Long messageID) {
-        this.messageID = messageID;
-    }
+    public Messenger getMessenger();
 
-    public Long getSenderID() {
-        return senderID;
-    }
+    public void setMessenger(Messenger messenger);
 
-    public void setSenderID(Long senderID) {
-        this.senderID = senderID;
-    }
+    public String getText();
 
-    public Messenger getMessenger() {
-        return messenger;
-    }
+    public void setText(String text);
 
-    public void setMessenger(Messenger messenger) {
-        this.messenger = messenger;
-    }
+    public boolean hasAttachements();
 
-    public String getText() {
-        return text;
-    }
+    public TelegramAttachment[] getAttachements();
 
-    public void setText(String text) {
-        this.text = text;
-    }
+    public void setAttachements(final TelegramAttachment[] attachements);
 
-    public boolean hasAttachements(){
-        if (attachements != null || testAttachements != null) return true;
-        else return false;
-    }
-    public Attachment[] getAttachements() {
-        return testAttachements;
-//        Attachment[] fileAttachments = new Attachment[attachements.length];
-//        for (int i = 0; i < attachements.length; i++) {
-//            fileAttachments[i] = attachmentStore.loadAttachment(attachements[i]);
-//        }
-//        return fileAttachments;
-    }
-
-    public void setAttachements(final Attachment[] attachements) {
-        this.testAttachements = attachements;
-//        this.attachements = new Long[attachements.length];
-//        for (int i = 0; i < attachements.length; i++) {
-//            this.attachements[i] = attachmentStore.storeAttachment(attachements[i]);
-//        }
-    }
-
-    @Override
-    public String toString() {
-        Gson gson = new GsonBuilder().create();
-        return gson.toJson(this);
-    }
 }
