@@ -17,7 +17,7 @@ services:
   rasa-server:
     build: ./rasa_nlu
     container_name: rasa_nlu
-    image: rasa_nlu
+    image: rasa_nlu:latest
     ports:
       - "5000:5000"
     command: python -m rasa_nlu.server -c config/chatbot_config.json --server_model_dirs=default
