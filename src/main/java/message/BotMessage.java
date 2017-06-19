@@ -6,7 +6,6 @@ import com.google.gson.GsonBuilder;
 
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.Map;
 
 /**
  * Created by Chris on 5/14/2017.
