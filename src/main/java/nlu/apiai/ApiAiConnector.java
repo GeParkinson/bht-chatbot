@@ -1,11 +1,15 @@
 package nlu.apiai;
 
+import com.google.gson.Gson;
 import jms.MessageQueue;
 import message.BotMessage;
 import messenger.utils.MessengerUtils;
+import nlu.apiai.model.ApiAiMessage;
+import nlu.apiai.model.ApiAiResponse;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,9 +71,15 @@ public class ApiAiConnector implements MessageListener {
             Response response = apiaiProxy.processText(botMessage.getText(), language, sessionID,"BHT-Chatbot","Bearer " + token);
             String responseAsString = response.readEntity(String.class);
 
-            System.out.println("API.AI RESPONSE:"+responseAsString);
-            messageQueue.addOutMessage(botMessage);
-            //TODO: Process response Message
+            JSONObject js= new JSONObject(response);
+            js.getJSONObject("result").get;
+
+
+            ApiAiResponse gs=new Gson().fromJson(responseAsString, ApiAiResponse.class);
+            ApiAiMessage msg = new ApiAiMessage(botMessage,gs.getResult().getFulfillment().getSpeech());
+
+            //System.out.println("API.AI RESPONSE:"+responseAsString);
+            messageQueue.addOutMessage(msg);
 
         } catch (JMSException e) {
             logger.error("Could not process message.", e);
