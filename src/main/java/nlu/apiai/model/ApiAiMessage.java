@@ -3,19 +3,23 @@ package nlu.apiai.model;
 import message.Attachment;
 import message.BotMessage;
 import message.Messenger;
+import message.NLUBotMessage;
 import nlu.NLUResponse;
+
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Created by oliver on 19.06.2017.
  */
-public class ApiAiMessage implements BotMessage {
+public class ApiAiMessage implements NLUBotMessage, Serializable {
 
     BotMessage bm;
-    String content;
+    NLUResponse nluResponse;
 
-    public ApiAiMessage(BotMessage bm, NLUResponse nluResponse, String content){
+    public ApiAiMessage(BotMessage bm, NLUResponse nluResponse){
         this.bm=bm;
-        this.content=content;
+        this.nluResponse=nluResponse;
     }
 
     @Override
@@ -40,7 +44,7 @@ public class ApiAiMessage implements BotMessage {
 
     @Override
     public String getText() {
-        return content;
+        return bm.getText()+"-Entities:"+getEntities().toString()+"-Intend:"+getIntent();
     }
 
     @Override
@@ -51,5 +55,15 @@ public class ApiAiMessage implements BotMessage {
     @Override
     public Attachment[] getAttachements() {
         return bm.getAttachements();
+    }
+
+    @Override
+    public String getIntent() {
+        return nluResponse.getIntent();
+    }
+
+    @Override
+    public Map<String, String> getEntities() {
+        return nluResponse.getEntities();
     }
 }

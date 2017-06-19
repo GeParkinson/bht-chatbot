@@ -3,11 +3,14 @@ package nlu.apiai.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
+
 /**
  * @author: Oliver
  * Date: 19.06.17
  */
-public class Status {
+public class Status  implements Serializable {
 
     @SerializedName("code")
     @Expose

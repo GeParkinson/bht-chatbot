@@ -2,6 +2,7 @@ package jms;
 
 import message.Attachment;
 import message.BotMessage;
+import message.NLUBotMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,22 +32,58 @@ public class MessageQueue {
         Message message = context.createObjectMessage(botMessageObject);
         try {
             if (botMessageObject.hasAttachements()) {
-                //TODO: iterate attachements
-                Attachment attachment = botMessageObject.getAttachements()[0];
-                //TODO: different Attachementtypes
-                switch (attachment.getAttachmentType()) {
-                    case AUDIO:
-                        message.setStringProperty("BingConnector", "in");
-                        break;
-                    case VOICE:
-                        message.setStringProperty("BingConnector", "in");
-                        break;
-                    default:
-                        logger.error("new InMessage has Attachements but no defined case.");
+                for (Attachment attachment : botMessageObject.getAttachements()) {
+                    //TODO: different Attachementtypes -> different botMessageObjects
+                    switch (attachment.getAttachmentType()) {
+                        case AUDIO:
+                            message.setStringProperty("BingConnector", "in");
+                            break;
+                        case VOICE:
+                            message.setStringProperty("BingConnector", "in");
+                            break;
+                        default:
+                            logger.error("new InMessage has Attachements but no defined case.");
+                    }
                 }
             } else {
                 message.setStringProperty("NLU", "in");
             }
+            context.createProducer().send(messageQueueManager.getTopic(), message);
+            return true;
+        } catch (JMSException e) {
+            logger.error("Could not add message to inbox: {}", botMessageObject, e);
+            return false;
+        }
+    }
+
+    /**
+     * Adds a new message to the system inbox queue and sets a string property to the message with
+     * the given property name and value.
+     * @param botMessageObject
+     * @param propertyName
+     * @param propertyValue
+     * @returns true, false if a given parameter is null or something went wrong.
+     */
+    public boolean addMessage(final BotMessage botMessageObject, final String propertyName, final String propertyValue) {
+        final JMSContext context = messageQueueManager.getContext();
+        Message message = context.createObjectMessage(botMessageObject);
+        try {
+            if(botMessageObject == null){
+                logger.error("No bot message was given");
+                return false;
+            }
+
+            if(propertyName == null || propertyName.equals("")){
+                logger.error("No property name was given");
+                return false;
+            }
+
+            if(propertyValue == null || propertyValue.equals("")){
+                logger.error("No property value was given");
+                return false;
+            }
+
+            message.setStringProperty(propertyName, propertyValue);
             context.createProducer().send(messageQueueManager.getTopic(), message);
             return true;
         } catch (JMSException e) {

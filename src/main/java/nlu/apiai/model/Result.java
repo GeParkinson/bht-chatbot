@@ -1,14 +1,22 @@
 
 package nlu.apiai.model;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import org.jboss.logging.Param;
+import org.json.JSONObject;
+
 /**
  * @author: Oliver
  * Date: 19.06.17
  */
-public class Result {
+public class Result  implements Serializable {
 
     @SerializedName("source")
     @Expose
@@ -70,9 +78,21 @@ public class Result {
         this.actionIncomplete = actionIncomplete;
     }
 
-    public Parameters getParameters() {
+    public Parameters getParameters(){
         return parameters;
     }
+
+    /*public Map<String,String> getEntities() {
+        Map<String, String> Entities = new HashMap<>();
+
+        JSONObject obj =new JSONObject(parameters);
+        for(Iterator iterator = obj.keySet().iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            Entities.put(key, obj.getString(key));
+        }
+
+        return Entities;
+    }*/
 
     public void setParameters(Parameters parameters) {
         this.parameters = parameters;

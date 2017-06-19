@@ -20,7 +20,7 @@ public class HelloWorld {
 
     @Inject
     MessageQueue messageQueue;
-
+/*
     @GET
     @Path("/json")
     @Produces({"application/json"})
@@ -31,7 +31,7 @@ public class HelloWorld {
         messageQueue.addInMessage(emptyMessage);
         return "{\"result\":\"" + helloService.createHelloMessage("World") + "\"}";
     }
-
+*/
     @GET
     @Path("/xml")
     @Produces({"application/xml"})

@@ -71,15 +71,11 @@ public class ApiAiConnector implements MessageListener {
             Response response = apiaiProxy.processText(botMessage.getText(), language, sessionID,"BHT-Chatbot","Bearer " + token);
             String responseAsString = response.readEntity(String.class);
 
-            JSONObject js= new JSONObject(response);
-            js.getJSONObject("result").get;
-
-
             ApiAiResponse gs=new Gson().fromJson(responseAsString, ApiAiResponse.class);
-            ApiAiMessage msg = new ApiAiMessage(botMessage,gs.getResult().getFulfillment().getSpeech());
+            ApiAiMessage msg = new ApiAiMessage(botMessage,gs);
 
             //System.out.println("API.AI RESPONSE:"+responseAsString);
-            messageQueue.addOutMessage(msg);
+            messageQueue.addMessage(msg, "Drools", "in");
 
         } catch (JMSException e) {
             logger.error("Could not process message.", e);

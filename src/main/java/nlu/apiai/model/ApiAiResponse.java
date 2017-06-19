@@ -4,13 +4,14 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import nlu.NLUResponse;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * @author: Oliver
  * Date: 19.06.17
  */
-public class ApiAiResponse implements NLUResponse {
+public class ApiAiResponse implements NLUResponse, Serializable {
 
     @SerializedName("id")
     @Expose

@@ -25,5 +25,5 @@ public interface BotMessage extends Serializable {
     public boolean hasAttachements();
 
     public Attachment[] getAttachements();
-
+	
 }
