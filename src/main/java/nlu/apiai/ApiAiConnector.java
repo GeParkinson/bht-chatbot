@@ -68,7 +68,8 @@ public class ApiAiConnector implements MessageListener {
             String responseAsString = response.readEntity(String.class);
 
             System.out.println("API.AI RESPONSE:"+responseAsString);
-            messageQueue.addOutMessage(botMessage);
+            //messageQueue.addOutMessage(botMessage);
+            messageQueue.addMessage(botMessage, "Drools", "in");
             //TODO: Process response Message
 
         } catch (JMSException e) {

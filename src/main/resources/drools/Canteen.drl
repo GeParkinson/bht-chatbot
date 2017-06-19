@@ -16,7 +16,7 @@
 
 package drools
 
-import message.BotMessage
+import drools.model.DroolsMessage
 
 // TODO sja: Hier würde dann erneut der Cache stehen
 // global java.bla.keks.Cache cache
@@ -24,15 +24,15 @@ import message.BotMessage
 rule "Test Rule"
     dialect "java"
     when
-        m : BotMessage( intent == "Test")
+        m : DroolsMessage( intent == "Test")
     then
-        modify ( m ) { setAnswer("Test successful" )};
+        modify ( m ) { setText("Test successful" )};
 end
 
 rule "Show all meals"
     dialect "java"
     when
-        m : BotMessage( intent == "show_meals")
+        m : DroolsMessage( intent == "show_meals")
     then
-        modify ( m ) { setAnswer("Heute gibt es folgende Gerichte: \n" )};
+        modify ( m ) { setText("Heute gibt es folgende Gerichte: \n" )};
 end

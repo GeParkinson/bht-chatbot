@@ -2,6 +2,7 @@ package drools;
 
 import jms.MessageQueue;
 import message.BotMessage;
+import message.NLUBotMessage;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -45,11 +46,11 @@ public class DroolsService implements MessageListener {
     @Override
     public void onMessage(Message message) {
         try {
-            BotMessage botMessage = message.getBody(BotMessage.class);
+            NLUBotMessage botMessage = message.getBody(NLUBotMessage.class);
 
             botMessage = doRules(botMessage);
 
-            messageQueue.addMessage(botMessage, "Drools", "out");
+            messageQueue.addOutMessage(botMessage);
         } catch (JMSException e) {
             logger.error("Exception while setting bot message to the queue.", e);
         }
@@ -60,7 +61,7 @@ public class DroolsService implements MessageListener {
      * @param botMessage
      * @returns the botMessage with a new created answer text
      */
-    public static BotMessage doRules(final BotMessage botMessage){
+    public static NLUBotMessage doRules(final NLUBotMessage botMessage){
 
         // KieServices is the factory for all KIE services
         KieServices ks = KieServices.Factory.get();
