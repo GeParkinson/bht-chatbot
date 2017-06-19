@@ -21,6 +21,7 @@ import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,21 +106,15 @@ public class BingConnector implements MessageListener {
             }
 
             // send request
-            HttpResponse response = client.execute(httpPost);
-            int responseCode = response.getStatusLine().getStatusCode();
+            HttpResponse httpResponse = client.execute(httpPost);
+            int responseCode = httpResponse.getStatusLine().getStatusCode();
 
             logger.debug("AccessToken request returns: Response Code - " + String.valueOf(responseCode));
 
-            BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-
-            StringBuilder result = new StringBuilder();
-            String line = "";
-            while ((line = rd.readLine()) != null) {
-                result.append(line);
-            }
+            String result = EntityUtils.toString(httpResponse.getEntity());
 
             if (responseCode == 200) {
-                accessToken = result.toString();
+                accessToken = result;
                 logger.debug("new AccessToken: " + accessToken);
             } else {
                 logger.warn("Could not generate new Bing Speech AccessToken");
@@ -189,17 +184,11 @@ public class BingConnector implements MessageListener {
                 HttpResponse httpResponse = client.execute(httpPost);
                 int responseCode = httpResponse.getStatusLine().getStatusCode();
 
-                logger.debug("Send Audio request returns: Response Code - " + String.valueOf(responseCode));
+                logger.debug("Speech to Text request returns: Response Code - " + String.valueOf(responseCode));
 
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+                String result = EntityUtils.toString(httpResponse.getEntity());
 
-                StringBuilder result = new StringBuilder();
-                String line = "";
-                while ((line = bufferedReader.readLine()) != null) {
-                    result.append(line);
-                }
-
-                logger.debug("Audio request returns: " + result.toString());
+                logger.debug("Speech to Text request returns: " + result.toString());
 
                 // process response message
                 BingMessage bingMessage;
@@ -222,11 +211,42 @@ public class BingConnector implements MessageListener {
                 }
             }
         } catch (Exception e){
-            logger.error("Exception while audio request: ", e);
+            logger.error("Error while processing Speech to Text request: ", e);
         }
     }
 
     private void sendTextToSpeechRequest(BotMessage botMessage){
         //TODO: implement
+        HttpClient client = HttpClientBuilder.create().build();
+        String url = "https://speech.platform.bing.com/synthesize";
+        HttpPost httpPost = new HttpPost(url);
+
+        // HEADERS
+        Map<String, String> postHeaders = new HashMap<>();
+        postHeaders.put("Content-Type", MediaType.APPLICATION_XML);
+        postHeaders.put("Authorization", "Bearer " + accessToken);
+        postHeaders.put("X-Microsoft-OutputFormat", "audio-16khz-32kbitrate-mono-mp3");
+
+        for (Map.Entry<String, String> entry : postHeaders.entrySet()) {
+            httpPost.setHeader(entry.getKey(), entry.getValue());
+        }
+
+        try {
+            String xml = "<speak version='1.0' xml:lang='en-US'><voice xml:lang='en-US' xml:gender='Female' name='Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)'>" + botMessage.getText() + "</voice></speak>";
+            HttpEntity entity = new ByteArrayEntity(xml.getBytes("UTF-8"));
+            httpPost.setEntity(entity);
+
+            // send request
+            HttpResponse httpResponse = client.execute(httpPost);
+            int responseCode = httpResponse.getStatusLine().getStatusCode();
+
+            logger.debug("Send Text to Speech returns: Response Code - " + String.valueOf(responseCode));
+
+            //TODO: process response
+            //httpResponse.getEntity();
+
+        } catch (Exception e){
+            logger.error("Error while processing Text to Speech request: ", e);
+        }
     }
 }
