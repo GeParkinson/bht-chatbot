@@ -60,8 +60,10 @@ public class FacebookReceiveAdapter {
         FacebookInput gs=new Gson().fromJson(InputMessage, FacebookInput.class);
         FacebookBotMessage msg = new FacebookBotMessage(gs.getEntry().get(0));
 
-        if(!gs.getEntry().get(0).getMessaging().get(0).getMessage().getIsEcho()) {
-            messageQueue.addOutMessage(msg);
+        if(gs.getEntry().get(0).getMessaging().get(0).getMessage()!=null) {
+            if (!gs.getEntry().get(0).getMessaging().get(0).getMessage().getIsEcho()) {
+                messageQueue.addInMessage(msg);
+            }
         }
 
         return "\nReceived\n";

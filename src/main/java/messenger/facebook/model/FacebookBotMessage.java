@@ -43,12 +43,14 @@ public class FacebookBotMessage implements BotMessage{
         for(FacebookMessaging facebookMessaging : facebookEntry.getMessaging()) {
             stringBuilder.append(facebookMessaging.getMessage().getText());
         }
-        return stringBuilder.toString();//facebookEntry.getMessaging().get(0).getMessage().getText();
+        return stringBuilder.toString();
     }
 
     @Override
     public boolean hasAttachements() {
-        return false;
+        if(facebookEntry.getMessaging().get(0).getMessage().getAttachments()==null)
+            return false;
+        else return true;
     }
 
     @Override

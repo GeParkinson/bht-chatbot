@@ -1,5 +1,6 @@
 package nlu.apiai;
 
+import jms.MessageQueue;
 import message.BotMessage;
 import messenger.utils.MessengerUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -32,10 +34,13 @@ import java.util.Properties;
                         propertyName = "destination",
                         propertyValue = "jms/messages/inbox"),
                 @ActivationConfigProperty(
-                        propertyName = "messageSelector", propertyValue = "Telegram = 'in'")
+                        propertyName = "messageSelector", propertyValue = "NLU = 'in'")
         }
 )
 public class ApiAiConnector implements MessageListener {
+
+    @Inject
+    private MessageQueue messageQueue;
 
     private final Logger logger = LoggerFactory.getLogger(ApiAiConnector.class);
     private ApiAiRESTServiceInterface apiaiProxy;
@@ -59,10 +64,13 @@ public class ApiAiConnector implements MessageListener {
             String sessionID = String.valueOf(botMessage.getMessageID());
             String language = "en";
 
-            Response response = apiaiProxy.processText(botMessage.getText(), language, sessionID,"Context","Bearer " + token);
+            Response response = apiaiProxy.processText(botMessage.getText(), language, sessionID,"BHT-Chatbot","Bearer " + token);
             String responseAsString = response.readEntity(String.class);
 
+            System.out.println("API.AI RESPONSE:"+responseAsString);
+            messageQueue.addOutMessage(botMessage);
             //TODO: Process response Message
+
         } catch (JMSException e) {
             logger.error("Could not process message.", e);
         }
