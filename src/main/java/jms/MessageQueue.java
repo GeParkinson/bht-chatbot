@@ -56,6 +56,42 @@ public class MessageQueue {
     }
 
     /**
+     * Adds a new message to the system inbox queue and sets a string property to the message with
+     * the given property name and value.
+     * @param botMessageObject
+     * @param propertyName
+     * @param propertyValue
+     * @returns true, false if a given parameter is null or something went wrong.
+     */
+    public boolean addMessage(final BotMessage botMessageObject, final String propertyName, final String propertyValue) {
+        final JMSContext context = messageQueueManager.getContext();
+        Message message = context.createObjectMessage(botMessageObject);
+        try {
+            if(botMessageObject == null){
+                logger.error("No bot message was given");
+                return false;
+            }
+
+            if(propertyName == null || propertyName.equals("")){
+                logger.error("No property name was given");
+                return false;
+            }
+
+            if(propertyValue == null || propertyValue.equals("")){
+                logger.error("No property value was given");
+                return false;
+            }
+
+            message.setStringProperty(propertyName, propertyValue);
+            context.createProducer().send(messageQueueManager.getTopic(), message);
+            return true;
+        } catch (JMSException e) {
+            logger.error("Could not add message to inbox: {}", botMessageObject, e);
+            return false;
+        }
+    }
+
+    /**
      * Add message to system outbox queue
      * @param botMessageObject message to Telegram or Facebook
      * @return
