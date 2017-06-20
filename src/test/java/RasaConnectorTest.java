@@ -1,4 +1,4 @@
-import nlu.rasa.RasaConnector;
+import de.bht.chatbot.nlu.rasa.RasaConnector;
 import org.junit.Test;
 
 /**

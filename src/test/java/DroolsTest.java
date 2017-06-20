@@ -1,6 +1,6 @@
-import message.BotMessage;
+import de.bht.chatbot.message.BotMessage;
 import org.junit.Test;
-import drools.DroolsService;
+import de.bht.chatbot.drools.DroolsService;
 
 import static org.junit.Assert.assertEquals;
 

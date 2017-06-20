@@ -2,7 +2,7 @@
 <kmodule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://www.drools.org/xsd/kmodule">
 
-    <kbase name="CanteenKB" packages="drools">
+    <kbase name="CanteenKB" packages="de.bht.chatbot.drools">
         <ksession name="CanteenKS"/>
     </kbase>
 </kmodule>

@@ -1,5 +1,4 @@
-import jms.MessageQueue;
-import message.*;
+import de.bht.chatbot.jms.MessageQueue;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;

@@ -1,6 +1,6 @@
-import jms.MessageQueue;
-import message.BotMessage;
-import message.Messenger;
+import de.bht.chatbot.jms.MessageQueue;
+import de.bht.chatbot.message.BotMessage;
+import de.bht.chatbot.message.Messenger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -23,7 +23,7 @@ public class HelloWorldTest {
     @Deployment
     public static JavaArchive createDeployment() {
         return ShrinkWrap.create(JavaArchive.class)
-                .addPackages(true, "attachments","jms", "message")
+                .addPackages(true, "de/bht/chatbot/attachments", "de/bht/chatbot/jms", "de/bht/chatbot/message")
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
