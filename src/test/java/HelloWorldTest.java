@@ -1,4 +1,5 @@
 import de.bht.chatbot.jms.MessageQueue;
+import de.bht.chatbot.message.Attachment;
 import de.bht.chatbot.message.BotMessage;
 import de.bht.chatbot.message.Messenger;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -32,10 +33,42 @@ public class HelloWorldTest {
 
     @Test
     public void should_create_greeting() {
-        BotMessage emptyMessage = new BotMessage();
-        emptyMessage.setId(1L);
-        emptyMessage.setText("Hello World!");
-        emptyMessage.setMessenger(Messenger.TELEGRAM);
+        BotMessage emptyMessage = new BotMessage() {
+            @Override
+            public Long getId() {
+                return 1L;
+            }
+
+            @Override
+            public Long getMessageID() {
+                return null;
+            }
+
+            @Override
+            public Long getSenderID() {
+                return null;
+            }
+
+            @Override
+            public Messenger getMessenger() {
+                return Messenger.TELEGRAM;
+            }
+
+            @Override
+            public String getText() {
+                return "Hello World!";
+            }
+
+            @Override
+            public boolean hasAttachements() {
+                return false;
+            }
+
+            @Override
+            public Attachment[] getAttachements() {
+                return new Attachment[0];
+            }
+        };
         messageQueue.addInMessage(emptyMessage);
         Assert.assertTrue("Arquillian Test", true);
     }
