@@ -1,15 +1,24 @@
 package messenger.telegram;
 
 import com.pengrad.telegrambot.BotUtils;
+import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.TelegramBotAdapter;
+import com.pengrad.telegrambot.model.File;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.GetFile;
+import com.pengrad.telegrambot.response.GetFileResponse;
 import jms.MessageQueue;
 import message.*;
+import messenger.telegram.model.TelegramAttachment;
+import messenger.telegram.model.TelegramMessage;
+import messenger.utils.MessengerUtils;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * Created by Chris on 5/14/2017.
@@ -21,35 +30,57 @@ public class TelegramReceiveAdapter {
     @Inject
     private MessageQueue messageQueue;
 
+    private TelegramBot bot;
+
+    @PostConstruct
+    public void startUp(){
+        Properties properties = MessengerUtils.getProperties();
+        bot = TelegramBotAdapter.build(properties.getProperty("TELEGRAM_BOT_TOKEN"));
+    }
+
     @POST
     @Path("/getUpdates")
     public void getUpdates(String msg) {
         Update update = BotUtils.parseUpdate(msg);
-        Message message = update.message();
-        messageQueue.addInMessage(toMessage(message));
+        TelegramMessage message = new TelegramMessage(update.message());
+        message.setTelegramAttachments(addAttachments(update.message()));
+        messageQueue.addInMessage(message);
     }
 
-    private BotMessage toMessage(Message message) {
-        BotMessage msg = new BotMessage();
+    private TelegramAttachment[] addAttachments(Message message) {
+        startUp();
 
-        msg.setMessenger(Messenger.TELEGRAM);
-        msg.setMessageID(message.messageId().longValue());
-        msg.setSenderID(message.chat().id());
+        String fileID = null;
+        if (message.audio() != null) fileID = message.audio().fileId();
+        if (message.video() != null) fileID = message.video().fileId();
+        if (message.voice() != null) fileID = message.voice().fileId();
+        if (message.document() != null) fileID = message.document().fileId();
 
-        ArrayList<Attachment> attachments = new ArrayList<>();
+        if(fileID != null) {
+            // get download link
+            GetFile request = new GetFile(fileID);
+            GetFileResponse getFileResponse = bot.execute(request);
 
-        if (message.audio() != null)
-            attachments.add(new Attachment(Long.valueOf(message.audio().fileId()), AttachmentType.AUDIO, FileType.FILE_ID));
-        if (message.video() != null)
-            attachments.add(new Attachment(Long.valueOf(message.video().fileId()), AttachmentType.VIDEO, FileType.FILE_ID));
-        if (message.voice() != null)
-            attachments.add(new Attachment(Long.valueOf(message.voice().fileId()), AttachmentType.VOICE, FileType.FILE_ID));
-        if (message.document() != null)
-            attachments.add(new Attachment(Long.valueOf(message.document().fileId()), AttachmentType.DOCUMENT, FileType.FILE_ID));
-        if (message.text() != null) msg.setText(message.text());
+            File file = getFileResponse.file();
+            String fullPath = bot.getFullFilePath(file);
 
-        msg.setAttachements((Attachment[]) attachments.toArray());
-
-        return msg;
+            if (message.audio() != null) {
+                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(fullPath, AttachmentType.AUDIO, message.caption())};
+                return telegramAttachments;
+            }
+            if (message.video() != null){
+                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(fullPath, AttachmentType.VIDEO, message.caption())};
+                return telegramAttachments;
+            }
+            if (message.voice() != null){
+                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(fullPath, AttachmentType.VOICE, message.caption())};
+                return telegramAttachments;
+            }
+            if (message.document() != null){
+                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(fullPath, AttachmentType.DOCUMENT, message.caption())};
+                return telegramAttachments;
+            }
+        }
+        return null;
     }
 }

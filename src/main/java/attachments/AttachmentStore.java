@@ -8,6 +8,7 @@ import message.Attachment;
  */
 public class AttachmentStore {
 
+    //TODO: implement Storage
     public long storeAttachment(Attachment attachment) {
          return 1L;
     }

@@ -1,9 +1,14 @@
 package nlu.apiai;
 
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import com.google.gson.Gson;
+import jms.MessageQueue;
 import message.BotMessage;
 import messenger.utils.MessengerUtils;
+import nlu.apiai.model.ApiAiMessage;
+import nlu.apiai.model.ApiAiResponse;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,13 +16,16 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import java.util.Properties;
 
 /**
- * @author: georg.glossmann@adesso.de
+ * @authors: georg.glossmann@adesso.de (template) + oliverdavid@hotmail.de (content)
  * Date: 04.06.17
  */
 @MessageDriven(
@@ -30,48 +38,47 @@ import java.util.Properties;
                         propertyName = "destination",
                         propertyValue = "jms/messages/inbox"),
                 @ActivationConfigProperty(
-                        propertyName = "messageSelector", propertyValue = "Telegram = 'in'")
+                        propertyName = "messageSelector", propertyValue = "NLU = 'in'")
         }
 )
 public class ApiAiConnector implements MessageListener {
 
-    private final Logger logger = LoggerFactory.getLogger(ApiAiConnector.class);
+    @Inject
+    private MessageQueue messageQueue;
 
+    private final Logger logger = LoggerFactory.getLogger(ApiAiConnector.class);
+    private ApiAiRESTServiceInterface apiaiProxy;
 
     @PostConstruct
     public void init() {
-        // TODO: implementation
+        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyWebTarget target = client.target(UriBuilder.fromPath("https://api.api.ai/api/query"));
+        apiaiProxy = target.proxy(ApiAiRESTServiceInterface.class);
     }
 
 
     @Override
     public void onMessage(final Message message) {
-        // TODO: fix sample code
         try {
             BotMessage botMessage = message.getBody(BotMessage.class);
-
-            String sessionID = "";
-            String[] contexts = new String[]{};
 
             Properties properties = MessengerUtils.getProperties();
             String token = properties.getProperty("API_AI_TOKEN");
 
+            String sessionID = String.valueOf(botMessage.getMessageID());
             String language = "en";
 
-            String reqURL = String.format("https://api.api.ai/api/query?query=%s&lang=%s&sessionId=%s", botMessage.getText(), language, sessionID);
+            Response response = apiaiProxy.processText(botMessage.getText(), language, sessionID,"BHT-Chatbot","Bearer " + token);
+            String responseAsString = response.readEntity(String.class);
 
-            for (String context : contexts) {
-                reqURL = reqURL + "&contexts=" + context;
-            }
+            ApiAiResponse gs=new Gson().fromJson(responseAsString, ApiAiResponse.class);
+            ApiAiMessage msg = new ApiAiMessage(botMessage,gs);
 
-            //TODO: Replace Unirest with RESTeasy
-            JSONObject resultJson = Unirest.get(reqURL).header("Authorization", "Bearer " + token).asJson().getBody().getObject();
+            //System.out.println("API.AI RESPONSE:"+responseAsString);
+            messageQueue.addMessage(msg, "Drools", "in");
 
-            resultJson.getJSONObject("result");
         } catch (JMSException e) {
             logger.error("Could not process message.", e);
-        } catch (UnirestException e) {
-            logger.error("Request failed!", e);
         }
     }
 }

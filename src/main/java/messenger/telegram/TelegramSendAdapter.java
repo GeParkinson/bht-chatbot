@@ -6,9 +6,8 @@ import com.pengrad.telegrambot.TelegramBotAdapter;
 import com.pengrad.telegrambot.request.*;
 import com.pengrad.telegrambot.response.BaseResponse;
 import com.pengrad.telegrambot.response.SendResponse;
-import message.Attachment;
-import message.BotMessage;
-import message.FileType;
+import message.*;
+import messenger.telegram.model.TelegramAttachment;
 import messenger.utils.MessengerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import java.io.IOException;
@@ -42,16 +42,16 @@ import java.util.Properties;
 )
 public class TelegramSendAdapter implements MessageListener {
 
-    private static TelegramBot bot;
-
     private Logger logger = LoggerFactory.getLogger(TelegramSendAdapter.class);
+
+    private TelegramBot bot;
 
     @PostConstruct
     public void startUp(){
         Properties properties = MessengerUtils.getProperties();
         bot = TelegramBotAdapter.build(properties.getProperty("TELEGRAM_BOT_TOKEN"));
 
-        verifyWebhook();
+        //verifyWebhook();
     }
 
     private void verifyWebhook() {
@@ -73,37 +73,46 @@ public class TelegramSendAdapter implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
-        // TODO Chris: refactoring/implementing message sending
-    }
-
-    private void sendMessage(BotMessage botMessage){
-        switch(botMessage.getAttachements()[0].getAttachmentType()){
-            case AUDIO:
-                sendAudio(botMessage);
-                break;
-            case VOICE:
-                sendVoice(botMessage);
-                break;
-            case VIDEO:
-                sendVideo(botMessage);
-                break;
-            case DOCUMENT:
-                sendDocument(botMessage);
-                break;
-            case PHOTO:
-                sendPhoto(botMessage);
-                break;
-            default:
-                sendMessage(botMessage.getMessageID(), botMessage.getText());
-                break;
+        try {
+            BotMessage botMessage = message.getBody(BotMessage.class);
+            startUp();
+            if (botMessage.hasAttachements()){
+                for(Attachment attachment : botMessage.getAttachements()) {
+                    switch (attachment.getAttachmentType()) {
+                        case AUDIO:
+                            sendAudio(botMessage);
+                            break;
+                        case VOICE:
+                            sendVoice(botMessage);
+                            break;
+                        case VIDEO:
+                            sendVideo(botMessage);
+                            break;
+                        case DOCUMENT:
+                            sendDocument(botMessage);
+                            break;
+                        case PHOTO:
+                            sendPhoto(botMessage);
+                            break;
+                        default:
+                            logger.warn("new OutMessage has Attachements but no defined AttachementType Case.");
+                            break;
+                    }
+                }
+            } else {
+                sendMessage(botMessage.getSenderID(), botMessage.getText());
+            }
+        }
+        catch (JMSException e) {
+            logger.error("Error on receiving BotMessage-Object on TelegramSendAdapter: ", e);
         }
     }
 
     /** Send Text BotMessage */
-    private void sendMessage(Long chatId, String message) {
-        SendMessage request = new SendMessage(chatId, message);
+    private void sendMessage(Long senderId, String message) {
+        SendMessage request = new SendMessage(senderId, message);
         SendResponse sendResponse = bot.execute(request);
-        System.out.println("Send message: " + sendResponse.isOk());
+        logger.debug("Send message: " + sendResponse.isOk());
     }
 
     /** Send Photo Method */
@@ -112,11 +121,7 @@ public class TelegramSendAdapter implements MessageListener {
 
         // check & send each attachement
         for (Attachment attachment : botMessage.getAttachements()){
-            /** distinguish between FileTypes */
-            if (attachment.getFileType() == FileType.FILE) request = new SendPhoto(botMessage.getSenderID(), attachment.getFile());
-            else if (attachment.getFileType() == FileType.BYTE) request = new SendPhoto(botMessage.getSenderID(), attachment.getFileArray());
-            else if (attachment.getFileType() == FileType.FILE_ID) request = new SendPhoto(botMessage.getSenderID(), attachment.getFileUrl());
-            else continue;
+            request = new SendPhoto(botMessage.getSenderID(), attachment.getFileURI());
 
             if (attachment.getCaption() != null)
                 request.caption(attachment.getCaption());
@@ -132,18 +137,10 @@ public class TelegramSendAdapter implements MessageListener {
 
         // check & send each attachement
         for (Attachment attachment : botMessage.getAttachements()) {
-            /** distinguish between FileTypes */
-            if(attachment.getFileType() == FileType.FILE) request = new SendAudio(botMessage.getSenderID(), attachment.getFile());
-            else if(attachment.getFileType() == FileType.BYTE) request = new SendAudio(botMessage.getSenderID(), attachment.getFileArray());
-            else if(attachment.getFileType() == FileType.FILE_ID) request = new SendAudio(botMessage.getSenderID(), attachment.getFileUrl());
-            else continue;
+            request = new SendAudio(botMessage.getSenderID(), attachment.getFileURI());
 
             if (attachment.getCaption() != null)
                 request.caption(attachment.getCaption());
-            if (attachment.getDuration() != null)
-                request.duration(attachment.getDuration());
-
-            //TODO: performer & title
 
             SendResponse sendResponse = bot.execute(request);
             logger.debug("Send Audio: " + sendResponse.isOk());
@@ -155,16 +152,10 @@ public class TelegramSendAdapter implements MessageListener {
         SendVoice request;
 
         for (Attachment attachment : botMessage.getAttachements()) {
-            /** distinguish between FileTypes */
-            if (attachment.getFileType() == FileType.FILE) request = new SendVoice(botMessage.getSenderID(), attachment.getFile());
-            else if (attachment.getFileType() == FileType.BYTE) request = new SendVoice(botMessage.getSenderID(), attachment.getFileArray());
-            else if (attachment.getFileType() == FileType.FILE_ID) request = new SendVoice(botMessage.getSenderID(), attachment.getFileUrl());
-            else continue;
+            request = new SendVoice(botMessage.getSenderID(), attachment.getFileURI());
 
             if (attachment.getCaption() != null)
                 request.caption(attachment.getCaption());
-            if (attachment.getDuration() != null)
-                request.duration(attachment.getDuration());
 
             SendResponse sendResponse = bot.execute(request);
             logger.debug("Send Voice: " + sendResponse.isOk());
@@ -176,11 +167,7 @@ public class TelegramSendAdapter implements MessageListener {
         SendDocument request;
 
         for (Attachment attachment : botMessage.getAttachements()) {
-            /** distinguish between FileTypes */
-            if (attachment.getFileType() == FileType.FILE) request = new SendDocument(botMessage.getSenderID(), attachment.getFile());
-            else if (attachment.getFileType() == FileType.BYTE) request = new SendDocument(botMessage.getSenderID(), attachment.getFileArray());
-            else if (attachment.getFileType() == FileType.FILE_ID) request = new SendDocument(botMessage.getSenderID(), attachment.getFileUrl());
-            else continue;
+            request = new SendDocument(botMessage.getSenderID(), attachment.getFileURI());
 
             if (attachment.getCaption() != null)
                 request.caption(attachment.getCaption());
@@ -195,18 +182,10 @@ public class TelegramSendAdapter implements MessageListener {
         SendVideo request;
 
         for (Attachment attachment : botMessage.getAttachements()) {
-            /** distinguish between FileTypes */
-            if (attachment.getFileType() == FileType.FILE) request = new SendVideo(botMessage.getSenderID(), attachment.getFile());
-            else if (attachment.getFileType() == FileType.BYTE) request = new SendVideo(botMessage.getSenderID(), attachment.getFileArray());
-            else if (attachment.getFileType() == FileType.FILE_ID) request = new SendVideo(botMessage.getSenderID(), attachment.getFileUrl());
-            else continue;
+            request = new SendVideo(botMessage.getSenderID(), attachment.getFileURI());
 
             if (attachment.getCaption() != null)
                 request.caption(attachment.getCaption());
-            if (attachment.getDuration() != null)
-                request.duration(attachment.getDuration());
-
-            //TODO: width & heigth
 
             SendResponse sendResponse = bot.execute(request);
             logger.debug("Send Voice: " + sendResponse.isOk());
