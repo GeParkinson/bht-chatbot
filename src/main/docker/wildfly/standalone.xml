@@ -251,6 +251,23 @@
                 </local-cache>
                 <local-cache name="timestamps"/>
             </cache-container>
+            <cache-container name="app-caches">
+                <local-cache name="mensaCache">
+                    <!-- 30' cache -->
+                    <expiration lifespan="1800000" />
+                </local-cache>
+                <local-cache name="tokenCache">
+                    <!-- 9' cache -->
+                    <expiration lifespan="540" />
+                </local-cache>
+                <local-cache name="sessionCache">
+                    <!-- 12h idle cache -->
+                    <expiration max-idle="43200000" />
+                    <file-store preload="true" path="/tmp/chatbot-sessions">
+                        <write-behind />
+                    </file-store>
+                </local-cache>
+            </cache-container>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:jaxrs:1.0"/>
         <subsystem xmlns="urn:jboss:domain:jca:4.0">

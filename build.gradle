@@ -18,7 +18,8 @@ dependencies {
             "com.mashape.unirest:unirest-java:1.4.9"
 
     providedCompile "org.slf4j:slf4j-api:1.7.25",
-                    "org.jboss.resteasy:resteasy-client:3.1.3.Final"
+                    "org.jboss.resteasy:resteasy-client:3.1.3.Final",
+                    "org.infinispan:infinispan-core:8.2.4.Final"
 
     testCompile "org.jboss.arquillian.junit:arquillian-junit-container:1.1.13.Final",
                 "junit:junit:4.12"
@@ -32,7 +33,14 @@ dependencies {
 ---------------------------------*/
 sourceCompatibility = 1.8
 
-war.destinationDir file("./src/main/docker/wildfly/volumes/deployments/")
+war {
+    destinationDir file("./src/main/docker/wildfly/volumes/deployments/")
+
+    manifest {
+        // to use infinispan shipped with wildfly
+        attributes("Dependencies":"org.infinispan export")
+    }
+}
 
 
 /* Tasks
