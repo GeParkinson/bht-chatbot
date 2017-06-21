@@ -46,7 +46,7 @@ public class TelegramMessage implements BotMessage{
 
     @Override
     public boolean hasAttachements() {
-        return(telegramAttachments.length > 0);
+        return(telegramAttachments != null);
     }
 
     @Override

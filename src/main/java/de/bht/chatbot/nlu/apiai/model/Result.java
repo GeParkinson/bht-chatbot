@@ -39,7 +39,7 @@ public class Result  implements Serializable {
     private Fulfillment fulfillment;
     @SerializedName("score")
     @Expose
-    private Integer score;
+    private Float score;
 
     public String getSource() {
         return source;
@@ -117,11 +117,11 @@ public class Result  implements Serializable {
         this.fulfillment = fulfillment;
     }
 
-    public Integer getScore() {
+    public Float getScore() {
         return score;
     }
 
-    public void setScore(Integer score) {
+    public void setScore(Float score) {
         this.score = score;
     }
 

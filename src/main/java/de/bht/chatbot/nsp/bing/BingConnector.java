@@ -124,7 +124,7 @@ public class BingConnector implements MessageListener {
     private void sendSpeechToTextRequest(BotMessage botMessage){
         generateAccesToken();
         //TODO: different languages
-        String language = "en-US";
+        String language = "de-DE";
         try {
             HttpClient client = HttpClientBuilder.create().build();
             String url = "https://speech.platform.bing.com/speech/recognition/interactive/cognitiveservices/v1?language="
@@ -201,7 +201,7 @@ public class BingConnector implements MessageListener {
                         return;
                     }
                     // return message
-                    messageQueue.addOutMessage(bingMessage);
+                    messageQueue.addInMessage(bingMessage);
 
                 } catch (Exception e) {
                     logger.error("Error while parsing BingSpeecResponse: ", e);

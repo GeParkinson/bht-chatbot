@@ -28,10 +28,10 @@ import java.util.Properties;
     activationConfig = {
             @ActivationConfigProperty(
                     propertyName = "destinationType",
-                    propertyValue = "javax.de.bht.chatbot.jms.Topic"),
+                    propertyValue = "javax.jms.Topic"),
             @ActivationConfigProperty(
                     propertyName = "destination",
-                    propertyValue = "de/bht/chatbot/jms/messages/inbox"),
+                    propertyValue = "jms/messages/inbox"),
             @ActivationConfigProperty(
                     propertyName = "maxSession", propertyValue = "1"),
             @ActivationConfigProperty(
