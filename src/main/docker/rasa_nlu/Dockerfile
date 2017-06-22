@@ -27,7 +27,7 @@ RUN mkdir -p data/en && mv MITIE-models/english/total_word_feature_extractor.dat
 
 # train the model
 COPY rasa_config.json config/chatbot_config.json
-COPY training_data.json data/training_data.json
+COPY volumes/data/api/ data/api
 RUN python -m rasa_nlu.train -c config/chatbot_config.json
 RUN mv models/model_* models/default
 
