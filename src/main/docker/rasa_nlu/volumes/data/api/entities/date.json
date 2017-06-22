@@ -1,0 +1,23 @@
+{
+  "id": "00956f05-8d68-4be8-9b5c-77f3814a0bd0",
+  "name": "date",
+  "isOverridable": true,
+  "entries": [
+    {
+      "value": "today",
+      "synonyms": [
+        "today",
+        "heute"
+      ]
+    },
+    {
+      "value": "tomorrow",
+      "synonyms": [
+        "tomorrow",
+        "morgen"
+      ]
+    }
+  ],
+  "isEnum": false,
+  "automatedExpansion": false
+}

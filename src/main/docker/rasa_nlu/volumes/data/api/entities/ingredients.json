@@ -1,0 +1,30 @@
+{
+  "id": "3b1b818c-b0e8-4fe3-aa02-79dca07d74ab",
+  "name": "ingredients",
+  "isOverridable": true,
+  "entries": [
+    {
+      "value": "laktosefree",
+      "synonyms": [
+        "laktosefrei",
+        "ohne Laktose"
+      ]
+    },
+    {
+      "value": "glutenfree",
+      "synonyms": [
+        "glutenfrei",
+        "ohne Gluten"
+      ]
+    },
+    {
+      "value": "sugarfree",
+      "synonyms": [
+        "zuckerfrei",
+        "ohne Zucker"
+      ]
+    }
+  ],
+  "isEnum": false,
+  "automatedExpansion": false
+}

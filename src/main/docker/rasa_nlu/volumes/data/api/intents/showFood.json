@@ -1,0 +1,224 @@
+{
+  "userSays": [
+    {
+      "id": "4c28ddca-a35e-475d-967b-bc513645cf19",
+      "data": [
+        {
+          "text": "Zeige Gerichte",
+          "meta": "@sys.ignore",
+          "userDefined": true
+        },
+        {
+          "text": " "
+        },
+        {
+          "text": "ohne Zucker",
+          "alias": "ingredients",
+          "meta": "@ingredients",
+          "userDefined": true
+        }
+      ],
+      "isTemplate": false,
+      "count": 1
+    },
+    {
+      "id": "823222a6-c09c-430d-8164-ac9398a3ae42",
+      "data": [
+        {
+          "text": "Zeige "
+        },
+        {
+          "text": "gesunde",
+          "alias": "healthy",
+          "meta": "@healthy",
+          "userDefined": true
+        },
+        {
+          "text": " Gerichte"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "26104cc6-c7d1-4952-bbe8-ea66c0a608b8",
+      "data": [
+        {
+          "text": "Ich habe "
+        },
+        {
+          "text": "Hunger",
+          "meta": "@sys.ignore",
+          "userDefined": true
+        }
+      ],
+      "isTemplate": false,
+      "count": 1
+    },
+    {
+      "id": "0e61a171-092e-4100-ae11-8e96e4c8eb8a",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "veganes",
+          "alias": "dishtype",
+          "meta": "@dishtype",
+          "userDefined": true
+        },
+        {
+          "text": "?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 1
+    },
+    {
+      "id": "9b0d67ca-09ea-4d7d-bc72-342e0e7c5088",
+      "data": [
+        {
+          "text": "Wie ist der aktuelle "
+        },
+        {
+          "text": "Speiseplan",
+          "meta": "@sys.ignore",
+          "userDefined": true
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "e4281c8d-f69d-4b90-a12f-d39edc59b052",
+      "data": [
+        {
+          "text": "Habe "
+        },
+        {
+          "text": "Hunger",
+          "meta": "@sys.ignore",
+          "userDefined": false
+        }
+      ],
+      "isTemplate": false,
+      "count": 1
+    },
+    {
+      "id": "f7606b89-2724-41cb-973f-34210fa976fc",
+      "data": [
+        {
+          "text": "Ich möchte gerne etwas "
+        },
+        {
+          "text": "ohne Fleisch",
+          "alias": "dishtype",
+          "meta": "@dishtype",
+          "userDefined": true
+        },
+        {
+          "text": " "
+        },
+        {
+          "text": "essen",
+          "meta": "@sys.ignore",
+          "userDefined": true
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "5cb17168-c227-4ac9-ac83-520b70a5252c",
+      "data": [
+        {
+          "text": "Was ist "
+        },
+        {
+          "text": "vegetarisch",
+          "alias": "dishtype",
+          "meta": "@dishtype",
+          "userDefined": true
+        }
+      ],
+      "isTemplate": false,
+      "count": 1
+    },
+    {
+      "id": "1a749580-2d92-4526-9f9c-d5fa76e509eb",
+      "data": [
+        {
+          "text": "Was kann ich "
+        },
+        {
+          "text": "essen",
+          "meta": "@sys.ignore",
+          "userDefined": true
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "f49e58ff-4782-4701-9661-07accede286c",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "heute",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": true
+        },
+        {
+          "text": " in der Mensa"
+        }
+      ],
+      "isTemplate": false,
+      "count": 2
+    }
+  ],
+  "id": "fb49a221-02a6-4dff-8da4-9d31cf8f267b",
+  "name": "showFood",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "affectedContexts": [],
+      "parameters": [
+        {
+          "dataType": "@date",
+          "name": "date",
+          "value": "$date",
+          "isList": false
+        },
+        {
+          "dataType": "@dishtype",
+          "name": "dishtype",
+          "value": "$dishtype",
+          "isList": false
+        },
+        {
+          "dataType": "@healthy",
+          "name": "healthy",
+          "value": "$healthy",
+          "isList": false
+        },
+        {
+          "dataType": "@ingredients",
+          "name": "ingredients",
+          "value": "$ingredients",
+          "isList": false
+        }
+      ],
+      "messages": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": []
+}
