@@ -1,11 +1,11 @@
-package canteen;
+package de.bht.chatbot.canteen.model;
 
 /**
  * Created by sJantzen on 11.06.2017.
  */
 public enum DishType {
 
-    NORMAL("normal"), VEGETARIAN("vegetarisch"), VEGAN("vegan"), CLIMATE_NEUTRAL("Klimaessen"), BIO("Bio");
+    VEGETARIAN("vegetarisch"), VEGAN("vegan"), CLIMATE_NEUTRAL("Klimaessen"), BIO("Bio"), MSC("MSC");
 
     private String text;
 

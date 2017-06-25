@@ -1,5 +1,7 @@
 package de.bht.chatbot.drools;
 
+import de.bht.chatbot.canteen.model.CanteenData;
+import de.bht.chatbot.canteen.Parser;
 import de.bht.chatbot.jms.MessageQueue;
 import de.bht.chatbot.message.NLUBotMessage;
 import org.kie.api.KieServices;
@@ -36,10 +38,13 @@ import javax.jms.MessageListener;
 )
 public class DroolsService implements MessageListener {
 
-    private Logger logger = LoggerFactory.getLogger(MessageQueue.class);
+    private Logger logger = LoggerFactory.getLogger(DroolsService.class);
 
     @Inject
     private MessageQueue messageQueue;
+
+    @Inject
+    private Parser parser;
 
     @Override
     public void onMessage(Message message) {
@@ -48,7 +53,9 @@ public class DroolsService implements MessageListener {
 
             botMessage = doRules(botMessage);
 
-            messageQueue.addOutMessage(botMessage);
+            logger.info("ANSWER: " + botMessage.getText());
+
+            //messageQueue.addOutMessage(botMessage);
         } catch (JMSException e) {
             logger.error("Exception while setting bot message to the queue.", e);
         }
@@ -59,7 +66,7 @@ public class DroolsService implements MessageListener {
      * @param botMessage
      * @returns the botMessage with a new created answer text
      */
-    public static NLUBotMessage doRules(final NLUBotMessage botMessage){
+    private NLUBotMessage doRules(final NLUBotMessage botMessage){
 
         // KieServices is the factory for all KIE services
         KieServices ks = KieServices.Factory.get();
@@ -74,8 +81,8 @@ public class DroolsService implements MessageListener {
         // Once the session is created, the application can interact with it
         // In this case it is setting a global as defined in the
         // org/drools/examples/helloworld/HelloWorld.drl file
-        // TODO Sja: ich glaube hier müsste man dann den Cache setzen, damit man ihn in den Regeln benutzen kann
-        //ksession.setGlobal( "canteenCache", CACHE-Object);
+        CanteenData canteenData = parser.parse();
+        ksession.setGlobal("canteenData", canteenData);
 
         // The application can insert facts into the session
         ksession.insert(botMessage);
