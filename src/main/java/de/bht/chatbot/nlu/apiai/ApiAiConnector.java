@@ -3,6 +3,7 @@ package de.bht.chatbot.nlu.apiai;
 import com.google.gson.Gson;
 import de.bht.chatbot.jms.MessageQueue;
 import de.bht.chatbot.message.BotMessage;
+import de.bht.chatbot.message.BotMessageImpl;
 import de.bht.chatbot.messenger.utils.MessengerUtils;
 import de.bht.chatbot.nlu.apiai.model.ApiAiMessage;
 import de.bht.chatbot.nlu.apiai.model.ApiAiResponse;
@@ -19,6 +20,7 @@ import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.TextMessage;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.util.Properties;
@@ -41,6 +43,7 @@ import java.util.Properties;
         }
 )
 public class ApiAiConnector implements MessageListener {
+    private Gson gson;
 
     @Inject
     private MessageQueue messageQueue;
@@ -50,6 +53,8 @@ public class ApiAiConnector implements MessageListener {
 
     @PostConstruct
     public void init() {
+        gson = new Gson();
+        
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(UriBuilder.fromPath("https://api.api.ai/api/query"));
         apiaiProxy = target.proxy(ApiAiRESTServiceInterface.class);
@@ -59,7 +64,7 @@ public class ApiAiConnector implements MessageListener {
     @Override
     public void onMessage(final Message message) {
         try {
-            BotMessage botMessage = message.getBody(BotMessage.class);
+            BotMessage botMessage = gson.fromJson(((TextMessage) message).getText(), BotMessageImpl.class);
 
             Properties properties = MessengerUtils.getProperties();
             String token = properties.getProperty("API_AI_TOKEN");

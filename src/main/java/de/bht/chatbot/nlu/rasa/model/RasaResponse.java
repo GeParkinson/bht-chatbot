@@ -14,25 +14,25 @@ import java.util.Map;
  */
 public class RasaResponse implements NLUResponse {
 
-    private List<RasaEntity> rasaEntities;
-    private RasaIntent rasaIntent;
+    private List<RasaEntity> entities;
+    private RasaIntent intent;
     private String text;
 
 
     public List<RasaEntity> getRasaEntities() {
-        return rasaEntities;
+        return entities;
     }
 
     public void setRasaEntities(List<RasaEntity> rasaEntities) {
-        this.rasaEntities = rasaEntities;
+        this.entities = rasaEntities;
     }
 
     public RasaIntent getRasaIntent() {
-        return rasaIntent;
+        return intent;
     }
 
     public void setRasaIntent(RasaIntent rasaIntent) {
-        this.rasaIntent = rasaIntent;
+        this.intent = rasaIntent;
     }
 
     public String getText() {
@@ -46,13 +46,13 @@ public class RasaResponse implements NLUResponse {
 
     public Map<String, String> getEntities() {
         Map<String, String> entityMap = new HashMap<>();
-        for (RasaEntity rasaEntity : rasaEntities) {
+        for (RasaEntity rasaEntity : entities) {
             entityMap.put(rasaEntity.getEntity(), rasaEntity.getValue());
         }
         return entityMap;
     }
 
     public String getIntent() {
-        return rasaIntent.getName();
+        return intent.getName();
     }
 }
