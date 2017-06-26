@@ -75,8 +75,8 @@ public class TelegramSendAdapter implements MessageListener {
         try {
             BotMessage botMessage = message.getBody(BotMessage.class);
             startUp();
-            if (botMessage.hasAttachements()){
-                for(Attachment attachment : botMessage.getAttachements()) {
+            if (botMessage.hasAttachments()){
+                for(Attachment attachment : botMessage.getAttachments()) {
                     switch (attachment.getAttachmentType()) {
                         case AUDIO:
                             sendAudio(botMessage);
@@ -119,7 +119,7 @@ public class TelegramSendAdapter implements MessageListener {
         SendPhoto request;
 
         // check & send each attachement
-        for (Attachment attachment : botMessage.getAttachements()){
+        for (Attachment attachment : botMessage.getAttachments()){
             request = new SendPhoto(botMessage.getSenderID(), attachment.getFileURI());
 
             if (attachment.getCaption() != null)
@@ -135,7 +135,7 @@ public class TelegramSendAdapter implements MessageListener {
         SendAudio request;
 
         // check & send each attachement
-        for (Attachment attachment : botMessage.getAttachements()) {
+        for (Attachment attachment : botMessage.getAttachments()) {
             request = new SendAudio(botMessage.getSenderID(), attachment.getFileURI());
 
             if (attachment.getCaption() != null)
@@ -150,7 +150,7 @@ public class TelegramSendAdapter implements MessageListener {
     private void sendVoice(BotMessage botMessage){
         SendVoice request;
 
-        for (Attachment attachment : botMessage.getAttachements()) {
+        for (Attachment attachment : botMessage.getAttachments()) {
             request = new SendVoice(botMessage.getSenderID(), attachment.getFileURI());
 
             if (attachment.getCaption() != null)
@@ -165,7 +165,7 @@ public class TelegramSendAdapter implements MessageListener {
     private void sendDocument(BotMessage botMessage){
         SendDocument request;
 
-        for (Attachment attachment : botMessage.getAttachements()) {
+        for (Attachment attachment : botMessage.getAttachments()) {
             request = new SendDocument(botMessage.getSenderID(), attachment.getFileURI());
 
             if (attachment.getCaption() != null)
@@ -180,7 +180,7 @@ public class TelegramSendAdapter implements MessageListener {
     private void sendVideo(BotMessage botMessage){
         SendVideo request;
 
-        for (Attachment attachment : botMessage.getAttachements()) {
+        for (Attachment attachment : botMessage.getAttachments()) {
             request = new SendVideo(botMessage.getSenderID(), attachment.getFileURI());
 
             if (attachment.getCaption() != null)

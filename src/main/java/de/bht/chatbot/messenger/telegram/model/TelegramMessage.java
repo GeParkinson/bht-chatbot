@@ -45,12 +45,12 @@ public class TelegramMessage implements BotMessage{
     }
 
     @Override
-    public boolean hasAttachements() {
+    public boolean hasAttachments() {
         return(telegramAttachments != null);
     }
 
     @Override
-    public TelegramAttachment[] getAttachements() {
+    public TelegramAttachment[] getAttachments() {
         return telegramAttachments;
     }
 
