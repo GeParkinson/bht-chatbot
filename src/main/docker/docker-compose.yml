@@ -20,4 +20,6 @@ services:
     image: rasa_nlu:latest
     ports:
       - "5000:5000"
+    volumes:
+      - ./rasa_nlu/volumes/data/api/:/app/data/api
     command: python -m rasa_nlu.server -c config/chatbot_config.json --server_model_dirs=default

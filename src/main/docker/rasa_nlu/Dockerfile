@@ -29,6 +29,6 @@ RUN mkdir -p data/en && mv MITIE-models/english/total_word_feature_extractor.dat
 COPY rasa_config.json config/chatbot_config.json
 COPY volumes/data/api/ data/api
 RUN python -m rasa_nlu.train -c config/chatbot_config.json
-RUN mv models/model_* models/default
+RUN mv models/model_* models/default && rm -r data/api
 
 EXPOSE 5000
