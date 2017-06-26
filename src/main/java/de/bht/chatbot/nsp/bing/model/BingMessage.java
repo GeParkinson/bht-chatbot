@@ -48,12 +48,12 @@ public class BingMessage implements BotMessage{
     }
 
     @Override
-    public boolean hasAttachements() {
+    public boolean hasAttachments() {
         return false;
     }
 
     @Override
-    public Attachment[] getAttachements() {
+    public Attachment[] getAttachments() {
         //TODO: is there a case for an Attachment?
         return null;
     }

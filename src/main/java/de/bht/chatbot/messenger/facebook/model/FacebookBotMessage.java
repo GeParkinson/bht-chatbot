@@ -47,14 +47,14 @@ public class FacebookBotMessage implements BotMessage{
     }
 
     @Override
-    public boolean hasAttachements() {
+    public boolean hasAttachments() {
         if(facebookEntry.getMessaging().get(0).getMessage().getAttachments()==null)
             return false;
         else return true;
     }
 
     @Override
-    public Attachment[] getAttachements() {
+    public Attachment[] getAttachments() {
 
         Attachment[] atts=new Attachment[facebookEntry.getMessaging().get(0).getMessage().getAttachments().size()];
 

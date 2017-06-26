@@ -48,13 +48,13 @@ public class ApiAiMessage implements NLUBotMessage, Serializable {
     }
 
     @Override
-    public boolean hasAttachements() {
-        return bm.hasAttachements();
+    public boolean hasAttachments() {
+        return bm.hasAttachments();
     }
 
     @Override
-    public Attachment[] getAttachements() {
-        return bm.getAttachements();
+    public Attachment[] getAttachments() {
+        return bm.getAttachments();
     }
 
     @Override

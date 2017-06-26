@@ -71,7 +71,7 @@ public class FacebookSendAdapter implements MessageListener {
 
     /** Send Photo Method */
     private static void sendMedia(BotMessage message,String mediaType){
-        String payload = "{recipient: { id: "+message.getSenderID()+" }, message: { attachment: { type: \""+mediaType+"\", payload: { url: \""+message.getAttachements()[0].getFileURI()+"\"  } }   }} ";
+        String payload = "{recipient: { id: "+message.getSenderID()+" }, message: { attachment: { type: \""+mediaType+"\", payload: { url: \""+message.getAttachments()[0].getFileURI()+"\"  } }   }} ";
         System.out.println("FACEBOOK_SEND:Output:"+payload);
         String requestUrl = "https://graph.facebook.com/v2.6/me/messages" ;
         try {
@@ -104,8 +104,8 @@ public class FacebookSendAdapter implements MessageListener {
             message = messageIn.getBody(BotMessage.class);
 
 
-        if(message.hasAttachements()) {
-            switch (message.getAttachements()[0].getAttachmentType()) {
+        if(message.hasAttachments()) {
+            switch (message.getAttachments()[0].getAttachmentType()) {
                 case AUDIO:
                     sendMedia(message, "audio");
                     break;

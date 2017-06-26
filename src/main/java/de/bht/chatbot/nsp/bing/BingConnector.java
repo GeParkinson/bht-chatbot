@@ -68,9 +68,9 @@ public class BingConnector implements MessageListener {
     public void onMessage(Message message) {
         try {
             BotMessage botMessage = message.getBody(BotMessage.class);
-            if (botMessage.hasAttachements()) {
+            if (botMessage.hasAttachments()) {
                 // Speech to Text Request
-                for (Attachment attachment : botMessage.getAttachements()) {
+                for (Attachment attachment : botMessage.getAttachments()) {
                     sendSpeechToTextRequest(botMessage);
                 }
             } else {
@@ -140,7 +140,7 @@ public class BingConnector implements MessageListener {
                 httpPost.setHeader(entry.getKey(), entry.getValue());
             }
 
-            for (Attachment attachment : botMessage.getAttachements()) {
+            for (Attachment attachment : botMessage.getAttachments()) {
                 //TODO: implement Attachmentstorage
                 // AUDIO FILE DOWNLOAD
                 HttpGet get = new HttpGet(attachment.getFileURI());
