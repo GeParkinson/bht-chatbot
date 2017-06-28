@@ -16,8 +16,10 @@ import javax.jms.Message;
  */
 public class MessageQueue {
 
+    /** slf4j Logger */
     private Logger logger = LoggerFactory.getLogger(MessageQueue.class);
 
+    /** Injected JMS MessageQueueManager */
     @Inject
     private MessageQueueManager messageQueueManager;
 
@@ -45,7 +47,7 @@ public class MessageQueue {
                     }
                 }
             } else {
-                message.setStringProperty("NLU", "in");
+                message.setStringProperty("BingConnector", "in");
             }
             context.createProducer().send(messageQueueManager.getTopic(), message);
             return true;
@@ -67,17 +69,17 @@ public class MessageQueue {
         final JMSContext context = messageQueueManager.getContext();
         Message message = context.createObjectMessage(botMessageObject);
         try {
-            if(botMessageObject == null){
+            if (botMessageObject == null){
                 logger.error("No bot message was given");
                 return false;
             }
 
-            if(propertyName == null || propertyName.equals("")){
+            if (propertyName == null || propertyName.equals("")){
                 logger.error("No property name was given");
                 return false;
             }
 
-            if(propertyValue == null || propertyValue.equals("")){
+            if (propertyValue == null || propertyValue.equals("")){
                 logger.error("No property value was given");
                 return false;
             }

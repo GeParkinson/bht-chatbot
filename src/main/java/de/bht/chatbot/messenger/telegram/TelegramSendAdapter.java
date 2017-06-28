@@ -3,7 +3,10 @@ package de.bht.chatbot.messenger.telegram;
 import com.pengrad.telegrambot.Callback;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.TelegramBotAdapter;
-import com.pengrad.telegrambot.request.*;
+import com.pengrad.telegrambot.request.SendAudio;
+import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.request.SendVoice;
+import com.pengrad.telegrambot.request.SetWebhook;
 import com.pengrad.telegrambot.response.BaseResponse;
 import com.pengrad.telegrambot.response.SendResponse;
 import de.bht.chatbot.message.*;
@@ -41,10 +44,15 @@ import java.util.Properties;
 )
 public class TelegramSendAdapter implements MessageListener {
 
+    /** slf4j Logger */
     private Logger logger = LoggerFactory.getLogger(TelegramSendAdapter.class);
 
+    /** com.pengrad.telegrambot.TelegramBot; */
     private TelegramBot bot;
 
+    /**
+     * Initialize TelegramBot with Token
+     */
     @PostConstruct
     public void startUp(){
         Properties properties = MessengerUtils.getProperties();
@@ -53,27 +61,35 @@ public class TelegramSendAdapter implements MessageListener {
         //verifyWebhook();
     }
 
+    /**
+     * Method to async set TelegramWebhook
+     */
     private void verifyWebhook() {
         Properties properties = MessengerUtils.getProperties();
         SetWebhook webhook = new SetWebhook().url(properties.getProperty("TELEGRAM_WEBHOOK_URL"));
 
         bot.execute(webhook, new Callback<SetWebhook, BaseResponse>() {
             @Override
-            public void onResponse(SetWebhook request, BaseResponse response) {
+            public void onResponse(final SetWebhook request, final BaseResponse response) {
                 logger.debug("No errors while setting Telegram webhook.");
                 //TODO: Check if webhook is really set
             }
             @Override
-            public void onFailure(SetWebhook request, IOException e) {
+            public void onFailure(final SetWebhook request, final IOException e) {
                 logger.warn("An Error occured while setting Telegram webhook. BOT_TOKEN: " + properties.getProperty("TELEGRAM_BOT_TOKEN") + " - WEBHOOK_URL: " + properties.getProperty("TELEGRAM_WEBHOOK_URL"));
             }
         });
     }
 
+    /**
+     * Process JMS Message
+     * @param message
+     */
     @Override
-    public void onMessage(Message message) {
+    public void onMessage(final Message message) {
         try {
             BotMessage botMessage = message.getBody(BotMessage.class);
+            //TODO: remove and make sure Bot is initialized
             startUp();
             if (botMessage.hasAttachements()){
                 for (Attachment attachment : botMessage.getAttachements()) {
@@ -84,17 +100,9 @@ public class TelegramSendAdapter implements MessageListener {
                         case VOICE:
                             sendVoice(botMessage);
                             break;
-                        case VIDEO:
-                            sendVideo(botMessage);
-                            break;
-                        case DOCUMENT:
-                            sendDocument(botMessage);
-                            break;
-                        case PHOTO:
-                            sendPhoto(botMessage);
-                            break;
                         default:
-                            logger.warn("new OutMessage has Attachements but no defined AttachementType Case.");
+                            sendMessage(botMessage.getSenderID(), "UNKNOWN ATTACHMENT!");
+                            logger.info("new OutMessage has Attachements but no defined AttachementType Case.");
                             break;
                     }
                 }
@@ -107,31 +115,22 @@ public class TelegramSendAdapter implements MessageListener {
         }
     }
 
-    /** Send Text BotMessage */
-    private void sendMessage(Long senderId, String message) {
+    /**
+     * Send Telegram Text message
+     * @param senderId
+     * @param message
+     */
+    private void sendMessage(final Long senderId, final String message) {
         SendMessage request = new SendMessage(senderId, message);
         SendResponse sendResponse = bot.execute(request);
         logger.debug("Send de.bht.chatbot.message: " + sendResponse.isOk());
     }
 
-    /** Send Photo Method */
-    private void sendPhoto(BotMessage botMessage){
-        SendPhoto request;
-
-        // check & send each attachement
-        for (Attachment attachment : botMessage.getAttachements()){
-            request = new SendPhoto(botMessage.getSenderID(), attachment.getFileURI());
-
-            if (attachment.getCaption() != null)
-                request.caption(attachment.getCaption());
-
-            SendResponse sendResponse = bot.execute(request);
-            logger.debug("Send Photo: " + sendResponse.isOk());
-        }
-    }
-
-    /** Send Audio Method */
-    private void sendAudio(BotMessage botMessage){
+    /**
+     * Send Telegram Audio message
+     * @param botMessage
+     */
+    private void sendAudio(final BotMessage botMessage){
         SendAudio request;
 
         // check & send each attachement
@@ -146,42 +145,15 @@ public class TelegramSendAdapter implements MessageListener {
         }
     }
 
-    /** Send Voice Method */
-    private void sendVoice(BotMessage botMessage){
+    /**
+     * Send Telegram Voice message
+     * @param botMessage
+     */
+    private void sendVoice(final BotMessage botMessage){
         SendVoice request;
 
         for (Attachment attachment : botMessage.getAttachements()) {
             request = new SendVoice(botMessage.getSenderID(), attachment.getFileURI());
-
-            if (attachment.getCaption() != null)
-                request.caption(attachment.getCaption());
-
-            SendResponse sendResponse = bot.execute(request);
-            logger.debug("Send Voice: " + sendResponse.isOk());
-        }
-    }
-
-    /** Send Document Method */
-    private void sendDocument(BotMessage botMessage){
-        SendDocument request;
-
-        for (Attachment attachment : botMessage.getAttachements()) {
-            request = new SendDocument(botMessage.getSenderID(), attachment.getFileURI());
-
-            if (attachment.getCaption() != null)
-                request.caption(attachment.getCaption());
-
-            SendResponse sendResponse = bot.execute(request);
-            logger.debug("Send Voice: " + sendResponse.isOk());
-        }
-    }
-
-    /** Send Video Method */
-    private void sendVideo(BotMessage botMessage){
-        SendVideo request;
-
-        for (Attachment attachment : botMessage.getAttachements()) {
-            request = new SendVideo(botMessage.getSenderID(), attachment.getFileURI());
 
             if (attachment.getCaption() != null)
                 request.caption(attachment.getCaption());

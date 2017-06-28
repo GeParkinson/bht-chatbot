@@ -11,6 +11,7 @@ import de.bht.chatbot.nsp.bing.model.BingMessage;
 import de.bht.chatbot.nsp.bing.model.BingSimpleResponse;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -54,19 +55,32 @@ import java.util.*;
 )
 public class BingConnector implements MessageListener {
 
+    /** slf4j Logger */
     private static Logger logger = LoggerFactory.getLogger(BingConnector.class);
 
+    /** Bing Speech API Access Token */
     private String accessToken = "";
+
+    /** locale e.g. global */
     private String locale = "";
+
+    /** Bing Speech API User GUID */
     private String guid = "";
+
     //TODO: distinguish between formats (simple or detailed)
+    /** Bing Speech API response format */
     private String format = "simple";
 
+    /** Injected JMS MessageQueue */
     @Inject
-    MessageQueue messageQueue;
+    private MessageQueue messageQueue;
 
+    /**
+     * Process JMS Message
+     * @param message
+     */
     @Override
-    public void onMessage(Message message) {
+    public void onMessage(final Message message) {
         try {
             BotMessage botMessage = message.getBody(BotMessage.class);
             if (botMessage.hasAttachements()) {
@@ -84,17 +98,21 @@ public class BingConnector implements MessageListener {
     }
 
     //TODO: generate Token at Systemstart -> at runtime every 9 minutes
+    /**
+     * Method to generate Bing Speech API Access Token. - Token decays after 10 minutes. -> Refresh every 9 minutes.
+     */
     private void generateAccesToken(){
         try {
             HttpClient client = HttpClientBuilder.create().build();
             String url = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken";
             HttpPost httpPost = new HttpPost(url);
 
+            // get config Properties
             Properties properties = MessengerUtils.getProperties();
             locale = properties.getProperty("BING_SPEECH_LOCALE");
             guid = properties.getProperty("BING_SPEECH_GUID");
 
-            // HEADERS
+            // headers
             Map<String, String> postHeaders = new HashMap<>();
             postHeaders.put("Content-Type", MediaType.APPLICATION_FORM_URLENCODED);
             postHeaders.put("Ocp-Apim-Subscription-Key", properties.getProperty("BING_SPEECH_SECRET_KEY"));
@@ -111,7 +129,7 @@ public class BingConnector implements MessageListener {
 
             String result = EntityUtils.toString(httpResponse.getEntity());
 
-            if (responseCode == 200) {
+            if (responseCode == HttpStatus.SC_OK) {
                 accessToken = result;
                 logger.debug("new AccessToken: " + accessToken);
             } else {
@@ -122,7 +140,12 @@ public class BingConnector implements MessageListener {
         }
     }
 
-    private void sendSpeechToTextRequest(BotMessage botMessage){
+    /**
+     * Send Bing Speech to Text Request.
+     * @param botMessage
+     */
+    private void sendSpeechToTextRequest(final BotMessage botMessage){
+        //TODO: remove and make sure Access Token is set
         generateAccesToken();
         //TODO: different languages
         String language = "de-DE";
@@ -143,6 +166,7 @@ public class BingConnector implements MessageListener {
 
             for (Attachment attachment : botMessage.getAttachements()) {
                 //TODO: implement AttachmentStore
+
                 // download audio file
                 HttpGet get = new HttpGet(attachment.getFileURI());
                 CloseableHttpResponse execute = HttpClientBuilder.create().build().execute(get);
@@ -153,7 +177,6 @@ public class BingConnector implements MessageListener {
                 bArrOS.flush();
                 ByteArrayEntity bArrEntity = new ByteArrayEntity(bArrOS.toByteArray());
                 bArrOS.close();
-
 
                 // IMPORTANT! For Bing Speech API it is very important to set Transfer-Encoding = chunked. Otherwise Bing wouldn't accept the file.
                 bArrEntity.setChunked(true);
@@ -171,27 +194,27 @@ public class BingConnector implements MessageListener {
 
                 String result = EntityUtils.toString(httpResponse.getEntity());
 
-                logger.debug("Speech to Text request returns: " + result.toString());
-
-
-                // process response message
-                BingMessage bingMessage;
-                try {
-                    if (format == "simple") {
-                        BingSimpleResponse bingSimpleResponse = new Gson().fromJson(result.toString(), BingSimpleResponse.class);
-                        bingMessage = new BingMessage(bingSimpleResponse,botMessage);
-                    } else if (format == "detailed") {
-                        BingDetailedResponse bingDetailedResponse = new Gson().fromJson(result.toString(), BingDetailedResponse.class);
-                        bingMessage = new BingMessage(bingDetailedResponse,botMessage);
-                    } else {
-                        logger.error("Could not parse BingSpeechResponse");
-                        return;
+                if (responseCode == HttpStatus.SC_OK) {
+                    // process response message
+                    BingMessage bingMessage;
+                    try {
+                        if (format == "simple") {
+                            BingSimpleResponse bingSimpleResponse = new Gson().fromJson(result.toString(), BingSimpleResponse.class);
+                            bingMessage = new BingMessage(bingSimpleResponse, botMessage);
+                        } else if (format == "detailed") {
+                            BingDetailedResponse bingDetailedResponse = new Gson().fromJson(result.toString(), BingDetailedResponse.class);
+                            bingMessage = new BingMessage(bingDetailedResponse, botMessage);
+                        } else {
+                            logger.error("Could not parse BingSpeechResponse");
+                            return;
+                        }
+                        // return message
+                        messageQueue.addInMessage(bingMessage);
+                    } catch (Exception e) {
+                        logger.error("Error while parsing BingSpeechResponse: ", e);
                     }
-                    // return message
-                    messageQueue.addInMessage(bingMessage);
-
-                } catch (Exception e) {
-                    logger.error("Error while parsing BingSpeecResponse: ", e);
+                } else {
+                    logger.warn("Could not process Speech to Text request. Returns: " + "Speech to Text request returns: " + result.toString());
                 }
             }
         } catch (Exception e){
@@ -199,7 +222,12 @@ public class BingConnector implements MessageListener {
         }
     }
 
-    private void sendTextToSpeechRequest(BotMessage botMessage){
+    /**
+     * Send Bing Text to Speech Request.
+     * @param botMessage
+     */
+    private void sendTextToSpeechRequest(final BotMessage botMessage){
+        //TODO: remove and make sure Access Token is set
         generateAccesToken();
 
         HttpClient client = HttpClientBuilder.create().build();
@@ -217,6 +245,7 @@ public class BingConnector implements MessageListener {
         }
 
         try {
+            //TODO: build a proper xml
             String xml = "<speak version='1.0' xml:lang='de-DE'><voice xml:lang='de-DE' xml:gender='Female' name='Microsoft Server Speech Text to Speech Voice (de-DE, HeddaRUS)'>" + botMessage.getText() + "</voice></speak>";
             HttpEntity entity = new ByteArrayEntity(xml.getBytes("UTF-8"));
             httpPost.setEntity(entity);
@@ -227,32 +256,35 @@ public class BingConnector implements MessageListener {
 
             logger.debug("Send Text to Speech returns: Response Code - " + String.valueOf(responseCode));
 
-            // process response
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            httpResponse.getEntity().writeTo(bos);
-            bos.flush();
+            if (responseCode == HttpStatus.SC_OK) {
+                // process response
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                httpResponse.getEntity().writeTo(bos);
+                bos.flush();
 
-            //TODO: generate proper IDs
-            Long id = new Random().nextLong();
+                //TODO: generate proper IDs
+                Long id = new Random().nextLong();
 
-            //TODO: implement AttachmentStore or similar
-            File file = new File (String.valueOf(id) + ".mpg");
-            //file.mkdirs();
-            file.createNewFile();
+                //TODO: implement AttachmentStore or similar
+                File file = new File(String.valueOf(id) + ".mpg");
+                //file.mkdirs();
+                file.createNewFile();
 
-            OutputStream outputStream = null;
-            outputStream = new FileOutputStream(file);
+                OutputStream outputStream = null;
+                outputStream = new FileOutputStream(file);
 
-            bos.writeTo(outputStream);
-            outputStream.flush();
-            bos.close();
-            outputStream.close();
+                bos.writeTo(outputStream);
+                outputStream.flush();
+                bos.close();
+                outputStream.close();
 
-            //TODO: dont use hardcoded URI
-            BingMessage bingMessage = new BingMessage(botMessage, new BingAttachment(id, "https://wicioplcgi.localtunnel.me/bht-chatbot/rest/attachments/audio/" + id));
+                //TODO: don't use a hardcoded URI
+                BingMessage bingMessage = new BingMessage(botMessage, new BingAttachment(id, "https://wicioplcgi.localtunnel.me/bht-chatbot/rest/attachments/audio/" + id));
 
-            messageQueue.addOutMessage(bingMessage);
-
+                messageQueue.addOutMessage(bingMessage);
+            } else {
+                logger.warn("Could not process Speech to Text request. Returns: " + "Speech to Text request returns: " + httpResponse.toString());
+            }
         } catch (Exception e){
             logger.error("Error while processing Text to Speech request: ", e);
         }

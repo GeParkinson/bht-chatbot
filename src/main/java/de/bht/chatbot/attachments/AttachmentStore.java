@@ -1,23 +1,14 @@
 package de.bht.chatbot.attachments;
 
 import de.bht.chatbot.message.Attachment;
-import de.bht.chatbot.message.BotMessage;
 import de.bht.chatbot.nsp.bing.BingConnector;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -29,11 +20,18 @@ import java.util.Random;
  */
 public class AttachmentStore {
 
+    /** slf4j Logger */
     private static Logger logger = LoggerFactory.getLogger(BingConnector.class);
 
+    /** root directory for attachments */
     private final String folderDir = "/attachments";
 
 
+    /**
+     *
+     * @param attachment to store on Server
+     * @return generated id for specific Attachment
+     */
     public long storeAttachment(final Attachment attachment) {
 
         //TODO: generate proper IDs

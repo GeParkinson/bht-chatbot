@@ -12,11 +12,17 @@ import de.bht.chatbot.message.Messenger;
  */
 public class TelegramMessage implements BotMessage{
 
+    /** com.pengrad.telegrambot.model.Message */
     private Message message;
 
+    /** Attachment[] */
     private Attachment[] attachments;
 
-    public TelegramMessage(Message message){
+    /**
+     * Constructor
+     * @param message com.pengrad.telegrambot.model.Message
+     */
+    public TelegramMessage(final Message message){
         this.message = message;
     }
 
@@ -55,6 +61,10 @@ public class TelegramMessage implements BotMessage{
         return attachments;
     }
 
+    /**
+     * Setter for Attachment[]
+     * @param attachments
+     */
     public void setAttachments(final Attachment[] attachments){
         this.attachments = attachments;
     }

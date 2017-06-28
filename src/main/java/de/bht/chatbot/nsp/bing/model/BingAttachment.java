@@ -8,10 +8,18 @@ import de.bht.chatbot.message.AttachmentType;
  */
 public class BingAttachment implements Attachment {
 
+    /** generated unique id */
     private Long id;
+    /** URI where attachment is stored */
     private String fileURI;
+    /** caption of that attachment */
     private String caption;
 
+    /**
+     * Constructor
+     * @param id
+     * @param fileURI
+     */
     public BingAttachment(final Long id, final String fileURI){
         this.id = id;
         this.fileURI = fileURI;

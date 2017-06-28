@@ -7,7 +7,9 @@ import java.io.Serializable;
  */
 public interface NSPResponse extends Serializable {
 
-    public String getText();
+    /** generated text from file */
+    String getText();
 
-    public String getRecognitionStatus();
+    /** probability of recognition */
+    String getRecognitionStatus();
 }

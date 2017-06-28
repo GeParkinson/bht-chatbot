@@ -10,20 +10,39 @@ import de.bht.chatbot.nsp.NSPResponse;
  */
 public class BingMessage implements BotMessage{
 
+    /** Display text */
     private String text;
+
+    /** serial number */
     private Long messageID;
+
+    /** unique sender id */
     private Long senderID;
+
+    /** messenger type */
     private Messenger messenger;
+
+    /** Attachment[] */
     private Attachment[] attachments;
 
-    public BingMessage(BotMessage botMessage, BingAttachment bingAttachment){
+    /**
+     * Constructor
+     * @param botMessage
+     * @param bingAttachment
+     */
+    public BingMessage(final BotMessage botMessage, final BingAttachment bingAttachment){
         this.messageID = botMessage.getMessageID();
         this.senderID = botMessage.getSenderID();
         this.messenger = botMessage.getMessenger();
         this.attachments = new Attachment[]{bingAttachment};
     }
 
-    public BingMessage(NSPResponse nspResponse, BotMessage botMessage){
+    /**
+     * Constructor
+     * @param nspResponse
+     * @param botMessage
+     */
+    public BingMessage(final NSPResponse nspResponse, final BotMessage botMessage){
         this.text = nspResponse.getText();
         this.messageID = botMessage.getMessageID();
         this.senderID = botMessage.getSenderID();

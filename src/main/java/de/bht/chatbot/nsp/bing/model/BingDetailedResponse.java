@@ -6,17 +6,14 @@ import de.bht.chatbot.nsp.NSPResponse;
 import java.util.List;
 
 /**
+ * Bing Speech API Java Class for JSON parsing.
  * @Author: Christopher Kümmel on 6/14/2017.
  */
 public class BingDetailedResponse implements NSPResponse {
 
-    @SerializedName("RecognitionStatus")
     private String recognitionStatus;
-    @SerializedName("Offset")
     private String offset;
-    @SerializedName("Duration")
     private String duration;
-    @SerializedName("N-Best")
     private List<BingNBest> nBest = null;
 
     @Override
