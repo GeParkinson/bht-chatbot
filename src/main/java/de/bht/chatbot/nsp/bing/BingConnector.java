@@ -5,6 +5,7 @@ import de.bht.chatbot.jms.MessageQueue;
 import de.bht.chatbot.message.Attachment;
 import de.bht.chatbot.message.BotMessage;
 import de.bht.chatbot.messenger.utils.MessengerUtils;
+import de.bht.chatbot.nsp.bing.model.BingAttachment;
 import de.bht.chatbot.nsp.bing.model.BingDetailedResponse;
 import de.bht.chatbot.nsp.bing.model.BingMessage;
 import de.bht.chatbot.nsp.bing.model.BingSimpleResponse;
@@ -141,8 +142,8 @@ public class BingConnector implements MessageListener {
             }
 
             for (Attachment attachment : botMessage.getAttachements()) {
-                //TODO: implement Attachmentstorage
-                // AUDIO FILE DOWNLOAD
+                //TODO: implement AttachmentStore
+                // download audio file
                 HttpGet get = new HttpGet(attachment.getFileURI());
                 CloseableHttpResponse execute = HttpClientBuilder.create().build().execute(get);
                 HttpEntity entity = execute.getEntity();
@@ -153,26 +154,11 @@ public class BingConnector implements MessageListener {
                 ByteArrayEntity bArrEntity = new ByteArrayEntity(bArrOS.toByteArray());
                 bArrOS.close();
 
+
+                // IMPORTANT! For Bing Speech API it is very important to set Transfer-Encoding = chunked. Otherwise Bing wouldn't accept the file.
                 bArrEntity.setChunked(true);
                 bArrEntity.setContentEncoding(HttpMultipartMode.BROWSER_COMPATIBLE.toString());
                 bArrEntity.setContentType(ContentType.DEFAULT_BINARY.toString());
-
-                //File file = new File(fileURI);
-                //FileBody bin = new FileBody(file, ContentType.DEFAULT_BINARY);
-                //MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-                //builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-                //builder.addPart("bin", bin);
-                //HttpEntity reqEntity = builder.build();
-
-                //ByteArrayOutputStream bArrOS = new ByteArrayOutputStream();
-                //reqEntity.writeTo(bArrOS);
-                //bArrOS.flush();
-                //ByteArrayEntity bArrEntity = new ByteArrayEntity(bArrOS.toByteArray());
-                //bArrOS.close();
-
-                //bArrEntity.setChunked(true);
-                //bArrEntity.setContentEncoding(reqEntity.getContentEncoding());
-                //bArrEntity.setContentType(reqEntity.getContentType());
 
                 // set ByteArrayEntity to HttpPost
                 httpPost.setEntity(bArrEntity);
@@ -186,6 +172,7 @@ public class BingConnector implements MessageListener {
                 String result = EntityUtils.toString(httpResponse.getEntity());
 
                 logger.debug("Speech to Text request returns: " + result.toString());
+
 
                 // process response message
                 BingMessage bingMessage;
@@ -213,7 +200,8 @@ public class BingConnector implements MessageListener {
     }
 
     private void sendTextToSpeechRequest(BotMessage botMessage){
-        //TODO: implement
+        generateAccesToken();
+
         HttpClient client = HttpClientBuilder.create().build();
         String url = "https://speech.platform.bing.com/synthesize";
         HttpPost httpPost = new HttpPost(url);
@@ -229,7 +217,7 @@ public class BingConnector implements MessageListener {
         }
 
         try {
-            String xml = "<speak version='1.0' xml:lang='en-US'><voice xml:lang='en-US' xml:gender='Female' name='Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)'>" + botMessage.getText() + "</voice></speak>";
+            String xml = "<speak version='1.0' xml:lang='de-DE'><voice xml:lang='de-DE' xml:gender='Female' name='Microsoft Server Speech Text to Speech Voice (de-DE, HeddaRUS)'>" + botMessage.getText() + "</voice></speak>";
             HttpEntity entity = new ByteArrayEntity(xml.getBytes("UTF-8"));
             httpPost.setEntity(entity);
 
@@ -239,8 +227,31 @@ public class BingConnector implements MessageListener {
 
             logger.debug("Send Text to Speech returns: Response Code - " + String.valueOf(responseCode));
 
-            //TODO: process response
-            //httpResponse.getEntity();
+            // process response
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            httpResponse.getEntity().writeTo(bos);
+            bos.flush();
+
+            //TODO: generate proper IDs
+            Long id = new Random().nextLong();
+
+            //TODO: implement AttachmentStore or similar
+            File file = new File (String.valueOf(id) + ".mpg");
+            //file.mkdirs();
+            file.createNewFile();
+
+            OutputStream outputStream = null;
+            outputStream = new FileOutputStream(file);
+
+            bos.writeTo(outputStream);
+            outputStream.flush();
+            bos.close();
+            outputStream.close();
+
+            //TODO: dont use hardcoded URI
+            BingMessage bingMessage = new BingMessage(botMessage, new BingAttachment(id, "https://wicioplcgi.localtunnel.me/bht-chatbot/rest/attachments/audio/" + id));
+
+            messageQueue.addOutMessage(bingMessage);
 
         } catch (Exception e){
             logger.error("Error while processing Text to Speech request: ", e);
