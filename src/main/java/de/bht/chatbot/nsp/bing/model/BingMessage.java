@@ -10,13 +10,21 @@ import de.bht.chatbot.nsp.NSPResponse;
  */
 public class BingMessage implements BotMessage{
 
-    private NSPResponse nspResponse;
+    private String text;
     private Long messageID;
     private Long senderID;
     private Messenger messenger;
+    private Attachment[] attachments;
+
+    public BingMessage(BotMessage botMessage, BingAttachment bingAttachment){
+        this.messageID = botMessage.getMessageID();
+        this.senderID = botMessage.getSenderID();
+        this.messenger = botMessage.getMessenger();
+        this.attachments = new Attachment[]{bingAttachment};
+    }
 
     public BingMessage(NSPResponse nspResponse, BotMessage botMessage){
-        this.nspResponse = nspResponse;
+        this.text = nspResponse.getText();
         this.messageID = botMessage.getMessageID();
         this.senderID = botMessage.getSenderID();
         this.messenger = botMessage.getMessenger();
@@ -44,17 +52,16 @@ public class BingMessage implements BotMessage{
 
     @Override
     public String getText() {
-        return nspResponse.getText();
+        return text;
     }
 
     @Override
     public boolean hasAttachements() {
-        return false;
+        return (attachments != null);
     }
 
     @Override
     public Attachment[] getAttachements() {
-        //TODO: is there a case for an Attachment?
-        return null;
+        return attachments;
     }
 }
