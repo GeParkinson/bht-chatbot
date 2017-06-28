@@ -41,6 +41,12 @@ public class FacebookReceiveAdapter {
     String accessToken= MessengerUtils.getProperties().getProperty("FACEBOOK_BOT_TOKEN");
     String webhookToken = MessengerUtils.getProperties().getProperty("FACEBOOK_WEBHOOK_TOKEN");
 
+    /**
+     * listen to POST requests from facebook (which contain the received messages) and react to them
+     * @param InputMessage message send by facebook
+     * @return request-answer to return to facebook
+     * @throws IOException
+     */
     @POST
     @Path("/facebook")
     @Consumes("application/json")
@@ -51,12 +57,17 @@ public class FacebookReceiveAdapter {
         Boolean isEcho;
         JSONObject obj;
 
-        //message object
+        //parse the message to a FacebookInput-object, which represents the Json-structure of Facebook messages
         FacebookInput gs=new Gson().fromJson(InputMessage, FacebookInput.class);
+
+        //create a new FacebookBotMessage from the Entry object of the FacebookInput
         FacebookBotMessage msg = new FacebookBotMessage(gs.getEntry().get(0));
 
+        //check if Message-node of BotMessage object exists
         if(gs.getEntry().get(0).getMessaging().get(0).getMessage()!=null) {
+            // 'IsEcho' means whether the message is a new incoming message or just an 'echo' of a message the bot sends out
             if (!gs.getEntry().get(0).getMessaging().get(0).getMessage().getIsEcho()) {
+                //put message into JMS-queue
                 messageQueue.addInMessage(msg);
             }
         }
@@ -65,6 +76,11 @@ public class FacebookReceiveAdapter {
 
     }
 
+    /**
+     * function to listen to webhook verification tries and verify and activate them if the webhook token is correct
+     * @param request request from facebook to verify webhook
+     * @return return hub.challenge to facebook to inform facebook about successful verification
+     */
     @GET
     @Path("/facebook")
     @Produces("text/plain")
@@ -78,12 +94,13 @@ public class FacebookReceiveAdapter {
             System.out.println("FACEBOOK_WEBHOOK:HUB_VERIFY_TOKEN: " + request.getParameter("hub.verify_token"));
             System.out.println("FACEBOOK_WEBHOOK:HUB_CHALLENGE: " + request.getParameter("hub.challenge"));
 
+            //compare verification token in properties with token received from facebook
             if("subscribe".equals(request.getParameter("hub.mode")) &&
                     webhookToken.equals(request.getParameter("hub.verify_token"))){
                 System.out.println("FACEBOOK_WEBHOOK:VERIFIED");
 
+                //if all conditions apply, finish verification by returning hub-challenge and activate token after 5s delay
                 activateWebhook();
-
                 return request.getParameter("hub.challenge");
             }
         }else{

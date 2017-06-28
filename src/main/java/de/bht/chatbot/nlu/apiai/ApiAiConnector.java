@@ -55,7 +55,10 @@ public class ApiAiConnector implements MessageListener {
         apiaiProxy = target.proxy(ApiAiRESTServiceInterface.class);
     }
 
-
+    /**
+     * process messages received over the JMS
+     * @param message from JMS which contains the bot message
+     */
     @Override
     public void onMessage(final Message message) {
         try {
@@ -67,13 +70,19 @@ public class ApiAiConnector implements MessageListener {
             String sessionID = String.valueOf(botMessage.getMessageID());
             String language = "en";
 
+            //create a requests to te API.ai server
             Response response = apiaiProxy.processText(botMessage.getText(), language, sessionID,"BHT-Chatbot","Bearer " + token);
             String responseAsString = response.readEntity(String.class);
 
+            //parse the response into ApiAiResponse
             ApiAiResponse gs=new Gson().fromJson(responseAsString, ApiAiResponse.class);
+
+            //Create ApiAiMessage
             ApiAiMessage msg = new ApiAiMessage(botMessage,gs);
 
             //System.out.println("API.AI RESPONSE:"+responseAsString);
+
+            //put ApiAiMessage into messageQueue
             messageQueue.addMessage(msg, "Drools", "in");
 
         } catch (JMSException e) {

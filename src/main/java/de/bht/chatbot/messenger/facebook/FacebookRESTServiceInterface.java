@@ -11,7 +11,9 @@ import javax.ws.rs.core.Response;
 public interface FacebookRESTServiceInterface {
 
     /**
-     * Processing the given text for intent and entities
+     * interface to communicate with facebook
+     * @param json data payload which contains all necessary data of the message (sender, content, etc.)
+     * @param token the API token for Facebook messages
      * @return JAX RS Response representing the result of querying the facebook server
      */
     @POST

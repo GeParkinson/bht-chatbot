@@ -11,9 +11,12 @@ import java.util.Map;
 
 /**
  * Created by oliver on 19.06.2017.
+ *
+ * ApiAi-specific class of the NLUBotMessage Interface
  */
 public class ApiAiMessage implements NLUBotMessage, Serializable {
 
+    //store BotMessage and NLUResponse to query necessary information
     BotMessage bm;
     NLUResponse nluResponse;
 

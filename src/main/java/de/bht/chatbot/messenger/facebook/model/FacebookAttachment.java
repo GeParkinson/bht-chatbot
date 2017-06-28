@@ -8,6 +8,8 @@ import de.bht.chatbot.message.AttachmentType;
 
 /**
  * Created by oliver on 15.06.2017.
+ *
+ * Facebook-specific class of the Attachment Interface which is also the class which represents the Attachment-node in the message-Json
  */
 public class FacebookAttachment implements Attachment {
 
@@ -44,6 +46,10 @@ public class FacebookAttachment implements Attachment {
         return payload.getUrl();
     }
 
+    /**
+     * parse facebook specific types to the types the Chatbot implements
+     * @return Bot-intern Attachment type
+     */
     @Override
     public AttachmentType getAttachmentType() {
         switch (type) {

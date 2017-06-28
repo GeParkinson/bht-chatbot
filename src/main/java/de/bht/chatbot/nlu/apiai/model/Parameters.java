@@ -60,6 +60,9 @@ public class Parameters implements Serializable{
         this.ingredients = ingredients;
     }
 
+    /**
+     * @return puts the given entities with their values into a Map
+     */
     public Map<String, String> getEntities(){
         Map<String, String> Entities = new HashMap<>();
 

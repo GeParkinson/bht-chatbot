@@ -5,7 +5,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- * @author: georg.glossmann@adesso.de
+ * @author: georg.glossmann@adesso.de (template) + oliverdavid@hotmail.de (content)
  * Date: 04.06.17
  *
  * Proxy interface to query api.ai REST api

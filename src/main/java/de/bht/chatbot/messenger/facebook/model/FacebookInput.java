@@ -7,6 +7,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 /**
  * Created by oliver on 15.06.2017.
+ *
+ * represents the highest node of the json-object received by facebook
  */
 public class FacebookInput implements Serializable {
 
