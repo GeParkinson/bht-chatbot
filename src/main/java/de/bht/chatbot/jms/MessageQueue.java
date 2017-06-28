@@ -1,5 +1,6 @@
 package de.bht.chatbot.jms;
 
+import com.google.gson.Gson;
 import de.bht.chatbot.message.Attachment;
 import de.bht.chatbot.message.BotMessage;
 import org.slf4j.Logger;
@@ -16,7 +17,8 @@ import javax.jms.Message;
  */
 public class MessageQueue {
 
-    private Logger logger = LoggerFactory.getLogger(MessageQueue.class);
+    private final Logger logger = LoggerFactory.getLogger(MessageQueue.class);
+    private final Gson gson = new Gson();
 
     @Inject
     private MessageQueueManager messageQueueManager;
@@ -28,10 +30,10 @@ public class MessageQueue {
      */
     public boolean addInMessage(final BotMessage botMessageObject) {
         final JMSContext context = messageQueueManager.getContext();
-        Message message = context.createObjectMessage(botMessageObject);
+        Message message = context.createTextMessage(gson.toJson(botMessageObject));
         try {
-            if (botMessageObject.hasAttachements()) {
-                for (Attachment attachment : botMessageObject.getAttachements()) {
+            if (botMessageObject.hasAttachments()) {
+                for (Attachment attachment : botMessageObject.getAttachments()) {
                     //TODO: different Attachementtypes -> different botMessageObjects
                     switch (attachment.getAttachmentType()) {
                         case AUDIO:
@@ -65,7 +67,7 @@ public class MessageQueue {
      */
     public boolean addMessage(final BotMessage botMessageObject, final String propertyName, final String propertyValue) {
         final JMSContext context = messageQueueManager.getContext();
-        Message message = context.createObjectMessage(botMessageObject);
+        Message message = context.createTextMessage(gson.toJson(botMessageObject));
         try {
             if(botMessageObject == null){
                 logger.error("No bot message was given");
@@ -98,7 +100,7 @@ public class MessageQueue {
      */
     public boolean addOutMessage(final BotMessage botMessageObject) {
         final JMSContext context = messageQueueManager.getContext();
-        Message message = context.createObjectMessage(botMessageObject);
+        Message message = context.createTextMessage(gson.toJson(botMessageObject));
         try {
             switch (botMessageObject.getMessenger()) {
                 case TELEGRAM:

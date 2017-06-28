@@ -1,9 +1,15 @@
 package de.bht.chatbot.drools;
 
+
 import de.bht.chatbot.canteen.model.CanteenData;
 import de.bht.chatbot.canteen.Parser;
+
+import com.google.gson.Gson;
+
 import de.bht.chatbot.jms.MessageQueue;
+import de.bht.chatbot.message.BotMessageImpl;
 import de.bht.chatbot.message.NLUBotMessage;
+import de.bht.chatbot.message.NLUBotMessageImpl;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -16,6 +22,7 @@ import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.TextMessage;
 
 /**
  * Created by sJantzen on 13.06.2017.
@@ -39,6 +46,8 @@ import javax.jms.MessageListener;
 public class DroolsService implements MessageListener {
 
     private Logger logger = LoggerFactory.getLogger(DroolsService.class);
+    private Gson gson = new Gson();
+
 
     @Inject
     private MessageQueue messageQueue;
@@ -49,7 +58,7 @@ public class DroolsService implements MessageListener {
     @Override
     public void onMessage(Message message) {
         try {
-            NLUBotMessage botMessage = message.getBody(NLUBotMessage.class);
+            NLUBotMessage botMessage = gson.fromJson(((TextMessage) message).getText(), NLUBotMessageImpl.class);
 
             botMessage = doRules(botMessage);
 

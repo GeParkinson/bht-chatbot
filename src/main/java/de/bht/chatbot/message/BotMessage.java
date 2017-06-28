@@ -17,8 +17,8 @@ public interface BotMessage extends Serializable {
 
     public String getText();
 
-    public boolean hasAttachements();
+    public boolean hasAttachments();
 
-    public Attachment[] getAttachements();
+    public Attachment[] getAttachments();
 	
 }
