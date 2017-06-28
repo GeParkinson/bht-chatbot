@@ -60,7 +60,7 @@ public class TelegramReceiveAdapter {
     /**
      * Check and get for Attachments from com.pengrad.telegrambot.model.Update
      * @param message com.pengrad.telegrambot.model.Update
-     * @return returns null if no Attachment
+     * @return returns null if no Attachment available
      */
     private Attachment[] getAttachments(final Message message) {
         //TODO: remove and make sure Bot is initialized

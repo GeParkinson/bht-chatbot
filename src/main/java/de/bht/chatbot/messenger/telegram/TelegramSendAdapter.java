@@ -100,6 +100,8 @@ public class TelegramSendAdapter implements MessageListener {
                         case VOICE:
                             sendVoice(botMessage);
                             break;
+                        case UNKOWN:
+                            sendMessage(botMessage.getSenderID(), "Sorry! Can't process this AttachmentType.");
                         default:
                             sendMessage(botMessage.getSenderID(), "UNKNOWN ATTACHMENT!");
                             logger.info("new OutMessage has Attachements but no defined AttachementType Case.");

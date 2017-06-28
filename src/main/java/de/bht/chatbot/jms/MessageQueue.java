@@ -34,7 +34,7 @@ public class MessageQueue {
         try {
             if (botMessageObject.hasAttachements()) {
                 for (Attachment attachment : botMessageObject.getAttachements()) {
-                    //TODO: different Attachementtypes -> different botMessageObjects
+                    //TODO: different AttachmentTypes -> different botMessageObjects
                     switch (attachment.getAttachmentType()) {
                         case AUDIO:
                             message.setStringProperty("BingConnector", "in");
@@ -42,8 +42,10 @@ public class MessageQueue {
                         case VOICE:
                             message.setStringProperty("BingConnector", "in");
                             break;
+                        case UNKOWN:
+                            addOutMessage(botMessageObject);
                         default:
-                            logger.error("new InMessage has Attachements but no defined case.");
+                            logger.error("new InMessage has Attachements but no defined case. Type should be UNKNOWN.");
                     }
                 }
             } else {
