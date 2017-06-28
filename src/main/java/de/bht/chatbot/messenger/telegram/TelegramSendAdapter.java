@@ -76,7 +76,7 @@ public class TelegramSendAdapter implements MessageListener {
             BotMessage botMessage = message.getBody(BotMessage.class);
             startUp();
             if (botMessage.hasAttachements()){
-                for(Attachment attachment : botMessage.getAttachements()) {
+                for (Attachment attachment : botMessage.getAttachements()) {
                     switch (attachment.getAttachmentType()) {
                         case AUDIO:
                             sendAudio(botMessage);

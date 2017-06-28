@@ -43,7 +43,7 @@ public class TelegramReceiveAdapter {
     public void getUpdates(String msg) {
         Update update = BotUtils.parseUpdate(msg);
         TelegramMessage message = new TelegramMessage(update.message());
-        message.setTelegramAttachments(addAttachments(update.message()));
+        message.setAttachments(addAttachments(update.message()));
         messageQueue.addInMessage(message);
     }
 
