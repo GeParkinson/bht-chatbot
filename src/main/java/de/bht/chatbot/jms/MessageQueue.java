@@ -20,6 +20,7 @@ public class MessageQueue {
     private final Logger logger = LoggerFactory.getLogger(MessageQueue.class);
     private final Gson gson = new Gson();
 
+    /** Injected JMS MessageQueueManager */
     @Inject
     private MessageQueueManager messageQueueManager;
 
@@ -34,7 +35,7 @@ public class MessageQueue {
         try {
             if (botMessageObject.hasAttachments()) {
                 for (Attachment attachment : botMessageObject.getAttachments()) {
-                    //TODO: different Attachementtypes -> different botMessageObjects
+                    //TODO: different AttachmentTypes -> different botMessageObjects
                     switch (attachment.getAttachmentType()) {
                         case AUDIO:
                             message.setStringProperty("BingConnector", "in");
@@ -42,12 +43,14 @@ public class MessageQueue {
                         case VOICE:
                             message.setStringProperty("BingConnector", "in");
                             break;
+                        case UNKOWN:
+                            addOutMessage(botMessageObject);
                         default:
-                            logger.error("new InMessage has Attachements but no defined case.");
+                            logger.error("new InMessage has Attachements but no defined case. Type should be UNKNOWN.");
                     }
                 }
             } else {
-                message.setStringProperty("NLU", "in");
+                message.setStringProperty("BingConnector", "in");
             }
             context.createProducer().send(messageQueueManager.getTopic(), message);
             return true;
@@ -69,17 +72,17 @@ public class MessageQueue {
         final JMSContext context = messageQueueManager.getContext();
         Message message = context.createTextMessage(gson.toJson(botMessageObject));
         try {
-            if(botMessageObject == null){
+            if (botMessageObject == null){
                 logger.error("No bot message was given");
                 return false;
             }
 
-            if(propertyName == null || propertyName.equals("")){
+            if (propertyName == null || propertyName.equals("")){
                 logger.error("No property name was given");
                 return false;
             }
 
-            if(propertyValue == null || propertyValue.equals("")){
+            if (propertyValue == null || propertyValue.equals("")){
                 logger.error("No property value was given");
                 return false;
             }

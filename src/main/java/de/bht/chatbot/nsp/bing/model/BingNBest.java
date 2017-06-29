@@ -5,18 +5,14 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 /**
+ * Bing Speech API Java Class for JSON parsing.
  * @Author: Christopher Kümmel on 6/15/2017.
  */
 public class BingNBest implements Serializable{
-    @SerializedName("Confidence")
     private String confidence;
-    @SerializedName("Lexical")
     private String lexical;
-    @SerializedName("ITN")
     private String iTN;
-    @SerializedName("MaskedITN")
     private String maskedITN;
-    @SerializedName("Display")
     private String display;
 
     public String getConfidence() {

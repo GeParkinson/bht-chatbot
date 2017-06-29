@@ -7,23 +7,42 @@ import de.bht.chatbot.message.AttachmentType;
  * @Author: Christopher Kümmel on 6/15/2017.
  */
 public class BingAttachment implements Attachment {
+
+    /** generated unique id */
+    private Long id;
+    /** URI where attachment is stored */
+    private String fileURI;
+    /** caption of that attachment */
+    private String caption;
+
+    /**
+     * Constructor
+     * @param id
+     * @param fileURI
+     */
+    public BingAttachment(final Long id, final String fileURI){
+        this.id = id;
+        this.fileURI = fileURI;
+        this.caption = caption;
+    }
+
     @Override
     public Long getId() {
-        return null;
+        return id;
     }
 
     @Override
     public String getFileURI() {
-        return null;
+        return fileURI;
     }
 
     @Override
     public AttachmentType getAttachmentType() {
-        return null;
+        return AttachmentType.AUDIO;
     }
 
     @Override
     public String getCaption() {
-        return null;
+        return caption;
     }
 }

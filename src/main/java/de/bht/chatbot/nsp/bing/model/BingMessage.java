@@ -10,13 +10,40 @@ import de.bht.chatbot.nsp.NSPResponse;
  */
 public class BingMessage implements BotMessage{
 
-    private NSPResponse nspResponse;
+    /** Display text */
+    private String text;
+
+    /** serial number */
     private Long messageID;
+
+    /** unique sender id */
     private Long senderID;
+
+    /** messenger type */
     private Messenger messenger;
 
-    public BingMessage(NSPResponse nspResponse, BotMessage botMessage){
-        this.nspResponse = nspResponse;
+    /** Attachment[] */
+    private Attachment[] attachments;
+
+    /**
+     * Constructor
+     * @param botMessage
+     * @param bingAttachment
+     */
+    public BingMessage(final BotMessage botMessage, final BingAttachment bingAttachment){
+        this.messageID = botMessage.getMessageID();
+        this.senderID = botMessage.getSenderID();
+        this.messenger = botMessage.getMessenger();
+        this.attachments = new Attachment[]{bingAttachment};
+    }
+
+    /**
+     * Constructor
+     * @param nspResponse
+     * @param botMessage
+     */
+    public BingMessage(final NSPResponse nspResponse, final BotMessage botMessage){
+        this.text = nspResponse.getText();
         this.messageID = botMessage.getMessageID();
         this.senderID = botMessage.getSenderID();
         this.messenger = botMessage.getMessenger();
@@ -44,17 +71,16 @@ public class BingMessage implements BotMessage{
 
     @Override
     public String getText() {
-        return nspResponse.getText();
+        return text;
     }
 
     @Override
     public boolean hasAttachments() {
-        return false;
+        return (attachments != null);
     }
 
     @Override
     public Attachment[] getAttachments() {
-        //TODO: is there a case for an Attachment?
-        return null;
+        return attachments;
     }
 }

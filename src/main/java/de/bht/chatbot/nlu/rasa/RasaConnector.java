@@ -1,13 +1,11 @@
 package de.bht.chatbot.nlu.rasa;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import de.bht.chatbot.jms.MessageQueue;
 import de.bht.chatbot.message.BotMessage;
 import de.bht.chatbot.message.BotMessageImpl;
 import de.bht.chatbot.nlu.rasa.model.RasaMessage;
 import de.bht.chatbot.nlu.rasa.model.RasaResponse;
-import org.apache.commons.beanutils.BeanUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;

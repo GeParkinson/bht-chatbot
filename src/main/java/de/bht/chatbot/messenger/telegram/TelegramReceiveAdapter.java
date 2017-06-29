@@ -9,7 +9,8 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.GetFile;
 import com.pengrad.telegrambot.response.GetFileResponse;
 import de.bht.chatbot.jms.MessageQueue;
-import de.bht.chatbot.message.*;
+import de.bht.chatbot.message.Attachment;
+import de.bht.chatbot.message.AttachmentType;
 import de.bht.chatbot.messenger.telegram.model.TelegramAttachment;
 import de.bht.chatbot.messenger.telegram.model.TelegramMessage;
 import de.bht.chatbot.messenger.utils.MessengerUtils;
@@ -27,37 +28,53 @@ import java.util.Properties;
 @Path("/telegram")
 public class TelegramReceiveAdapter {
 
+    /** Injected JMS MessageQueue */
     @Inject
     private MessageQueue messageQueue;
 
+    /** com.pengrad.telegrambot.TelegramBot; */
     private TelegramBot bot;
 
+    /**
+     * Initialize TelegramBot with Token
+     */
     @PostConstruct
     public void startUp(){
         Properties properties = MessengerUtils.getProperties();
         bot = TelegramBotAdapter.build(properties.getProperty("TELEGRAM_BOT_TOKEN"));
     }
 
+    /**
+     * RESTEasy HTTP Post as Webhook Endpoint
+     * @param msg Telegram Message
+     */
     @POST
     @Path("/getUpdates")
-    public void getUpdates(String msg) {
+    public void getUpdates(final String msg) {
         Update update = BotUtils.parseUpdate(msg);
         TelegramMessage message = new TelegramMessage(update.message());
-        message.setTelegramAttachments(addAttachments(update.message()));
+        // TODO Chris: fix this
+        // message.setAttachments(getAttachments(update.message()));
         messageQueue.addInMessage(message);
     }
 
-    private TelegramAttachment[] addAttachments(Message message) {
+    /**
+     * Check and get for Attachments from com.pengrad.telegrambot.model.Update
+     * @param message com.pengrad.telegrambot.model.Update
+     * @return returns null if no Attachment available
+     */
+    private Attachment[] getAttachments(final Message message) {
+        //TODO: remove and make sure Bot is initialized
         startUp();
 
+        // check for attachments
         String fileID = null;
         if (message.audio() != null) fileID = message.audio().fileId();
-        if (message.video() != null) fileID = message.video().fileId();
         if (message.voice() != null) fileID = message.voice().fileId();
-        if (message.document() != null) fileID = message.document().fileId();
 
-        if(fileID != null) {
-            // get download link
+
+        if (fileID != null) {
+            // get download link from Telegram
             GetFile request = new GetFile(fileID);
             GetFileResponse getFileResponse = bot.execute(request);
 
@@ -68,19 +85,28 @@ public class TelegramReceiveAdapter {
                 TelegramAttachment[] telegramAttachments = {new TelegramAttachment(fullPath, AttachmentType.AUDIO, message.caption())};
                 return telegramAttachments;
             }
-            if (message.video() != null){
-                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(fullPath, AttachmentType.VIDEO, message.caption())};
-                return telegramAttachments;
-            }
             if (message.voice() != null){
                 TelegramAttachment[] telegramAttachments = {new TelegramAttachment(fullPath, AttachmentType.VOICE, message.caption())};
                 return telegramAttachments;
             }
-            if (message.document() != null){
-                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(fullPath, AttachmentType.DOCUMENT, message.caption())};
-                return telegramAttachments;
-            }
         }
-        return null;
+
+        // "unkown" undefined attachments
+        //TODO: process attachments
+        boolean unknownType = false;
+        if (message.video() != null) unknownType = true;
+        if (message.contact() != null) unknownType = true;
+        if (message.sticker() != null) unknownType = true;
+        if (message.location() != null) unknownType = true;
+        if (message.invoice() != null) unknownType = true;
+        if (message.game() != null) unknownType = true;
+        if (message.document() != null) unknownType = true;
+
+        if (unknownType){
+            TelegramAttachment[] telegramAttachments = {new TelegramAttachment(AttachmentType.UNKOWN)};
+            return telegramAttachments;
+        } else {
+            return null;
+        }
     }
 }
