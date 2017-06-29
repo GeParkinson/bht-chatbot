@@ -47,11 +47,7 @@ sourceCompatibility = 1.8
 
 war {
     destinationDir file("./src/main/docker/wildfly/volumes/deployments/")
-
-    manifest {
-        // to use infinispan shipped with wildfly
-        attributes("Dependencies":"org.infinispan export")
-    }
+    archiveName "beuthbot.war"
 }
 
 
