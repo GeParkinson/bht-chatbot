@@ -177,7 +177,7 @@ public class BingConnector implements MessageListener {
                 httpPost.setHeader(entry.getKey(), entry.getValue());
             }
 
-            for (Attachment attachment : botMessage.getAttachements()) {
+            for (Attachment attachment : botMessage.getAttachments()) {
                 // get audio file
                 File file = new File(attachmentStore.loadAttachmentPath(attachment.getId(), AttachmentStoreMode.LOCAL_PATH));
                 FileBody fileBody = new FileBody(file, ContentType.DEFAULT_BINARY);

@@ -144,6 +144,9 @@ public class FacebookSendAdapter implements MessageListener {
                 case PHOTO:
                     sendMedia(message, "image");
                     break;
+                case UNKOWN:
+                    sendMessage(message.getSenderID(), "Unknown AttachmentType");
+                    break;
             }
         }
         // else use simple text message sending

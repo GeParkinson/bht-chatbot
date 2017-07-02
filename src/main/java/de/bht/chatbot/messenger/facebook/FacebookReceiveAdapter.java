@@ -1,7 +1,9 @@
 package de.bht.chatbot.messenger.facebook;
 
 import com.google.gson.Gson;
+import de.bht.chatbot.attachments.AttachmentStore;
 import de.bht.chatbot.jms.MessageQueue;
+import de.bht.chatbot.messenger.facebook.model.FacebookAttachment;
 import de.bht.chatbot.messenger.facebook.model.FacebookBotMessage;
 import de.bht.chatbot.messenger.facebook.model.FacebookInput;
 import de.bht.chatbot.messenger.utils.MessengerUtils;
@@ -25,6 +27,9 @@ public class FacebookReceiveAdapter {
 
     @Inject
     private MessageQueue messageQueue;
+
+    @Inject
+    private AttachmentStore attachmentStore;
 
     //---------------------------------------
     //Testing:
@@ -67,6 +72,14 @@ public class FacebookReceiveAdapter {
         if(gs.getEntry().get(0).getMessaging().get(0).getMessage()!=null) {
             // 'IsEcho' means whether the message is a new incoming message or just an 'echo' of a message the bot sends out
             if (!gs.getEntry().get(0).getMessaging().get(0).getMessage().getIsEcho()) {
+
+                //if Attachment --> get ID via AttachmentStore and put it into attachment
+                if(gs.getEntry().get(0).getMessaging().get(0).getMessage().getAttachments()!=null) {
+                    FacebookAttachment att=gs.getEntry().get(0).getMessaging().get(0).getMessage().getAttachments().get(0);
+                    Long id = attachmentStore.storeAttachment(att.getFileURI(), att.getAttachmentType());
+                    att.setID(id);
+                }
+
                 //put message into JMS-queue
                 messageQueue.addInMessage(msg);
             }
