@@ -21,23 +21,21 @@ public class TelegramAttachment implements Attachment {
 
     /**
      * Constructor
-     * @param fileURI
-     * @param attachmentType
-     * @param caption
+     * @param id generated unique id
+     * @param attachmentType type of Attachment e.g. AUDIO, VIDEO, ..
+     * @param caption caption of that attachment
      */
-    public TelegramAttachment(final String fileURI, final AttachmentType attachmentType, final String caption){
-        this.fileURI = fileURI;
+    public TelegramAttachment(final Long id, final AttachmentType attachmentType, final String caption){
         this.attachmentType = attachmentType;
         this.caption = caption;
-        //TODO: generate proper IDs
-        this.id = new Random().nextLong();
+        this.id = id;
     }
 
     /**
      * Constructor
-     * @param attachmentType
+     * @param attachmentType type of Attachment e.g. AUDIO, VIDEO, ..
      */
-    public TelegramAttachment(AttachmentType attachmentType){
+    public TelegramAttachment(final AttachmentType attachmentType){
         this.attachmentType = attachmentType;
     }
 

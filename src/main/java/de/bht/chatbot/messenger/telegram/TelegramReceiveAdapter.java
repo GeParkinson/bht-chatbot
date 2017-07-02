@@ -8,6 +8,7 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.GetFile;
 import com.pengrad.telegrambot.response.GetFileResponse;
+import de.bht.chatbot.attachments.AttachmentStore;
 import de.bht.chatbot.jms.MessageQueue;
 import de.bht.chatbot.message.Attachment;
 import de.bht.chatbot.message.AttachmentType;
@@ -22,7 +23,7 @@ import javax.ws.rs.Path;
 import java.util.Properties;
 
 /**
- * Created by Chris on 5/14/2017.
+ * @Author: Christopher Kümmel on 5/14/2017.
  */
 
 @Path("/telegram")
@@ -31,6 +32,10 @@ public class TelegramReceiveAdapter {
     /** Injected JMS MessageQueue */
     @Inject
     private MessageQueue messageQueue;
+
+    /** Injected AttachmentStore */
+    @Inject
+    private AttachmentStore attachmentStore;
 
     /** com.pengrad.telegrambot.TelegramBot; */
     private TelegramBot bot;
@@ -81,12 +86,15 @@ public class TelegramReceiveAdapter {
             File file = getFileResponse.file();
             String fullPath = bot.getFullFilePath(file);
 
+            Long id;
             if (message.audio() != null) {
-                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(fullPath, AttachmentType.AUDIO, message.caption())};
+                id = attachmentStore.storeAttachment(fullPath, AttachmentType.AUDIO);
+                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(id, AttachmentType.AUDIO, message.caption())};
                 return telegramAttachments;
             }
             if (message.voice() != null){
-                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(fullPath, AttachmentType.VOICE, message.caption())};
+                id = attachmentStore.storeAttachment(fullPath, AttachmentType.VOICE);
+                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(id, AttachmentType.VOICE, message.caption())};
                 return telegramAttachments;
             }
         }
