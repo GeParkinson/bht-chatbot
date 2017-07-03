@@ -1,5 +1,7 @@
 package de.bht.chatbot.messenger.facebook;
 
+import de.bht.chatbot.attachments.AttachmentStore;
+import de.bht.chatbot.attachments.model.AttachmentStoreMode;
 import de.bht.chatbot.message.BotMessage;
 import de.bht.chatbot.messenger.utils.MessengerUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -8,6 +10,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -35,6 +38,9 @@ import java.util.Properties;
         }
 )
 public class FacebookSendAdapter implements MessageListener {
+
+    @Inject
+    private AttachmentStore attachmentStore;
 
     /**
      * get and return token from properties
@@ -83,8 +89,9 @@ public class FacebookSendAdapter implements MessageListener {
     /** Send Media Method
      * fill payload with media information and send it to facebook
      */
-    private static void sendMedia(BotMessage message,String mediaType){
-        String payload = "{recipient: { id: "+message.getSenderID()+" }, message: { attachment: { type: \""+mediaType+"\", payload: { url: \""+message.getAttachments()[0].getFileURI()+"\"  } }   }} ";
+    private void sendMedia(BotMessage message,String mediaType){
+        String fileURL=attachmentStore.loadAttachmentPath(message.getAttachments()[0].getId(), AttachmentStoreMode.FILE_URI);
+        String payload = "{recipient: { id: "+message.getSenderID()+" }, message: { attachment: { type: \""+mediaType+"\", payload: { url: \""+fileURL+"\"  } }   }} ";
         System.out.println("FACEBOOK_SEND:Output:"+payload);
         String requestUrl = "https://graph.facebook.com/v2.6/me/messages" ;
         try {
