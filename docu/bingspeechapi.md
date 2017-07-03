@@ -49,9 +49,7 @@ Step by step Guide.
     - Choose your subscription plan
     - Choose your pricing plan (here you should choose the F0 - free tier - for 5k calls in a month)
     
-![Create Service](img/bing/create-new-bing-speech-service-1.png)    
-
-![Create Service](img/bing/create-new-bing-speech-service-2.png)
+![Create Service](img/bing/create-new-bing-speech-service.png)
 
 - Go back to Azure Dashboard and click on your new Service
 - The secret keys and your subscription id is necessary for your authentication. You have to copy & paste them to your config.properties
