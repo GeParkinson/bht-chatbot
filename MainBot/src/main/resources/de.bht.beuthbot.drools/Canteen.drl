@@ -1,0 +1,92 @@
+/*
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package de.bht.beuthbot.drools
+
+import de.bht.beuthbot.drools.model.DroolsMessage
+import java.util.List
+import de.bht.beuthbot.canteen.model.Dish
+import de.bht.beuthbot.canteen.model.DishType;
+import de.bht.beuthbot.canteen.model.DishCategory;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.time.LocalDate;
+
+global de.bht.beuthbot.canteen.model.CanteenData canteenData;
+
+rule "Test Rule"
+    dialect "java"
+    when
+        m : DroolsMessage( intent == "Test")
+    then
+        modify ( m ) { setText("Test successful" )};
+end
+
+rule "Test Parser0"
+    dialect "java"
+    when
+        m : DroolsMessage( intent == "Test Parser0")
+    then
+        modify( m ){ setText("Test nach Ampel: " + canteenData.getDishesFiltered(null,
+         de.bht.beuthbot.canteen.model.TrafficLight.RED, null, null, null).size())}
+end
+
+rule "Test Parser1"
+    dialect "java"
+    when
+        m : DroolsMessage( intent == "Test Parser1")
+    then
+        modify( m ){ setText("Test für Heute dishes: " + canteenData.getDishesFiltered(LocalDate.parse("2017-06-26"),
+         null, null, null, null).size())}
+end
+
+rule "Test Parser2"
+    dialect "java"
+    when
+        m : DroolsMessage( intent == "Test Parser2")
+    then
+        modify( m ){ setText("Test nach Kategorie: " + canteenData.getDishesFiltered(null,
+         null, null, Arrays.asList(new DishCategory[]{de.bht.beuthbot.canteen.model.DishCategory.SPECIAL,
+          de.bht.beuthbot.canteen.model.DishCategory.STARTER}), null).size())}
+end
+rule "Test Parser3"
+    dialect "java"
+    when
+        m : DroolsMessage( intent == "Test Parser3")
+    then
+        modify( m ){ setText("Test nach Markings: " + canteenData.getDishesFiltered(null,
+         null, null, null, Arrays.asList(new String[]{"Senf","Hefe"})).size())}
+end
+
+rule "Test Parser4"
+    dialect "java"
+    when
+        m : DroolsMessage( intent == "Test Parser4")
+    then
+        modify( m ){ setText("Test 29.06.2017 alle vegan, orange, Farbstoff: " +
+        canteenData.getDishesFiltered(LocalDate.parse("2017-06-29"), de.bht.beuthbot.canteen.model.TrafficLight.ORANGE,
+        Arrays.asList(new DishType[]{de.bht.beuthbot.canteen.model.DishType.VEGAN}), null,
+        Arrays.asList(new String[]{"Farbstoff"})))}
+end
+
+
+rule "Show all meals"
+    dialect "java"
+    when
+        m : DroolsMessage( intent == "show_meals")
+    then
+        modify ( m ) { setText("Heute gibt es folgende Gerichte: \n" )};
+end

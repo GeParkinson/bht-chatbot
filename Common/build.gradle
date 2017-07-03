@@ -1,0 +1,17 @@
+apply plugin: 'java'
+apply plugin: 'checkstyle'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    compile "org.jboss.spec:jboss-javaee-7.0:1.1.0.Final",
+            "com.google.code.gson:gson:2.8.1",
+            "org.apache.httpcomponents:httpclient:4.5.3",
+            "org.apache.httpcomponents:httpmime:4.3.1",
+            "org.slf4j:slf4j-api:1.7.25"
+}
+
+sourceCompatibility = 1.8
