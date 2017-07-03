@@ -36,12 +36,9 @@ Step by step Guide.
     
         - Create new subscription for user-based payment
         
-        ![Billing Menu](img/bing/billing-menu.png)  ![Payment Methods](img/bing/payment-methods-1.png)
+        ![Billing Menu](img/bing/billing-menu.png)
         
-        - Click on that ![Manage Button](img/bing/manage-btn.png) button
-        
-        ![Payment Methods](img/bing/payment-methods-2.png)
-        
+        - Click on that ![Manage Button](img/bing/manage-btn.png) button    
         - Create new subscription for user-based payment
         - Go back to Azure Dashboard
 
