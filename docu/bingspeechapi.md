@@ -19,7 +19,9 @@ Step by step Guide.
 ## Microsoft Azure registration
 
 - Create new [Azure](https://azure.microsoft.com/de-de/free/) Account
+
 ![Azure Registration](img/bing/azure-registration.png)
+
 - Deposit a Payment Method - e.g. Credit Card
     - You will receive 170 Euro welcome bonus for the first month. (You have to spend that in this month)
 - [Log-In](https://portal.azure.com/#dashboard/private) with your new Account 
@@ -33,22 +35,30 @@ Step by step Guide.
     2. Create a new subscription (recommended)
     
         - Create new subscription for user-based payment
-        ![Billing Menu](img/bing/billing-menu.png)
-        ![Payment Methods](img/bing/payment-methods-1.png)
+        
+        ![Billing Menu](img/bing/billing-menu.png)  ![Payment Methods](img/bing/payment-methods-1.png)
+        
         - Click on that ![Manage Button](img/bing/manage-btn.png) button
+        
         ![Payment Methods](img/bing/payment-methods-2.png)
+        
         - Create new subscription for user-based payment
         - Go back to Azure Dashboard
 
 ## Bing Speech Service
 
 - Create a new Bing Speech Service (initialization might take a while)
-![Create Service](img/bing/create-new-bing-speech-service-1.png)
+
     - Choose your subscription plan
     - Choose your pricing plan (here you should choose the F0 - free tier - for 5k calls in a month)
-    ![Create Service](img/bing/create-new-bing-speech-service-2.png)
+    
+![Create Service](img/bing/create-new-bing-speech-service-1.png)    
+
+![Create Service](img/bing/create-new-bing-speech-service-2.png)
+
 - Go back to Azure Dashboard and click on your new Service
 - The secret keys and your subscription id is necessary for your authentication. You have to copy & paste them to your config.properties
+
 ![Bing Speech Service](img/bing/bing-speech-service-dashboard.png)
 
 ## Used online sources
