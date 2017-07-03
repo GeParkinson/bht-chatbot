@@ -16,7 +16,6 @@ import javax.ws.rs.core.Context;
 import java.io.IOException;
 import java.util.Map;
 
-import static de.bht.chatbot.messenger.facebook.FacebookSendAdapter.activateWebhook;
 
 /**
  * Created by Oliver on 14.05.2017.
@@ -30,6 +29,9 @@ public class FacebookReceiveAdapter {
 
     @Inject
     private AttachmentStore attachmentStore;
+
+    @Inject
+    private FacebookUtils facebookUtils;
 
     //---------------------------------------
     //Testing:
@@ -113,7 +115,7 @@ public class FacebookReceiveAdapter {
                 System.out.println("FACEBOOK_WEBHOOK:VERIFIED");
 
                 //if all conditions apply, finish verification by returning hub-challenge and activate token after 5s delay
-                activateWebhook();
+                facebookUtils.activateWebhook();
                 return request.getParameter("hub.challenge");
             }
         }else{
