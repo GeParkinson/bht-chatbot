@@ -1,0 +1,91 @@
+{
+  "userSays": [
+    {
+      "id": "535a9275-ab39-43f9-87df-431be10d09d5",
+      "data": [
+        {
+          "text": "Tag"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "df882ea3-1cdb-4797-8d70-c3b661839f9b",
+      "data": [
+        {
+          "text": "Servus"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "0aa700e1-6b51-4921-8c2d-c294ef7769cd",
+      "data": [
+        {
+          "text": "Moin"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "9b7d796f-7c54-40f8-a04f-ceaea25d9b94",
+      "data": [
+        {
+          "text": "Hi"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "6324a668-ee31-45ea-a175-afed03b3e6c1",
+      "data": [
+        {
+          "text": "Hallo"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "3c301d82-d2b2-41e6-8914-8f35c49d0310",
+      "data": [
+        {
+          "text": "Guten Tag"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "6a78579c-37c7-4d40-b9fc-3013a3a08642",
+      "data": [
+        {
+          "text": "Hello"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    }
+  ],
+  "id": "298d49fa-5122-430d-bd63-ee2d4316274d",
+  "name": "Hello",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": []
+}

@@ -1,13 +1,11 @@
 package de.bht.chatbot.messenger.utils;
 
-// import de.bht.chatbot.messenger.telegram.TelegramSendAdapter;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Created by Chris on 5/18/2017.
+ * @Author: Christopher Kümmel on 5/18/2017.
  */
 public class MessengerUtils {
 

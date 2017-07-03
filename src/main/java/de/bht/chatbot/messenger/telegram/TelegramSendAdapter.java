@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Created by Chris on 5/22/2017.
+ * @Author: Christopher Kümmel on 5/22/2017.
  */
 @MessageDriven(
     name = "OutboxTelegramProcessor",
@@ -46,7 +46,7 @@ import java.util.Properties;
 public class TelegramSendAdapter implements MessageListener {
 
     /** slf4j Logger */
-    private Logger logger = LoggerFactory.getLogger(TelegramSendAdapter.class);
+    private final Logger logger = LoggerFactory.getLogger(TelegramSendAdapter.class);
 
     /** com.pengrad.telegrambot.TelegramBot; */
     private TelegramBot bot;
@@ -67,7 +67,7 @@ public class TelegramSendAdapter implements MessageListener {
      */
     private void verifyWebhook() {
         Properties properties = MessengerUtils.getProperties();
-        SetWebhook webhook = new SetWebhook().url(properties.getProperty("TELEGRAM_WEBHOOK_URL"));
+        SetWebhook webhook = new SetWebhook().url(properties.getProperty("WEB_URL") + properties.getProperty("TELEGRAM_WEBHOOK_URL"));
 
         bot.execute(webhook, new Callback<SetWebhook, BaseResponse>() {
             @Override
@@ -77,7 +77,7 @@ public class TelegramSendAdapter implements MessageListener {
             }
             @Override
             public void onFailure(final SetWebhook request, final IOException e) {
-                logger.warn("An Error occured while setting Telegram webhook. BOT_TOKEN: " + properties.getProperty("TELEGRAM_BOT_TOKEN") + " - WEBHOOK_URL: " + properties.getProperty("TELEGRAM_WEBHOOK_URL"));
+                logger.warn("An Error occured while setting Telegram webhook. BOT_TOKEN: " + properties.getProperty("TELEGRAM_BOT_TOKEN") + " - WEBHOOK_URL: " + properties.getProperty("WEB_URL") + properties.getProperty("TELEGRAM_WEBHOOK_URL"));
             }
         });
     }
@@ -120,8 +120,8 @@ public class TelegramSendAdapter implements MessageListener {
 
     /**
      * Send Telegram Text message
-     * @param senderId
-     * @param message
+     * @param senderId Telegram Sender ID
+     * @param message to send
      */
     private void sendMessage(final Long senderId, final String message) {
         SendMessage request = new SendMessage(senderId, message);
@@ -131,7 +131,7 @@ public class TelegramSendAdapter implements MessageListener {
 
     /**
      * Send Telegram Audio message
-     * @param botMessage
+     * @param botMessage to send
      */
     private void sendAudio(final BotMessage botMessage){
         SendAudio request;
@@ -150,7 +150,7 @@ public class TelegramSendAdapter implements MessageListener {
 
     /**
      * Send Telegram Voice message
-     * @param botMessage
+     * @param botMessage to send
      */
     private void sendVoice(final BotMessage botMessage){
         SendVoice request;
