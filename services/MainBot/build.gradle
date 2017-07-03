@@ -1,0 +1,27 @@
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'checkstyle'
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://repository.jboss.org/nexus/content/groups/public/'
+    }
+}
+
+dependencies {
+    compile project(':services:Common'),
+            "org.jboss.spec:jboss-javaee-7.0:1.1.0.Final",
+            "com.google.code.gson:gson:2.8.1",
+            "org.drools:drools-compiler:7.0.0.Final",
+            "org.jsoup:jsoup:1.10.2"
+
+    providedCompile "org.slf4j:slf4j-api:1.7.25"
+}
+
+sourceCompatibility = 1.8
+
+war {
+    destinationDir new File(project.rootProject.projectDir, 'docker/wildfly/volumes/deployments/')
+    archiveName "mainbot.war"
+}

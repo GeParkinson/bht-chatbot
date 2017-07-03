@@ -1,1 +1,10 @@
-include ':Common', ':Messenger', ':NaturalLanguageProcessing', ':NaturalSpeechProcessing', ':MainBot', ':LoggingStatistics'
+include (
+        'services:Common',
+        // 'services:FaceBook',
+        'services:ApiAi',
+        'services:Rasa',
+        'services:Bing',
+        'services:MainBot',
+        'services:LoggingStatistics',
+        'services:Telegram'
+)

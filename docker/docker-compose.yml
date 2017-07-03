@@ -12,6 +12,7 @@ services:
     volumes:
       - ./wildfly/volumes/deployments/:/opt/jboss/wildfly/standalone/deployments/
       - ./wildfly/volumes/logs/:/opt/jboss/wildfly/standalone/log/
+      - ./wildfly/volumes/conf/:/opt/jboss/wildfly/standalone/conf/
     links:
       - rasa-server
     command: /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0 --debug
