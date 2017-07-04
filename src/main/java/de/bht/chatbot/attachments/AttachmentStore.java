@@ -4,6 +4,7 @@ import de.bht.chatbot.attachments.model.AttachmentStoreMode;
 import de.bht.chatbot.message.AttachmentType;
 import de.bht.chatbot.messenger.utils.MessengerUtils;
 import de.bht.chatbot.nsp.bing.BingConnector;
+import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -42,7 +43,27 @@ public class AttachmentStore {
     public AttachmentStore() {
         // make directories
         File file = new File(localPath);
-        file.mkdirs();
+        try {
+            if (file.exists()) {
+                // WORKAROUND: delete old data at system start
+                deleteDirectory(file);
+            } else {
+                file.mkdirs();
+            }
+        } catch (Exception e) {
+            logger.error("Error while deleting or creating AttachmentStore Directory.", e);
+        }
+    }
+
+    /**
+     * Delete attachment directory.
+     * @param file directory to delete
+     */
+    private void deleteDirectory(final File file){
+        File[] directoryFiles = file.listFiles();
+        for (File directoryFile : directoryFiles) {
+            directoryFile.delete();
+        }
     }
 
     /**
