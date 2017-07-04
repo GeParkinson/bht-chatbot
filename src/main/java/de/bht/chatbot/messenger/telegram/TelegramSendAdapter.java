@@ -1,26 +1,21 @@
 package de.bht.chatbot.messenger.telegram;
 
-import com.pengrad.telegrambot.Callback;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.TelegramBotAdapter;
 import com.pengrad.telegrambot.request.SendAudio;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SendVoice;
-import com.pengrad.telegrambot.request.SetWebhook;
-import com.pengrad.telegrambot.response.BaseResponse;
 import com.pengrad.telegrambot.response.SendResponse;
 import de.bht.chatbot.message.*;
 import de.bht.chatbot.messenger.utils.MessengerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -51,35 +46,13 @@ public class TelegramSendAdapter implements MessageListener {
     private TelegramBot bot;
 
     /**
-     * Initialize TelegramBot with Token
+     * Constructor: Initialize TelegramBot with Token
      */
-    @PostConstruct
-    public void startUp(){
+    public TelegramSendAdapter(){
         Properties properties = MessengerUtils.getProperties();
         bot = TelegramBotAdapter.build(properties.getProperty("TELEGRAM_BOT_TOKEN"));
-
-        //verifyWebhook();
     }
 
-    /**
-     * Method to async set TelegramWebhook
-     */
-    private void verifyWebhook() {
-        Properties properties = MessengerUtils.getProperties();
-        SetWebhook webhook = new SetWebhook().url(properties.getProperty("WEB_URL") + properties.getProperty("TELEGRAM_WEBHOOK_URL"));
-
-        bot.execute(webhook, new Callback<SetWebhook, BaseResponse>() {
-            @Override
-            public void onResponse(final SetWebhook request, final BaseResponse response) {
-                logger.debug("No errors while setting Telegram webhook.");
-                //TODO: Check if webhook is really set
-            }
-            @Override
-            public void onFailure(final SetWebhook request, final IOException e) {
-                logger.warn("An Error occured while setting Telegram webhook. BOT_TOKEN: " + properties.getProperty("TELEGRAM_BOT_TOKEN") + " - WEBHOOK_URL: " + properties.getProperty("WEB_URL") + properties.getProperty("TELEGRAM_WEBHOOK_URL"));
-            }
-        });
-    }
 
     /**
      * Process JMS Message
@@ -89,8 +62,6 @@ public class TelegramSendAdapter implements MessageListener {
     public void onMessage(final Message message) {
         try {
             BotMessage botMessage = message.getBody(BotMessage.class);
-            //TODO: remove and make sure Bot is initialized
-            startUp();
             if (botMessage.hasAttachements()){
                 for (Attachment attachment : botMessage.getAttachements()) {
                     switch (attachment.getAttachmentType()) {
@@ -135,7 +106,7 @@ public class TelegramSendAdapter implements MessageListener {
     private void sendAudio(final BotMessage botMessage){
         SendAudio request;
 
-        // check & send each attachement
+        // check & send each attachment
         for (Attachment attachment : botMessage.getAttachements()) {
             request = new SendAudio(botMessage.getSenderID(), attachment.getFileURI());
 
