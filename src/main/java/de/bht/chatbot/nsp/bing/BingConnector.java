@@ -104,11 +104,11 @@ public class BingConnector implements MessageListener {
         }
     }
 
-    //TODO: generate Token at Systemstart -> at runtime every 9 minutes
+    //TODO: cyclically generate a Token - remove call in methods
     /**
      * Method to generate Bing Speech API Access Token. - Token decays after 10 minutes. -> Refresh every 9 minutes.
      */
-    private void generateAccesToken(){
+    private void generateAccessToken() {
         try {
             HttpClient client = HttpClientBuilder.create().build();
             String url = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken";
@@ -151,9 +151,8 @@ public class BingConnector implements MessageListener {
      * Send Bing Speech to Text Request.
      * @param botMessage Object to parse to Text
      */
-    private void sendSpeechToTextRequest(final BotMessage botMessage){
-        //TODO: remove and make sure Access Token is set
-        generateAccesToken();
+    private void sendSpeechToTextRequest(final BotMessage botMessage) {
+        generateAccessToken();
         //TODO: different languages
         String language = "de-DE";
         try {
@@ -206,15 +205,18 @@ public class BingConnector implements MessageListener {
                     // process response message
                     BingMessage bingMessage;
                     try {
-                        if (format == "simple") {
-                            BingSimpleResponse bingSimpleResponse = new Gson().fromJson(result.toString(), BingSimpleResponse.class);
-                            bingMessage = new BingMessage(bingSimpleResponse, botMessage);
-                        } else if (format == "detailed") {
-                            BingDetailedResponse bingDetailedResponse = new Gson().fromJson(result.toString(), BingDetailedResponse.class);
-                            bingMessage = new BingMessage(bingDetailedResponse, botMessage);
-                        } else {
-                            logger.error("Could not parse BingSpeechResponse");
-                            return;
+                        switch (format){
+                            case "simple":
+                                BingSimpleResponse bingSimpleResponse = new Gson().fromJson(result.toString(), BingSimpleResponse.class);
+                                bingMessage = new BingMessage(bingSimpleResponse, botMessage);
+                                break;
+                            case "detailed":
+                                BingDetailedResponse bingDetailedResponse = new Gson().fromJson(result.toString(), BingDetailedResponse.class);
+                                bingMessage = new BingMessage(bingDetailedResponse, botMessage);
+                                break;
+                            default:
+                                logger.error("Could not parse BingSpeechResponse");
+                                return;
                         }
                         // return message
                         messageQueue.addInMessage(bingMessage);
@@ -235,8 +237,7 @@ public class BingConnector implements MessageListener {
      * @param botMessage Object to parse to Speech
      */
     private void sendTextToSpeechRequest(final BotMessage botMessage){
-        //TODO: remove and make sure Access Token is set
-        generateAccesToken();
+        generateAccessToken();
 
         HttpClient client = HttpClientBuilder.create().build();
         String url = "https://speech.platform.bing.com/synthesize";
