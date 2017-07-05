@@ -7,12 +7,17 @@ import de.bht.chatbot.messenger.facebook.model.FacebookAttachment;
 import de.bht.chatbot.messenger.facebook.model.FacebookBotMessage;
 import de.bht.chatbot.messenger.facebook.model.FacebookInput;
 import de.bht.chatbot.messenger.utils.MessengerUtils;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.util.Map;
 
@@ -21,7 +26,7 @@ import java.util.Map;
  * Created by Oliver on 14.05.2017.
  */
 
-@Path("/webhook")
+@Path("/facebook")
 public class FacebookReceiveAdapter {
 
     @Inject
@@ -45,7 +50,6 @@ public class FacebookReceiveAdapter {
     //token: set in config.properties
     //---------------------------------------
 
-    String accessToken= MessengerUtils.getProperties().getProperty("FACEBOOK_BOT_TOKEN");
     String webhookToken = MessengerUtils.getProperties().getProperty("FACEBOOK_WEBHOOK_TOKEN");
 
     /**
@@ -55,7 +59,7 @@ public class FacebookReceiveAdapter {
      * @throws IOException
      */
     @POST
-    @Path("/facebook")
+    @Path("/getUpdates")
     @Consumes("application/json")
     public String ReceiveMessage(String InputMessage) throws IOException {
 
@@ -97,7 +101,7 @@ public class FacebookReceiveAdapter {
      * @return return hub.challenge to facebook to inform facebook about successful verification
      */
     @GET
-    @Path("/facebook")
+    @Path("/getUpdates")
     @Produces("text/plain")
     public String verification(@Context HttpServletRequest request){
 
@@ -125,8 +129,38 @@ public class FacebookReceiveAdapter {
         return "Webhook FAILED";
     }
 
+    /**
+     * makes it possible to set the Facebook webhook to the current server adress
+     * just open /rest/facebook/setWebhook to update your hook
+     * you need an APP! access token from https://developers.facebook.com/tools/explorer/
+     * @param request starts when user navigates to setWebhook page
+     * @return answer from Facebook "{"success":true}" if worked
+     */
+    @GET
+    @Path("/setWebhook")
+    @Produces("text/plain")
+    public String setWebhook(@Context HttpServletRequest request){
+
+        String access_token = facebookUtils.accessID();
+
+        //access token contains the App-ID, which we need for our call
+        String appid = access_token.substring(0 , access_token.indexOf("|"));
+
+        String registrationAdress="https://graph.facebook.com/v2.9/"+appid+"/subscriptions";
+        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyWebTarget target = client.target(UriBuilder.fromPath(registrationAdress));
+        FacebookRESTServiceInterface facebookProxy = target.proxy(FacebookRESTServiceInterface.class);
+
+        String fields ="messages, messaging_postbacks, messaging_optins, message_deliveries, message_reads, messaging_payments, messaging_pre_checkouts, messaging_checkout_updates, messaging_account_linking, messaging_referrals, message_echoes";
+
+        String callback_url ="https://chatbot.ziemers.net/rest/webhook/facebook";//facebookUtils.webadress()+"/facebook/getUpdates";
+        Response response = facebookProxy.sendText("page", callback_url, fields, webhookToken, access_token);
+
+        String responseAsString = response.readEntity(String.class);
 
 
+        return responseAsString;
+    }
 
 
 

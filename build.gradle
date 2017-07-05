@@ -47,7 +47,7 @@ sourceCompatibility = 1.8
 
 war {
     destinationDir file("./src/main/docker/wildfly/volumes/deployments/")
-    archiveName "beuthbot.war"
+    archiveName "bht-chatbot.war"
 }
 
 
