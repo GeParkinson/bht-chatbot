@@ -1,10 +1,13 @@
 package de.bht.beuthbot.nsp.bing;
 
 import com.google.gson.Gson;
+import de.bht.beuthbot.attachments.AttachmentStore;
+import de.bht.beuthbot.attachments.model.AttachmentStoreMode;
 import de.bht.beuthbot.conf.Application;
 import de.bht.beuthbot.conf.Configuration;
 import de.bht.beuthbot.jms.MessageQueue;
 import de.bht.beuthbot.model.Attachment;
+import de.bht.beuthbot.model.AttachmentType;
 import de.bht.beuthbot.model.BotMessage;
 import de.bht.beuthbot.nsp.bing.model.BingAttachment;
 import de.bht.beuthbot.nsp.bing.model.BingDetailedResponse;

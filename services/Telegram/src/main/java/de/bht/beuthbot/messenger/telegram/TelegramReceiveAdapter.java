@@ -8,6 +8,7 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.GetFile;
 import com.pengrad.telegrambot.response.GetFileResponse;
+import de.bht.beuthbot.attachments.AttachmentStore;
 import de.bht.beuthbot.conf.Application;
 import de.bht.beuthbot.conf.Configuration;
 import de.bht.beuthbot.jms.MessageQueue;

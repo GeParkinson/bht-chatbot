@@ -1,4 +1,4 @@
-package de.bht.chatbot.attachments.model;
+package de.bht.beuthbot.attachments.model;
 
 /**
  * @Author: Christopher Kümmel on 7/2/2017.

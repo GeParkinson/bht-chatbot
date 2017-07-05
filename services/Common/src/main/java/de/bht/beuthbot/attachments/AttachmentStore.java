@@ -1,6 +1,9 @@
 package de.bht.beuthbot.attachments;
 
-import de.bht.beuthbot.model.Attachment;
+import de.bht.beuthbot.attachments.model.AttachmentStoreMode;
+import de.bht.beuthbot.conf.Application;
+import de.bht.beuthbot.conf.Configuration;
+import de.bht.beuthbot.model.AttachmentType;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -9,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Singleton;
+import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,16 +31,22 @@ public class AttachmentStore {
     /** id counter for unique id. */
     private static Long idCounter = 0L;
 
+    /** BeuthBot Application Bean */
+    @Inject
+    private Application application;
+
     /** path to local attachment directory. */
-    private final String localPath = MessengerUtils.getProperties().getProperty("LOCAL_ATTACHMENT_PATH");
+    private String localPath;
 
     /** accessible FileURI base Path. */
-    private final String fileURIPath = MessengerUtils.getProperties().getProperty("WEB_URL") + "/attachments/";
+    private String fileURIPath;
 
     /**
      * Construtor for path generation.
      */
     public AttachmentStore() {
+        localPath = application.getConfiguration(Configuration.LOCAL_ATTACHMENT_PATH);
+        fileURIPath = application.getConfiguration(Configuration.WEB_URL);
         // make directories
         File file = new File(localPath);
         file.mkdirs();

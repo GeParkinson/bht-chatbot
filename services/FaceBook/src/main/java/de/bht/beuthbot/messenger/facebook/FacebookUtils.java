@@ -1,25 +1,30 @@
-package de.bht.chatbot.messenger.facebook;
+package de.bht.beuthbot.messenger.facebook;
 
-import de.bht.chatbot.messenger.utils.MessengerUtils;
+import de.bht.beuthbot.conf.Application;
+import de.bht.beuthbot.conf.Configuration;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import java.util.Properties;
 
 /**
  * Created by oliver on 03.07.2017.
  */
 public class FacebookUtils {
+
+    /** BeuthBot Application Bean */
+    @Inject
+    private Application application;
+
     /**
      * get and return token from properties
      * @return String Facebook-Message token
      */
     public String token(){
-        Properties properties = MessengerUtils.getProperties();
-        return properties.getProperty("FACEBOOK_BOT_TOKEN");
+        return application.getConfiguration(Configuration.FACEBOOK_BOT_TOKEN);
     }
 
     /**

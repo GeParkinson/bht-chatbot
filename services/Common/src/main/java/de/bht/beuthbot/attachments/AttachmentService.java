@@ -1,6 +1,6 @@
 package de.bht.beuthbot.attachments;
 
-import de.bht.chatbot.attachments.model.AttachmentStoreMode;
+import de.bht.beuthbot.attachments.model.AttachmentStoreMode;
 import org.apache.http.HttpStatus;
 
 import javax.inject.Inject;

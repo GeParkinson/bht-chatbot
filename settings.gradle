@@ -1,6 +1,6 @@
 include (
         'services:Common',
-        // 'services:FaceBook',
+        'services:FaceBook',
         'services:ApiAi',
         'services:Rasa',
         'services:Bing',

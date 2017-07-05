@@ -1,11 +1,8 @@
 package de.bht.beuthbot.messenger.facebook;
 
-import de.bht.beuthbot.conf.Application;
+import de.bht.beuthbot.attachments.AttachmentStore;
+import de.bht.beuthbot.attachments.model.AttachmentStoreMode;
 import de.bht.beuthbot.model.BotMessage;
-import de.bht.beuthbot.messenger.utils.MessengerUtils;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
@@ -13,9 +10,6 @@ import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import java.util.Properties;
 
 /**
  * Created by oliver on 22.05.2017.

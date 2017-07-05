@@ -1,10 +1,13 @@
 package de.bht.beuthbot.messenger.facebook;
 
 import com.google.gson.Gson;
+import de.bht.beuthbot.attachments.AttachmentStore;
+import de.bht.beuthbot.conf.Application;
+import de.bht.beuthbot.conf.Configuration;
 import de.bht.beuthbot.jms.MessageQueue;
+import de.bht.beuthbot.messenger.facebook.model.FacebookAttachment;
 import de.bht.beuthbot.messenger.facebook.model.FacebookBotMessage;
 import de.bht.beuthbot.messenger.facebook.model.FacebookInput;
-import de.bht.beuthbot.messenger.utils.MessengerUtils;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
@@ -31,6 +34,10 @@ public class FacebookReceiveAdapter {
     @Inject
     private FacebookUtils facebookUtils;
 
+    /** BeuthBot Application Bean */
+    @Inject
+    private Application application;
+
     //---------------------------------------
     //Testing:
     //install localtunnel (npm install -g localtunnel) and connect via 'lt --port 8080' *
@@ -43,8 +50,13 @@ public class FacebookReceiveAdapter {
     //token: set in config.properties
     //---------------------------------------
 
-    String accessToken= MessengerUtils.getProperties().getProperty("FACEBOOK_BOT_TOKEN");
-    String webhookToken = MessengerUtils.getProperties().getProperty("FACEBOOK_WEBHOOK_TOKEN");
+    private String accessToken;
+    private String webhookToken;
+
+    public FacebookReceiveAdapter() {
+        this.accessToken = application.getConfiguration(Configuration.FACEBOOK_BOT_TOKEN);
+        this.webhookToken = application.getConfiguration(Configuration.FACEBOOK_WEBHOOK_TOKEN);
+    }
 
     /**
      * listen to POST requests from facebook (which contain the received messages) and react to them
