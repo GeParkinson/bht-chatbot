@@ -19,6 +19,7 @@ public class FacebookAttachment implements Attachment {
     @SerializedName("payload")
     @Expose
     private FacebookPayload payload;
+    private Long id;
 
     public String getType() {
         return type;
@@ -32,13 +33,13 @@ public class FacebookAttachment implements Attachment {
         return payload;
     }
 
-    public void setPayload(FacebookPayload payload) {
-        this.payload = payload;
-    }
+    public void setPayload(FacebookPayload payload) { this.payload = payload; }
+
+    public void setID(Long id){ this.id=id; }
 
     @Override
     public Long getId() {
-        return 1L;
+        return id;
     }
 
     @Override
@@ -62,7 +63,7 @@ public class FacebookAttachment implements Attachment {
             case "image":
                 return AttachmentType.PHOTO;
             default:
-                return null;
+                return AttachmentType.UNKOWN;
         }
 
 

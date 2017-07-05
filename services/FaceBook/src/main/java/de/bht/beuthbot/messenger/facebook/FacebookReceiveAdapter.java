@@ -14,7 +14,6 @@ import javax.ws.rs.core.Context;
 import java.io.IOException;
 import java.util.Map;
 
-import static de.bht.beuthbot.messenger.facebook.FacebookSendAdapter.activateWebhook;
 
 /**
  * Created by Oliver on 14.05.2017.
@@ -25,6 +24,12 @@ public class FacebookReceiveAdapter {
 
     @Inject
     private MessageQueue messageQueue;
+
+    @Inject
+    private AttachmentStore attachmentStore;
+
+    @Inject
+    private FacebookUtils facebookUtils;
 
     //---------------------------------------
     //Testing:
@@ -67,6 +72,14 @@ public class FacebookReceiveAdapter {
         if(gs.getEntry().get(0).getMessaging().get(0).getMessage()!=null) {
             // 'IsEcho' means whether the message is a new incoming message or just an 'echo' of a message the bot sends out
             if (!gs.getEntry().get(0).getMessaging().get(0).getMessage().getIsEcho()) {
+
+                //if Attachment --> get ID via AttachmentStore and put it into attachment
+                if(gs.getEntry().get(0).getMessaging().get(0).getMessage().getAttachments()!=null) {
+                    FacebookAttachment att=gs.getEntry().get(0).getMessaging().get(0).getMessage().getAttachments().get(0);
+                    Long id = attachmentStore.storeAttachment(att.getFileURI(), att.getAttachmentType());
+                    att.setID(id);
+                }
+
                 //put message into JMS-queue
                 messageQueue.addInMessage(msg);
             }
@@ -100,7 +113,7 @@ public class FacebookReceiveAdapter {
                 System.out.println("FACEBOOK_WEBHOOK:VERIFIED");
 
                 //if all conditions apply, finish verification by returning hub-challenge and activate token after 5s delay
-                activateWebhook();
+                facebookUtils.activateWebhook();
                 return request.getParameter("hub.challenge");
             }
         }else{

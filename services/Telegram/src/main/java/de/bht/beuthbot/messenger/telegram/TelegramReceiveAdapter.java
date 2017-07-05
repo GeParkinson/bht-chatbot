@@ -22,7 +22,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 /**
- * Created by Chris on 5/14/2017.
+ * @Author: Christopher Kümmel on 5/14/2017.
  */
 
 @Path("/telegram")
@@ -35,6 +35,10 @@ public class TelegramReceiveAdapter {
     /** BeuthBot Application Bean */
     @Inject
     private Application application;
+
+    /** Injected AttachmentStore */
+    @Inject
+    private AttachmentStore attachmentStore;
 
     /** com.pengrad.telegrambot.TelegramBot; */
     private TelegramBot bot;
@@ -84,12 +88,15 @@ public class TelegramReceiveAdapter {
             File file = getFileResponse.file();
             String fullPath = bot.getFullFilePath(file);
 
+            Long id;
             if (message.audio() != null) {
-                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(fullPath, AttachmentType.AUDIO, message.caption())};
+                id = attachmentStore.storeAttachment(fullPath, AttachmentType.AUDIO);
+                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(id, AttachmentType.AUDIO, message.caption())};
                 return telegramAttachments;
             }
             if (message.voice() != null){
-                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(fullPath, AttachmentType.VOICE, message.caption())};
+                id = attachmentStore.storeAttachment(fullPath, AttachmentType.VOICE);
+                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(id, AttachmentType.VOICE, message.caption())};
                 return telegramAttachments;
             }
         }

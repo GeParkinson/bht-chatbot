@@ -28,13 +28,13 @@ public class BingMessage implements BotMessage{
     /**
      * Constructor
      * @param botMessage
-     * @param bingAttachment
+     * @param attachment
      */
-    public BingMessage(final BotMessage botMessage, final BingAttachment bingAttachment){
+    public BingMessage(final BotMessage botMessage, final Attachment attachment){
         this.messageID = botMessage.getMessageID();
         this.senderID = botMessage.getSenderID();
         this.messenger = botMessage.getMessenger();
-        this.attachments = new Attachment[]{bingAttachment};
+        this.attachments = new Attachment[]{attachment};
     }
 
     /**

@@ -17,13 +17,13 @@ public class BingAttachment implements Attachment {
 
     /**
      * Constructor
-     * @param id
-     * @param fileURI
+     * @param id generated unique id
+     * @param fileURI URI where attachment is stored
      */
     public BingAttachment(final Long id, final String fileURI){
         this.id = id;
-        this.fileURI = fileURI;
         this.caption = caption;
+        this.fileURI = fileURI;
     }
 
     @Override
