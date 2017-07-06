@@ -18,6 +18,7 @@ public class RasaMessage implements NLUBotMessage {
     private String text, intent;
     private Attachment[] attachments;
     private Map<String, String> entities;
+    boolean isAttachment = false;
 
 
     public RasaMessage(BotMessage botMessage, RasaResponse rasaResponse) {
@@ -26,6 +27,7 @@ public class RasaMessage implements NLUBotMessage {
         this.senderID = botMessage.getSenderID();
         this.messenger = botMessage.getMessenger();
         this.text = botMessage.getText();
+        this.isAttachment = botMessage.hasAttachments();
         this.attachments = botMessage.getAttachments();
         this.intent = rasaResponse.getIntent();
         this.entities = rasaResponse.getEntities();
@@ -58,7 +60,7 @@ public class RasaMessage implements NLUBotMessage {
 
     @Override
     public boolean hasAttachments() {
-        return attachments.length > 0 ? true : false;
+        return isAttachment;
     }
 
     @Override
