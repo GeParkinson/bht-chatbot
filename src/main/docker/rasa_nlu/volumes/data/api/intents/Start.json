@@ -1,0 +1,31 @@
+{
+  "userSays": [
+    {
+      "id": "a775b2f8-984a-4e4f-be8e-92dcf9d426a9",
+      "data": [
+        {
+          "text": "Start"
+        }
+      ],
+      "isTemplate": false,
+      "count": 1
+    }
+  ],
+  "id": "fd44ae16-5a7d-40d6-9216-cf528db47b93",
+  "name": "Start",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": []
+}

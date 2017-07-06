@@ -1,6 +1,38 @@
 {
   "userSays": [
     {
+      "id": "27ade6fd-22a8-4026-80a0-dc464a133e5d",
+      "data": [
+        {
+          "text": "Guten Tag"
+        }
+      ],
+      "isTemplate": false,
+      "count": 1
+    },
+    {
+      "id": "8251e097-7f65-46c8-82d7-4521360823f8",
+      "data": [
+        {
+          "text": "Hello",
+          "userDefined": false
+        }
+      ],
+      "isTemplate": false,
+      "count": 1
+    },
+    {
+      "id": "7c16e6f9-df2c-44f7-ba9a-36315a5e9f47",
+      "data": [
+        {
+          "text": "Hello Bot",
+          "userDefined": false
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
       "id": "535a9275-ab39-43f9-87df-431be10d09d5",
       "data": [
         {
@@ -45,26 +77,6 @@
       "data": [
         {
           "text": "Hallo"
-        }
-      ],
-      "isTemplate": false,
-      "count": 0
-    },
-    {
-      "id": "3c301d82-d2b2-41e6-8914-8f35c49d0310",
-      "data": [
-        {
-          "text": "Guten Tag"
-        }
-      ],
-      "isTemplate": false,
-      "count": 0
-    },
-    {
-      "id": "6a78579c-37c7-4d40-b9fc-3013a3a08642",
-      "data": [
-        {
-          "text": "Hello"
         }
       ],
       "isTemplate": false,
