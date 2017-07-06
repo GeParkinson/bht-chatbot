@@ -9,7 +9,7 @@ import java.util.List;
  */
 public enum DishType {
 
-    VEGETARIAN("vegetarisch", "1"), VEGAN("vegan", "15"), CLIMATE_NEUTRAL("Klimaessen", "43"), BIO("Bio", "18"), MSC("MSC", "38");
+    VEGETARIAN("vegetarian", "1"), VEGAN("vegan", "15"), CLIMATE_NEUTRAL("klimaessen", "43"), BIO("bio", "18"), MSC("msc", "38");
 
     private String text;
     private String number;
