@@ -65,6 +65,7 @@ public class ApiAiConnector implements MessageListener {
     public void onMessage(final Message message) {
         try {
             BotMessage botMessage = message.getBody(BotMessage.class);
+            logger.debug("Receive message: {}", botMessage.toString());
 
             Properties properties = MessengerUtils.getProperties();
             String token = properties.getProperty("API_AI_TOKEN");
