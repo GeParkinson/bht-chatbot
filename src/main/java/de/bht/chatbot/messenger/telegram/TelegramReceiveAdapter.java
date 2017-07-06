@@ -7,6 +7,8 @@ import com.pengrad.telegrambot.model.File;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.GetFile;
+import com.pengrad.telegrambot.request.SetWebhook;
+import com.pengrad.telegrambot.response.BaseResponse;
 import com.pengrad.telegrambot.response.GetFileResponse;
 import de.bht.chatbot.attachments.AttachmentStore;
 import de.bht.chatbot.jms.MessageQueue;
@@ -15,11 +17,14 @@ import de.bht.chatbot.message.AttachmentType;
 import de.bht.chatbot.messenger.telegram.model.TelegramAttachment;
 import de.bht.chatbot.messenger.telegram.model.TelegramMessage;
 import de.bht.chatbot.messenger.utils.MessengerUtils;
+import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
 import java.util.Properties;
 
 /**
@@ -28,6 +33,9 @@ import java.util.Properties;
 
 @Path("/telegram")
 public class TelegramReceiveAdapter {
+
+    /** slf4j Logger */
+    private final Logger logger = LoggerFactory.getLogger(TelegramSendAdapter.class);
 
     /** Injected JMS MessageQueue */
     @Inject
@@ -41,10 +49,9 @@ public class TelegramReceiveAdapter {
     private TelegramBot bot;
 
     /**
-     * Initialize TelegramBot with Token
+     * Constructor: Initialize TelegramBot with Token
      */
-    @PostConstruct
-    public void startUp(){
+    public TelegramReceiveAdapter(){
         Properties properties = MessengerUtils.getProperties();
         bot = TelegramBotAdapter.build(properties.getProperty("TELEGRAM_BOT_TOKEN"));
     }
@@ -57,9 +64,9 @@ public class TelegramReceiveAdapter {
     @Path("/getUpdates")
     public void getUpdates(final String msg) {
         Update update = BotUtils.parseUpdate(msg);
+        logger.debug("Received new Telegram message: " + update.message().text());
         TelegramMessage message = new TelegramMessage(update.message());
-        // TODO Chris: fix this
-        // message.setAttachments(getAttachments(update.message()));
+        message.setAttachments(getAttachments(update.message()));
         messageQueue.addInMessage(message);
     }
 
@@ -69,8 +76,6 @@ public class TelegramReceiveAdapter {
      * @return returns null if no Attachment available
      */
     private Attachment[] getAttachments(final Message message) {
-        //TODO: remove and make sure Bot is initialized
-        startUp();
 
         // check for attachments
         String fileID = null;
@@ -115,6 +120,35 @@ public class TelegramReceiveAdapter {
             return telegramAttachments;
         } else {
             return null;
+        }
+    }
+
+
+    /**
+     * RESTEasy HTTP Post to set Webhook
+     * @param msg Telegram Message
+     */
+    @POST
+    @Path("/setWebhook")
+    public Response setWebhook(final String msg) {
+        int responseCode = verifyWebhook();
+        return Response.status(responseCode).build();
+    }
+
+    /**
+     * Method to set TelegramWebhook
+     */
+    private int verifyWebhook() {
+        Properties properties = MessengerUtils.getProperties();
+        SetWebhook webhook = new SetWebhook().url(properties.getProperty("WEB_URL") + properties.getProperty("TELEGRAM_WEBHOOK_URL"));
+
+        BaseResponse response = bot.execute(webhook);
+        if (response.isOk()) {
+            logger.debug("Telegram Webhook was set.");
+            return HttpStatus.SC_OK;
+        } else {
+            logger.warn("Telegram Webhook could not be set!");
+            return HttpStatus.SC_METHOD_FAILURE;
         }
     }
 }

@@ -3,7 +3,6 @@ package de.bht.chatbot.nlu.rasa;
 import com.google.gson.Gson;
 import de.bht.chatbot.jms.MessageQueue;
 import de.bht.chatbot.message.BotMessage;
-import de.bht.chatbot.message.BotMessageImpl;
 import de.bht.chatbot.nlu.rasa.model.RasaMessage;
 import de.bht.chatbot.nlu.rasa.model.RasaResponse;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -62,7 +61,7 @@ public class RasaConnector implements MessageListener {
     @Override
     public void onMessage(final Message message) {
         try {
-            BotMessage incomingChatMessage = gson.fromJson(((TextMessage) message).getText(), BotMessageImpl.class);
+            BotMessage incomingChatMessage = message.getBody(BotMessage.class);
             String messageText = incomingChatMessage.getText();
 
             Response response = rasaProxy.processText(messageText);

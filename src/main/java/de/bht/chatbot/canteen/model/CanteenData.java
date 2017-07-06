@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * This class represents all data of dishes for the current and the next
+ * week of the canteen of the beuth university.
  * Created by sJantzen on 11.06.2017.
  */
 public class CanteenData {
@@ -68,11 +70,11 @@ public class CanteenData {
 
     /**
      * Returns all dishes, matching the given parameters.
-     * @param date
-     * @param trafficLight
-     * @param dishTypes
-     * @param dishCategories
-     * @param markings
+     * @param date if you wish to get the dishes of the given date
+     * @param trafficLight gets all dishes having the given traffic light color
+     * @param dishTypes gets dishes, containing all given dishTypes
+     * @param dishCategories gets dishes, containing all given dishCategories
+     * @param markings gets dishes, containing all given markings
      * @return
      */
     public final List<Dish> getDishesFiltered(final LocalDate date, final TrafficLight trafficLight, final List<DishType> dishTypes,
@@ -85,12 +87,12 @@ public class CanteenData {
              * Ein Gericht darf KEINEN von beiden enthalten
               */
 
-            return dishes.stream().filter(dish -> (date == null || date.equals(dish.getDate())))
-            .filter(dish -> (trafficLight == null || trafficLight.equals(dish.getTrafficLight())))
-            .filter(dish -> (dishTypes != null && !dishTypes.isEmpty() ? dish.getDishTypes().containsAll(dishTypes) : true))
-            .filter(dish -> (dishCategories != null && !dishTypes.isEmpty() ? dishCategories.contains(dish.getDishCategory()) : true))
-            .filter(dish -> (markings != null && !markings.isEmpty() ? dish.getMarkings().containsAll(markings) : true))
-            .collect(Collectors.toList());
+        return dishes.stream().filter(dish -> (date == null || date.equals(dish.getDate())))
+                .filter(dish -> (trafficLight == null || trafficLight.equals(dish.getTrafficLight())))
+                .filter(dish -> (dishTypes != null && !dishTypes.isEmpty() ? dish.getDishTypes().containsAll(dishTypes) : true))
+                .filter(dish -> (dishCategories != null && !dishTypes.isEmpty() ? dishCategories.contains(dish.getDishCategory()) : true))
+                .filter(dish -> (markings != null && !markings.isEmpty() ? dish.getMarkings().containsAll(markings) : true))
+                .collect(Collectors.toList());
     }
 
     /**

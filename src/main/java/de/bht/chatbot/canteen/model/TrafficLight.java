@@ -5,7 +5,7 @@ package de.bht.chatbot.canteen.model;
  */
 public enum TrafficLight {
 
-    GREEN("Grün"), ORANGE("Orange"), RED("Rot");
+    GREEN("Grün"), YELLOW("Gelb"), RED("Rot");
 
     private String text;
 

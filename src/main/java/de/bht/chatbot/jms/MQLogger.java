@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
-import javax.jms.*;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
 
 /**
  * @author: georg.parkinson@adesso.de
@@ -32,7 +34,7 @@ public class MQLogger implements MessageListener {
     @Override
     public void onMessage(final Message message) {
          try {
-             logger.info("Inbox receive message [{}]: {}", message.getJMSMessageID(), ((TextMessage) message).getText());
+             logger.info("Inbox receive message [{}]: {}", message.getJMSMessageID(), message.getBody(BotMessage.class));
          } catch (JMSException e) {
              logger.error("Error while interpreting message.", e);
          }

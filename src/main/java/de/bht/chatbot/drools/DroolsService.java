@@ -7,9 +7,7 @@ import de.bht.chatbot.canteen.Parser;
 import com.google.gson.Gson;
 
 import de.bht.chatbot.jms.MessageQueue;
-import de.bht.chatbot.message.BotMessageImpl;
 import de.bht.chatbot.message.NLUBotMessage;
-import de.bht.chatbot.message.NLUBotMessageImpl;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -22,7 +20,6 @@ import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.TextMessage;
 
 /**
  * Created by sJantzen on 13.06.2017.
@@ -58,13 +55,13 @@ public class DroolsService implements MessageListener {
     @Override
     public void onMessage(Message message) {
         try {
-            NLUBotMessage botMessage = gson.fromJson(((TextMessage) message).getText(), NLUBotMessageImpl.class);
+            NLUBotMessage botMessage = message.getBody(NLUBotMessage.class);
 
             botMessage = doRules(botMessage);
 
             logger.info("ANSWER: " + botMessage.getText());
 
-            //messageQueue.addOutMessage(botMessage);
+            messageQueue.addOutMessage(botMessage);
         } catch (JMSException e) {
             logger.error("Exception while setting bot message to the queue.", e);
         }

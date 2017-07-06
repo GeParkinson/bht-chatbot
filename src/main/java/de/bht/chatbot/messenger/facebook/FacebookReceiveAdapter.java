@@ -154,7 +154,7 @@ public class FacebookReceiveAdapter {
         String fields ="messages, messaging_postbacks, messaging_optins, message_deliveries, message_reads, messaging_payments, messaging_pre_checkouts, messaging_checkout_updates, messaging_account_linking, messaging_referrals, message_echoes";
 
         String callback_url =facebookUtils.webadress()+"/facebook/getUpdates";
-        Response response = facebookProxy.sendText("page", callback_url, fields, webhookToken, access_token);
+        Response response = facebookProxy.sendHook("page", callback_url, fields, webhookToken, access_token);
 
         String responseAsString = response.readEntity(String.class);
 
