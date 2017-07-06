@@ -10,6 +10,9 @@ import java.util.Map;
 /**
  * @author: Oliver
  * Date: 19.06.17
+ *
+ * ApiAi-specific class of the NLUResponse Interface
+ * class which represents the JSON received from ApiAI
  */
 public class ApiAiResponse implements NLUResponse, Serializable {
 

@@ -1,0 +1,33 @@
+{
+  "id": "7448b81b-c696-4f27-b31a-9f418f1addbf",
+  "name": "dishtype",
+  "isOverridable": true,
+  "entries": [
+    {
+      "value": "vegan",
+      "synonyms": [
+        "vegan",
+        "veganes",
+        "veganer"
+      ]
+    },
+    {
+      "value": "vegetarian",
+      "synonyms": [
+        "vegetarisch",
+        "vegetarisches",
+        "vegetarier",
+        "ohne Fleisch",
+        "kein Fleisch"
+      ]
+    },
+    {
+      "value": "bio",
+      "synonyms": [
+        "bio"
+      ]
+    }
+  ],
+  "isEnum": false,
+  "automatedExpansion": false
+}

@@ -11,9 +11,12 @@ import java.util.Map;
 
 /**
  * Created by oliver on 19.06.2017.
+ *
+ * ApiAi-specific class of the NLUBotMessage Interface
  */
 public class ApiAiMessage implements NLUBotMessage, Serializable {
 
+    //store BotMessage and NLUResponse to query necessary information
     BotMessage bm;
     NLUResponse nluResponse;
 
@@ -48,13 +51,13 @@ public class ApiAiMessage implements NLUBotMessage, Serializable {
     }
 
     @Override
-    public boolean hasAttachements() {
-        return bm.hasAttachements();
+    public boolean hasAttachments() {
+        return bm.hasAttachments();
     }
 
     @Override
-    public Attachment[] getAttachements() {
-        return bm.getAttachements();
+    public Attachment[] getAttachments() {
+        return bm.getAttachments();
     }
 
     @Override

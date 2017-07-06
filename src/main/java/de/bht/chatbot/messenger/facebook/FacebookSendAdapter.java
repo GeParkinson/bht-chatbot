@@ -1,5 +1,7 @@
 package de.bht.chatbot.messenger.facebook;
 
+import de.bht.chatbot.attachments.AttachmentStore;
+import de.bht.chatbot.attachments.model.AttachmentStoreMode;
 import de.bht.chatbot.message.BotMessage;
 import de.bht.chatbot.messenger.utils.MessengerUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -8,6 +10,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -35,77 +38,56 @@ import java.util.Properties;
         }
 )
 public class FacebookSendAdapter implements MessageListener {
-    static String token(){
-        Properties properties = MessengerUtils.getProperties();
-        return properties.getProperty("FACEBOOK_BOT_TOKEN");
-    }
 
-    /** activate Webhook */
-    public static void activateWebhook() {
-        //Start function to activate webhook
-        Runnable activation = new Runnable() {
-            public void run() {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    //e.printStackTrace();
-                }
-                sendPostRequest("https://graph.facebook.com/v2.9/me/subscribed_apps","",token());
-            }
-        };
-        new Thread(activation).start();//Call it when you need to run the function
-    }
+    @Inject
+    private AttachmentStore attachmentStore;
 
+    @Inject
+    private FacebookUtils facebookUtils;
 
-    /** Send Text Message */
-    private static void sendMessage(Long recipient, String messageJson) {
+    /** Send Text Message
+     * build a payload from the given message and send it to the facebook url
+     */
+    private void sendMessage(Long recipient, String messageJson) {
         String payload = "{\"recipient\": {\"id\": \"" + recipient + "\"}, \"message\": { \"text\": \""+messageJson+"\"}}";
         String requestUrl = "https://graph.facebook.com/v2.6/me/messages" ;
         try {
-            sendPostRequest(requestUrl, payload, token());
+            facebookUtils.sendPostRequest(requestUrl, payload, facebookUtils.token());
         }
         catch(Exception ex){
             ex.printStackTrace();
         }
     }
 
-    /** Send Photo Method */
-    private static void sendMedia(BotMessage message,String mediaType){
-        String payload = "{recipient: { id: "+message.getSenderID()+" }, message: { attachment: { type: \""+mediaType+"\", payload: { url: \""+message.getAttachements()[0].getFileURI()+"\"  } }   }} ";
+    /** Send Media Method
+     * fill payload with media information and send it to facebook
+     */
+    private void sendMedia(BotMessage message,String mediaType){
+        String fileURL=attachmentStore.loadAttachmentPath(message.getAttachments()[0].getId(), AttachmentStoreMode.FILE_URI);
+        String payload = "{recipient: { id: "+message.getSenderID()+" }, message: { attachment: { type: \""+mediaType+"\", payload: { url: \""+fileURL+"\"  } }   }} ";
         System.out.println("FACEBOOK_SEND:Output:"+payload);
         String requestUrl = "https://graph.facebook.com/v2.6/me/messages" ;
         try {
-            sendPostRequest(requestUrl, payload,token());
+            facebookUtils.sendPostRequest(requestUrl, payload,facebookUtils.token());
         }
         catch(Exception ex){
             ex.printStackTrace();
         }
     }
 
-    public static String sendPostRequest(String requestUrl, String payload, String token) {
-
-        ResteasyClient client = new ResteasyClientBuilder().build();
-        ResteasyWebTarget target = client.target(UriBuilder.fromPath(requestUrl));
-        FacebookRESTServiceInterface facebookProxy = target.proxy(FacebookRESTServiceInterface.class);
-
-        Response response = facebookProxy.sendMessage(payload, token);
-        String responseAsString = response.readEntity(String.class);
-
-
-        return responseAsString;
-
-    }
-
-
+     /**
+     * receive messages from JMS and forward them to Facebook
+     * @param messageIn message from JMS
+     */
     @Override
     public void onMessage(Message messageIn) {
         BotMessage message = null;
         try {
             message = messageIn.getBody(BotMessage.class);
 
-
-        if(message.hasAttachements()) {
-            switch (message.getAttachements()[0].getAttachmentType()) {
+        // if message has attachment(s), use sendMedia function depending on type
+        if(message.hasAttachments()) {
+            switch (message.getAttachments()[0].getAttachmentType()) {
                 case AUDIO:
                     sendMedia(message, "audio");
                     break;
@@ -121,8 +103,12 @@ public class FacebookSendAdapter implements MessageListener {
                 case PHOTO:
                     sendMedia(message, "image");
                     break;
+                case UNKOWN:
+                    sendMessage(message.getSenderID(), "Unknown AttachmentType");
+                    break;
             }
         }
+        // else use simple text message sending
         else{
             sendMessage(message.getSenderID(), message.getText());
         }

@@ -1,15 +1,15 @@
-package canteen;
+package de.bht.chatbot.canteen.model;
 
 /**
  * Created by sJantzen on 11.06.2017.
  */
-public enum DishCategory {
+public enum TrafficLight {
 
-    STARTER("Vorspeise"), SALAD("Salat"), SOUP("Suppe"), SPECIAL("Aktionsstand"), FOOD("Essen"), SIDE_DISH("Beilage"), DESSERT("Dessert");
+    GREEN("Grün"), ORANGE("Orange"), RED("Rot");
 
     private String text;
 
-    DishCategory(final String text){
+    TrafficLight(final String text){
         this.text = text;
     }
 

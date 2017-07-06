@@ -32,8 +32,8 @@ public class MessageQueue {
         final JMSContext context = messageQueueManager.getContext();
         Message message = context.createObjectMessage(botMessageObject);
         try {
-            if (botMessageObject.hasAttachements()) {
-                for (Attachment attachment : botMessageObject.getAttachements()) {
+            if (botMessageObject.hasAttachments()) {
+                for (Attachment attachment : botMessageObject.getAttachments()) {
                     //TODO: different AttachmentTypes -> different botMessageObjects
                     switch (attachment.getAttachmentType()) {
                         case AUDIO:

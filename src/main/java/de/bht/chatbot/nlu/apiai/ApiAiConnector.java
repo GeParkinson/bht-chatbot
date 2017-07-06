@@ -3,6 +3,7 @@ package de.bht.chatbot.nlu.apiai;
 import com.google.gson.Gson;
 import de.bht.chatbot.jms.MessageQueue;
 import de.bht.chatbot.message.BotMessage;
+import de.bht.chatbot.message.BotMessageImpl;
 import de.bht.chatbot.messenger.utils.MessengerUtils;
 import de.bht.chatbot.nlu.apiai.model.ApiAiMessage;
 import de.bht.chatbot.nlu.apiai.model.ApiAiResponse;
@@ -19,6 +20,7 @@ import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.TextMessage;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.util.Properties;
@@ -50,12 +52,16 @@ public class ApiAiConnector implements MessageListener {
 
     @PostConstruct
     public void init() {
+        
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(UriBuilder.fromPath("https://api.api.ai/api/query"));
         apiaiProxy = target.proxy(ApiAiRESTServiceInterface.class);
     }
 
-
+    /**
+     * process messages received over the JMS
+     * @param message from JMS which contains the bot message
+     */
     @Override
     public void onMessage(final Message message) {
         try {
@@ -65,15 +71,21 @@ public class ApiAiConnector implements MessageListener {
             String token = properties.getProperty("API_AI_TOKEN");
 
             String sessionID = String.valueOf(botMessage.getMessageID());
-            String language = "en";
+            String language = "de";
 
+            //create a requests to te API.ai server
             Response response = apiaiProxy.processText(botMessage.getText(), language, sessionID,"BHT-Chatbot","Bearer " + token);
             String responseAsString = response.readEntity(String.class);
 
-            ApiAiResponse gs=new Gson().fromJson(responseAsString, ApiAiResponse.class);
-            ApiAiMessage msg = new ApiAiMessage(botMessage,gs);
+            //parse the response into ApiAiResponse
+            ApiAiResponse gs = new Gson().fromJson(responseAsString, ApiAiResponse.class);
+
+            //Create ApiAiMessage
+            ApiAiMessage msg = new ApiAiMessage(botMessage, gs);
 
             //System.out.println("API.AI RESPONSE:"+responseAsString);
+
+            //put ApiAiMessage into messageQueue
             messageQueue.addMessage(msg, "Drools", "in");
 
         } catch (JMSException e) {

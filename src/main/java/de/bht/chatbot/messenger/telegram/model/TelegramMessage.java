@@ -3,7 +3,6 @@ package de.bht.chatbot.messenger.telegram.model;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.pengrad.telegrambot.model.Message;
-import de.bht.chatbot.message.Attachment;
 import de.bht.chatbot.message.BotMessage;
 import de.bht.chatbot.message.Messenger;
 
@@ -16,7 +15,7 @@ public class TelegramMessage implements BotMessage{
     private Message message;
 
     /** Attachment[] */
-    private Attachment[] attachments;
+    private TelegramAttachment[] telegramAttachments;
 
     /**
      * Constructor
@@ -52,21 +51,21 @@ public class TelegramMessage implements BotMessage{
     }
 
     @Override
-    public boolean hasAttachements() {
-        return (attachments != null);
+    public boolean hasAttachments() {
+        return(telegramAttachments != null);
     }
 
     @Override
-    public Attachment[] getAttachements() {
-        return attachments;
+    public TelegramAttachment[] getAttachments() {
+        return telegramAttachments;
     }
 
     /**
      * Setter for Attachment[]
      * @param attachments
      */
-    public void setAttachments(final Attachment[] attachments){
-        this.attachments = attachments;
+    public void setTelegramAttachments(TelegramAttachment[] telegramAttachments){
+        this.telegramAttachments = telegramAttachments;
     }
 
     @Override

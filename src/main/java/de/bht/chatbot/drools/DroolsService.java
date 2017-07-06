@@ -1,7 +1,16 @@
 package de.bht.chatbot.drools;
 
+
+import de.bht.chatbot.canteen.model.CanteenData;
+import de.bht.chatbot.canteen.Parser;
+
+import com.google.gson.Gson;
+
 import de.bht.chatbot.jms.MessageQueue;
+import de.bht.chatbot.message.BotMessage;
+import de.bht.chatbot.message.BotMessageImpl;
 import de.bht.chatbot.message.NLUBotMessage;
+import de.bht.chatbot.message.NLUBotMessageImpl;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -14,6 +23,7 @@ import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.TextMessage;
 
 /**
  * Created by sJantzen on 13.06.2017.
@@ -36,10 +46,15 @@ import javax.jms.MessageListener;
 )
 public class DroolsService implements MessageListener {
 
-    private Logger logger = LoggerFactory.getLogger(MessageQueue.class);
+    private Logger logger = LoggerFactory.getLogger(DroolsService.class);
+    private Gson gson = new Gson();
+
 
     @Inject
     private MessageQueue messageQueue;
+
+    @Inject
+    private Parser parser;
 
     @Override
     public void onMessage(Message message) {
@@ -47,6 +62,8 @@ public class DroolsService implements MessageListener {
             NLUBotMessage botMessage = message.getBody(NLUBotMessage.class);
 
             botMessage = doRules(botMessage);
+
+            logger.info("ANSWER: " + botMessage.getText());
 
             messageQueue.addOutMessage(botMessage);
         } catch (JMSException e) {
@@ -59,7 +76,7 @@ public class DroolsService implements MessageListener {
      * @param botMessage
      * @returns the botMessage with a new created answer text
      */
-    public static NLUBotMessage doRules(final NLUBotMessage botMessage){
+    private NLUBotMessage doRules(final NLUBotMessage botMessage){
 
         // KieServices is the factory for all KIE services
         KieServices ks = KieServices.Factory.get();
@@ -74,8 +91,8 @@ public class DroolsService implements MessageListener {
         // Once the session is created, the application can interact with it
         // In this case it is setting a global as defined in the
         // org/drools/examples/helloworld/HelloWorld.drl file
-        // TODO Sja: ich glaube hier müsste man dann den Cache setzen, damit man ihn in den Regeln benutzen kann
-        //ksession.setGlobal( "canteenCache", CACHE-Object);
+        CanteenData canteenData = parser.parse();
+        ksession.setGlobal("canteenData", canteenData);
 
         // The application can insert facts into the session
         ksession.insert(botMessage);

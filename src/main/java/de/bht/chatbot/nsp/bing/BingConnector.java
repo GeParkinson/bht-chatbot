@@ -34,8 +34,14 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.ws.rs.core.MediaType;
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Random;
 
 /**
  * @Author: Christopher Kümmel on 6/12/2017.
@@ -90,9 +96,9 @@ public class BingConnector implements MessageListener {
     public void onMessage(final Message message) {
         try {
             BotMessage botMessage = message.getBody(BotMessage.class);
-            if (botMessage.hasAttachements()) {
+            if (botMessage.hasAttachments()) {
                 // Speech to Text Request
-                for (Attachment attachment : botMessage.getAttachements()) {
+                for (Attachment attachment : botMessage.getAttachments()) {
                     sendSpeechToTextRequest(botMessage);
                 }
             } else {
@@ -170,7 +176,7 @@ public class BingConnector implements MessageListener {
                 httpPost.setHeader(entry.getKey(), entry.getValue());
             }
 
-            for (Attachment attachment : botMessage.getAttachements()) {
+            for (Attachment attachment : botMessage.getAttachments()) {
                 // get audio file
                 File file = new File(attachmentStore.loadAttachmentPath(attachment.getId(), AttachmentStoreMode.LOCAL_PATH));
                 FileBody fileBody = new FileBody(file, ContentType.DEFAULT_BINARY);

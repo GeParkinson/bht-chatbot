@@ -14,48 +14,62 @@ import java.util.Map;
  */
 public class Parameters implements Serializable{
 
-    //TODO: allow custom parameters, not just fixed one
 
-    @SerializedName("day")
+    @SerializedName("date")
     @Expose
-    private String day;
-    @SerializedName("Essen")
+    private String date;
+    @SerializedName("dishtype")
     @Expose
-    private String essen;
-    @SerializedName("Vegan-Vegetarisch")
+    private String dishtype;
+    @SerializedName("healthy")
     @Expose
-    private String veganVegetarisch;
+    private String healthy;
+    @SerializedName("ingredients")
+    @Expose
+    private String ingredients;
 
-    public String getDay() {
-        return day;
+    public String getDate() {
+        return date;
     }
 
-    public void setDay(String day) {
-        this.day = day;
+    public void setDate(String date) {
+        this.date = date;
     }
 
-    public String getEssen() {
-        return essen;
+    public String getDishtype() {
+        return dishtype;
     }
 
-    public void setEssen(String essen) {
-        this.essen = essen;
+    public void setDishtype(String dishtype) {
+        this.dishtype = dishtype;
     }
 
-    public String getVeganVegetarisch() {
-        return veganVegetarisch;
+    public String getHealthy() {
+        return healthy;
     }
 
-    public void setVeganVegetarisch(String veganVegetarisch) {
-        this.veganVegetarisch = veganVegetarisch;
+    public void setHealthy(String healthy) {
+        this.healthy = healthy;
     }
 
+    public String getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(String ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    /**
+     * @return puts the given entities with their values into a Map
+     */
     public Map<String, String> getEntities(){
         Map<String, String> Entities = new HashMap<>();
 
-        Entities.put("Essen",essen);
-        Entities.put("Day",day);
-        Entities.put("VeganVegetarisch",veganVegetarisch);
+        Entities.put("date",date);
+        Entities.put("dishtype",dishtype);
+        Entities.put("healthy",healthy);
+        Entities.put("ingredients",ingredients);
 
         return Entities;
     }

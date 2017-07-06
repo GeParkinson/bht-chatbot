@@ -1,7 +1,10 @@
 package de.bht.chatbot.nlu.rasa;
 
 import com.google.gson.Gson;
+import de.bht.chatbot.jms.MessageQueue;
 import de.bht.chatbot.message.BotMessage;
+import de.bht.chatbot.message.BotMessageImpl;
+import de.bht.chatbot.nlu.rasa.model.RasaMessage;
 import de.bht.chatbot.nlu.rasa.model.RasaResponse;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -12,9 +15,11 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.TextMessage;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
@@ -39,10 +44,15 @@ public class RasaConnector implements MessageListener {
 
     private final Logger logger = LoggerFactory.getLogger(RasaConnector.class);
     private RasaRESTServiceInterface rasaProxy;
+    private Gson gson;
+
+    @Inject
+    private MessageQueue messageQueue;
     
 
     @PostConstruct
     public void init() {
+        gson = new Gson();
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(UriBuilder.fromPath("http://rasa_nlu:5000"));
         rasaProxy = target.proxy(RasaRESTServiceInterface.class);
@@ -60,8 +70,10 @@ public class RasaConnector implements MessageListener {
 
             logger.debug("{}: {}", response.getStatus(), responseAsString);
 
-            RasaResponse rasaResponse = new Gson().fromJson(responseAsString, RasaResponse.class);
+            RasaResponse rasaResponse = gson.fromJson(responseAsString, RasaResponse.class);
 
+
+            messageQueue.addMessage(new RasaMessage(incomingChatMessage, rasaResponse), "Drools", "in");
         } catch (JMSException e) {
             logger.error("Error while processing message.", e);
         }

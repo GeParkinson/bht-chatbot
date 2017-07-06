@@ -6,7 +6,8 @@ import com.pengrad.telegrambot.request.SendAudio;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SendVoice;
 import com.pengrad.telegrambot.response.SendResponse;
-import de.bht.chatbot.message.*;
+import de.bht.chatbot.message.Attachment;
+import de.bht.chatbot.message.BotMessage;
 import de.bht.chatbot.messenger.utils.MessengerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,8 +63,8 @@ public class TelegramSendAdapter implements MessageListener {
     public void onMessage(final Message message) {
         try {
             BotMessage botMessage = message.getBody(BotMessage.class);
-            if (botMessage.hasAttachements()){
-                for (Attachment attachment : botMessage.getAttachements()) {
+            if (botMessage.hasAttachments()){
+                for (Attachment attachment : botMessage.getAttachments()) {
                     switch (attachment.getAttachmentType()) {
                         case AUDIO:
                             sendAudio(botMessage);
@@ -75,7 +76,7 @@ public class TelegramSendAdapter implements MessageListener {
                             sendMessage(botMessage.getSenderID(), "Sorry! Can't process this AttachmentType.");
                         default:
                             sendMessage(botMessage.getSenderID(), "UNKNOWN ATTACHMENT!");
-                            logger.info("new OutMessage has Attachements but no defined AttachementType Case.");
+                            logger.info("new OutMessage has Attachments but no defined AttachmentType Case.");
                             break;
                     }
                 }
@@ -106,8 +107,8 @@ public class TelegramSendAdapter implements MessageListener {
     private void sendAudio(final BotMessage botMessage){
         SendAudio request;
 
-        // check & send each attachment
-        for (Attachment attachment : botMessage.getAttachements()) {
+        // check & send each attachement
+        for (Attachment attachment : botMessage.getAttachments()) {
             request = new SendAudio(botMessage.getSenderID(), attachment.getFileURI());
 
             if (attachment.getCaption() != null)
@@ -125,7 +126,7 @@ public class TelegramSendAdapter implements MessageListener {
     private void sendVoice(final BotMessage botMessage){
         SendVoice request;
 
-        for (Attachment attachment : botMessage.getAttachements()) {
+        for (Attachment attachment : botMessage.getAttachments()) {
             request = new SendVoice(botMessage.getSenderID(), attachment.getFileURI());
 
             if (attachment.getCaption() != null)
