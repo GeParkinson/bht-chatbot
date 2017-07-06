@@ -3,6 +3,7 @@ package de.bht.beuthbot.attachments;
 import de.bht.beuthbot.attachments.model.AttachmentStoreMode;
 import org.apache.http.HttpStatus;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -18,7 +19,7 @@ import java.io.File;
 public class AttachmentService {
 
     /** Injected AttachmentStore */
-    @Inject
+    @Resource(lookup = "java:global/global/AttachmentStoreBean")
     private AttachmentStore attachmentStore;
 
     /**
