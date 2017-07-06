@@ -126,11 +126,10 @@ public class TelegramReceiveAdapter {
 
     /**
      * RESTEasy HTTP Post to set Webhook
-     * @param msg Telegram Message
      */
     @POST
     @Path("/setWebhook")
-    public Response setWebhook(final String msg) {
+    public Response setWebhook() {
         int responseCode = verifyWebhook();
         return Response.status(responseCode).build();
     }
