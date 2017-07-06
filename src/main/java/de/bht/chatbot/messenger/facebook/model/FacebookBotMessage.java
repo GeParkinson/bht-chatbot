@@ -68,13 +68,17 @@ public class FacebookBotMessage implements BotMessage{
     @Override
     public Attachment[] getAttachments() {
 
-        Attachment[] atts=new Attachment[facebookEntry.getMessaging().get(0).getMessage().getAttachments().size()];
+        if(hasAttachments()) {
+            Attachment[] atts = new Attachment[facebookEntry.getMessaging().get(0).getMessage().getAttachments().size()];
 
-        for(int i=0; i<facebookEntry.getMessaging().get(0).getMessage().getAttachments().size(); i++)
-        {
-            atts[i]=facebookEntry.getMessaging().get(0).getMessage().getAttachments().get(i);
+            for (int i = 0; i < facebookEntry.getMessaging().get(0).getMessage().getAttachments().size(); i++) {
+                atts[i] = facebookEntry.getMessaging().get(0).getMessage().getAttachments().get(i);
+            }
+
+            return atts;
         }
-
-        return atts;
+        else {
+            return new Attachment[0];
+        }
     }
 }
