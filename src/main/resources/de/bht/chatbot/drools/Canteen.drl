@@ -27,7 +27,6 @@ import java.time.LocalDate;
 
 import de.bht.chatbot.canteen.model.Dish
 import de.bht.chatbot.canteen.model.DishType;
-import de.bht.chatbot.canteen.model.DishCategory;
 import de.bht.chatbot.message.Intent;
 import de.bht.chatbot.message.EntityName;
 import de.bht.chatbot.drools.model.DroolsMessage
@@ -45,7 +44,7 @@ end
 rule "Greeting"
     dialect "java"
     when
-        m : DroolsMessage( intent.equals(Intent.GREETING))
+        m : DroolsMessage( intent.equals(Intent.GREETING.getText()))
     then
         modify ( m ) { setText("Hallo")};
 end
@@ -53,7 +52,7 @@ end
 rule "Saying goodbye"
     dialect "java"
     when
-        m : DroolsMessage( intent.equals(Intent.SAYING_GOODBYE))
+        m : DroolsMessage( intent.equals(Intent.SAYING_GOODBYE.getText()))
     then
         modify( m ) { setText("Tschüss")};
 end
@@ -61,7 +60,7 @@ end
 rule "Show all dishes"
     dialect "java"
     when
-        m : DroolsMessage( intent.equals(Intent.SHOW_DISHES) && MapUtils.isEmpty(entities))
+        m : DroolsMessage( intent.equals(Intent.SHOW_FOOD.getText()) && MapUtils.isEmpty(entities))
     then
         modify ( m ) { setText("Heute gibt es folgende Gerichte: \n" + canteenData.getDishes())};
 end
@@ -69,15 +68,14 @@ end
 rule "Show dishes"
     dialect "java"
     when
-        m : DroolsMessage( intent.equals(Intent.SHOW_DISHES) && !MapUtils.isEmpty(entities) )
+        m : DroolsMessage( intent.equals(Intent.SHOW_FOOD.getText()) && !MapUtils.isEmpty(entities) )
     then
         modify( m ) {
             setText("Gerichte:\n" + canteenData.getDishesFiltered(
-            (m.getEntities().containsKey(de.bht.chatbot.message.EntityName.DATE.getText()) ? m.getEntities().containsKey(de.bht.chatbot.message.EntityName.DATE.getText()) : null),
-            (m.getEntities().containsKey(de.bht.chatbot.message.EntityName.TRAFFICLIGHT.getText()) ? m.getEntities().containsKey(de.bht.chatbot.message.EntityName.TRAFFICLIGHT.getText()) : null),
-            (m.getEntities().containsKey(de.bht.chatbot.message.EntityName.DISH_TYPE.getText()) ? m.getEntities().containsKey(de.bht.chatbot.message.EntityName.DISH_TYPE.getText()) : null),
-            (m.getEntities().containsKey(de.bht.chatbot.message.EntityName.DISH_CATEGORY.getText()) ? m.getEntities().containsKey(de.bht.chatbot.message.EntityName.DISH_CATEGORY.getText()) : null),
-            (m.getEntities().containsKey(de.bht.chatbot.message.EntityName.MARKINGS.getText()) ? m.getEntities().containsKey(de.bht.chatbot.message.EntityName.MARKINGS.getText()) : null)
+            (m.getEntities().containsKey(de.bht.chatbot.message.EntityName.DATE.getText()) ? m.getEntities().get(de.bht.chatbot.message.EntityName.DATE.getText()) : null),
+            (m.getEntities().containsKey(de.bht.chatbot.message.EntityName.HEALTHY.getText()) ? m.getEntities().get(de.bht.chatbot.message.EntityName.HEALTHY.getText()) : null),
+            (m.getEntities().containsKey(de.bht.chatbot.message.EntityName.DISH_TYPE.getText()) ? m.getEntities().get(de.bht.chatbot.message.EntityName.DISH_TYPE.getText()) : null),
+            (m.getEntities().containsKey(de.bht.chatbot.message.EntityName.INGREDIENTS.getText()) ? m.getEntities().get(de.bht.chatbot.message.EntityName.INGREDIENTS.getText()) : null)
             ))
         };
 end

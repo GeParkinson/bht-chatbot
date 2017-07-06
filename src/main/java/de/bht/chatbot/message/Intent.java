@@ -5,8 +5,7 @@ package de.bht.chatbot.message;
  */
 public enum Intent {
 
-    SHOW_DISHES("show_dishes"), OPENING_HOURS("opening_hours"), KITCHEN_OPENING_HOURS("kitchen_opening_hours"),
-    GREETING("greeting"), SAYING_GOODBYE("saying_goodbye");
+    SHOW_FOOD("showFood"), GREETING("Hello"), SAYING_GOODBYE("Bye");
 
     private String text;
 
