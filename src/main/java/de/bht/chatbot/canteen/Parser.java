@@ -33,18 +33,12 @@ public class Parser {
 
     private static final String OPENING_HOURS = "Mo. - Fr. | 09:00 - 14:30";
 
-    public static void main(String [] args) {
-        CanteenData data = parse();
-
-        s(data.toString());
-    }
-
     /**
      * Creates new CanteenData with all dishes of the current and next week by parsing
      * the canteen url of the beuth university.
      * @return
      */
-    public static CanteenData parse() {
+    public CanteenData parse() {
 
         String canteenName = "";
 
