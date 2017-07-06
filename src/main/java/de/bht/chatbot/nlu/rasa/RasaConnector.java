@@ -3,7 +3,6 @@ package de.bht.chatbot.nlu.rasa;
 import com.google.gson.Gson;
 import de.bht.chatbot.jms.MessageQueue;
 import de.bht.chatbot.message.BotMessage;
-import de.bht.chatbot.message.BotMessageImpl;
 import de.bht.chatbot.nlu.rasa.model.RasaMessage;
 import de.bht.chatbot.nlu.rasa.model.RasaResponse;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;

@@ -7,10 +7,7 @@ import de.bht.chatbot.canteen.Parser;
 import com.google.gson.Gson;
 
 import de.bht.chatbot.jms.MessageQueue;
-import de.bht.chatbot.message.BotMessage;
-import de.bht.chatbot.message.BotMessageImpl;
 import de.bht.chatbot.message.NLUBotMessage;
-import de.bht.chatbot.message.NLUBotMessageImpl;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -23,7 +20,6 @@ import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.TextMessage;
 
 /**
  * Created by sJantzen on 13.06.2017.

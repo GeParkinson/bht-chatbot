@@ -3,7 +3,6 @@ package de.bht.chatbot.nlu.apiai;
 import com.google.gson.Gson;
 import de.bht.chatbot.jms.MessageQueue;
 import de.bht.chatbot.message.BotMessage;
-import de.bht.chatbot.message.BotMessageImpl;
 import de.bht.chatbot.messenger.utils.MessengerUtils;
 import de.bht.chatbot.nlu.apiai.model.ApiAiMessage;
 import de.bht.chatbot.nlu.apiai.model.ApiAiResponse;
