@@ -1,8 +1,6 @@
 package de.bht.chatbot.drools.model;
 
-import de.bht.chatbot.message.Attachment;
-import de.bht.chatbot.message.Messenger;
-import de.bht.chatbot.message.NLUBotMessage;
+import de.bht.chatbot.message.*;
 
 import java.util.Map;
 
@@ -84,7 +82,7 @@ public class DroolsMessage implements NLUBotMessage {
         return entities;
     }
 
-    public void setEntity(Map<String,String> entities){
+    public void setEntities(Map<String,String> entities){
         this.entities = entities;
     }
 }

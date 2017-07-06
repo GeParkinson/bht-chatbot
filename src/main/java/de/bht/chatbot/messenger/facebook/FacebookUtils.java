@@ -14,12 +14,30 @@ import java.util.Properties;
  */
 public class FacebookUtils {
     /**
-     * get and return token from properties
+     * get and return messaging-token from properties
      * @return String Facebook-Message token
      */
     public String token(){
         Properties properties = MessengerUtils.getProperties();
         return properties.getProperty("FACEBOOK_BOT_TOKEN");
+    }
+
+    /**
+     * get and return access-token from properties
+     * @return String Facebook-access token
+     */
+    public String accessID(){
+        Properties properties = MessengerUtils.getProperties();
+        return properties.getProperty("FACEBOOK_ACCESS_TOKEN");
+    }
+
+    /**
+     * get and return url of server
+     * @return String Server URL
+     */
+    public String webadress(){
+        Properties properties = MessengerUtils.getProperties();
+        return properties.getProperty("WEB_URL");
     }
 
     /**
@@ -56,6 +74,7 @@ public class FacebookUtils {
         FacebookRESTServiceInterface facebookProxy = target.proxy(FacebookRESTServiceInterface.class);
 
         Response response = facebookProxy.sendMessage(payload, token);
+
         String responseAsString = response.readEntity(String.class);
 
 

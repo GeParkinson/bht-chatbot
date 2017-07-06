@@ -16,14 +16,20 @@
 
 package de.bht.chatbot.drools
 
-import de.bht.chatbot.drools.model.DroolsMessage
+import org.apache.commons.collections4.MapUtils;
+
 import java.util.List
-import de.bht.chatbot.canteen.model.Dish
-import de.bht.chatbot.canteen.model.DishType;
-import de.bht.chatbot.canteen.model.DishCategory;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+
 import java.time.LocalDate;
+
+import de.bht.chatbot.canteen.model.Dish
+import de.bht.chatbot.canteen.model.DishType;
+import de.bht.chatbot.message.Intent;
+import de.bht.chatbot.message.EntityName;
+import de.bht.chatbot.drools.model.DroolsMessage
 
 global de.bht.chatbot.canteen.model.CanteenData canteenData;
 
@@ -35,58 +41,41 @@ rule "Test Rule"
         modify ( m ) { setText("Test successful" )};
 end
 
-rule "Test Parser0"
+rule "Greeting"
     dialect "java"
     when
-        m : DroolsMessage( intent == "Test Parser0")
+        m : DroolsMessage( intent.equals(Intent.GREETING.getText()))
     then
-        modify( m ){ setText("Test nach Ampel: " + canteenData.getDishesFiltered(null,
-         de.bht.chatbot.canteen.model.TrafficLight.RED, null, null, null).size())}
+        modify ( m ) { setText("Hallo")};
 end
 
-rule "Test Parser1"
+rule "Saying goodbye"
     dialect "java"
     when
-        m : DroolsMessage( intent == "Test Parser1")
+        m : DroolsMessage( intent.equals(Intent.SAYING_GOODBYE.getText()))
     then
-        modify( m ){ setText("Test für Heute dishes: " + canteenData.getDishesFiltered(LocalDate.parse("2017-06-26"),
-         null, null, null, null).size())}
+        modify( m ) { setText("Tschüss")};
 end
 
-rule "Test Parser2"
+rule "Show all dishes"
     dialect "java"
     when
-        m : DroolsMessage( intent == "Test Parser2")
+        m : DroolsMessage( intent.equals(Intent.SHOW_FOOD.getText()) && MapUtils.isEmpty(entities))
     then
-        modify( m ){ setText("Test nach Kategorie: " + canteenData.getDishesFiltered(null,
-         null, null, Arrays.asList(new DishCategory[]{de.bht.chatbot.canteen.model.DishCategory.SPECIAL,
-          de.bht.chatbot.canteen.model.DishCategory.STARTER}), null).size())}
-end
-rule "Test Parser3"
-    dialect "java"
-    when
-        m : DroolsMessage( intent == "Test Parser3")
-    then
-        modify( m ){ setText("Test nach Markings: " + canteenData.getDishesFiltered(null,
-         null, null, null, Arrays.asList(new String[]{"Senf","Hefe"})).size())}
+        modify ( m ) { setText("Heute gibt es folgende Gerichte: \n" + canteenData.getDishes())};
 end
 
-rule "Test Parser4"
+rule "Show dishes"
     dialect "java"
     when
-        m : DroolsMessage( intent == "Test Parser4")
+        m : DroolsMessage( intent.equals(Intent.SHOW_FOOD.getText()) && !MapUtils.isEmpty(entities) )
     then
-        modify( m ){ setText("Test 29.06.2017 alle vegan, orange, Farbstoff: " +
-        canteenData.getDishesFiltered(LocalDate.parse("2017-06-29"), de.bht.chatbot.canteen.model.TrafficLight.ORANGE,
-        Arrays.asList(new DishType[]{de.bht.chatbot.canteen.model.DishType.VEGAN}), null,
-        Arrays.asList(new String[]{"Farbstoff"})))}
-end
-
-
-rule "Show all meals"
-    dialect "java"
-    when
-        m : DroolsMessage( intent == "show_meals")
-    then
-        modify ( m ) { setText("Heute gibt es folgende Gerichte: \n" )};
+        modify( m ) {
+            setText("Gerichte:\n" + canteenData.getDishesFiltered(
+            (m.getEntities().containsKey(de.bht.chatbot.message.EntityName.DATE.getText()) ? m.getEntities().get(de.bht.chatbot.message.EntityName.DATE.getText()) : null),
+            (m.getEntities().containsKey(de.bht.chatbot.message.EntityName.HEALTHY.getText()) ? m.getEntities().get(de.bht.chatbot.message.EntityName.HEALTHY.getText()) : null),
+            (m.getEntities().containsKey(de.bht.chatbot.message.EntityName.DISH_TYPE.getText()) ? m.getEntities().get(de.bht.chatbot.message.EntityName.DISH_TYPE.getText()) : null),
+            (m.getEntities().containsKey(de.bht.chatbot.message.EntityName.INGREDIENTS.getText()) ? m.getEntities().get(de.bht.chatbot.message.EntityName.INGREDIENTS.getText()) : null)
+            ))
+        };
 end

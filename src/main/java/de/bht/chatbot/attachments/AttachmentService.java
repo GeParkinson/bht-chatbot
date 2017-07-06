@@ -31,11 +31,16 @@ public class AttachmentService {
     @Path("/{directory:(audio|voice)*}/{fileID}.{ext}")
     @Produces({"audio/mpeg"})
     public Response downloadAudioFile(@PathParam("fileID") final Long fileId, @PathParam("ext") final String ext) {
-        File file = new File(attachmentStore.loadAttachmentPath(fileId, AttachmentStoreMode.LOCAL_PATH));
-        if (file.exists()) {
-            Response.ResponseBuilder response = Response.ok((Object) file);
-            response.header("Content-Disposition", "attachment;filename=" + String.valueOf(fileId)); //+ "." + ext);
-            return response.build();
+        String filePath = attachmentStore.loadAttachmentPath(fileId, AttachmentStoreMode.LOCAL_PATH);
+        if (filePath != null) {
+            File file = new File(filePath);
+            if (file.exists()) {
+                Response.ResponseBuilder response = Response.ok((Object) file);
+                response.header("Content-Disposition", "attachment;filename=" + String.valueOf(fileId)); //+ "." + ext);
+                return response.build();
+            } else {
+                return Response.status(HttpStatus.SC_NO_CONTENT).build();
+            }
         } else {
             return Response.status(HttpStatus.SC_NO_CONTENT).build();
         }

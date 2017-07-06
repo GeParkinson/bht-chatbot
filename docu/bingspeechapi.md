@@ -76,7 +76,7 @@ public class BingConnector implements MessageListener {
 ```
 
 - AccessToken is required to successfully send parsing-request. Token generates from secret-keys mentioned above.
-
+- AccessToken decays after 10 mins. You need to refresh the Token.
 
 __Important:__ Speech to Text REST requests need to have **_Transfer-Endcoding: chunked_** Header!
 
