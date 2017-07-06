@@ -49,7 +49,7 @@ public class MessageQueue {
                     }
                 }
             } else {
-                message.setStringProperty("BingConnector", "in");
+                message.setStringProperty("NLU", "in");
             }
             context.createProducer().send(messageQueueManager.getTopic(), message);
             return true;
