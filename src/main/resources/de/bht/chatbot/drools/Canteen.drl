@@ -16,8 +16,6 @@
 
 package de.bht.chatbot.drools
 
-import org.apache.commons.collections4.MapUtils;
-
 import java.util.List
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,7 +58,7 @@ end
 rule "Show all dishes"
     dialect "java"
     when
-        m : DroolsMessage( intent.equals(Intent.SHOW_FOOD.getText()) && MapUtils.isEmpty(entities))
+        m : DroolsMessage( intent.equals(Intent.SHOW_FOOD.getText()) && entities.isEmpty())
     then
         modify ( m ) { setText("Heute gibt es folgende Gerichte: \n" + canteenData.getDishes())};
 end
@@ -68,7 +66,7 @@ end
 rule "Show dishes"
     dialect "java"
     when
-        m : DroolsMessage( intent.equals(Intent.SHOW_FOOD.getText()) && !MapUtils.isEmpty(entities) )
+        m : DroolsMessage( intent.equals(Intent.SHOW_FOOD.getText()) && !entities.isEmpty() )
     then
         modify( m ) {
             setText("Gerichte:\n" + canteenData.getDishesFiltered(
