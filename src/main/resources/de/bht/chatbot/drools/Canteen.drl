@@ -34,7 +34,7 @@ global de.bht.chatbot.canteen.model.CanteenData canteenData;
 rule "Test Rule"
     dialect "java"
     when
-        m : DroolsMessage( intent == "Test")
+        m : DroolsMessage( getIntent().equals("Test"))
     then
         modify ( m ) { setText("Test successful" )};
 end
@@ -42,7 +42,7 @@ end
 rule "Greeting"
     dialect "java"
     when
-        m : DroolsMessage( intent.equals(Intent.GREETING.getText()))
+        m : DroolsMessage( getIntent().equals(Intent.GREETING.getText()))
     then
         modify ( m ) { setText("Hallo")};
 end
@@ -50,7 +50,7 @@ end
 rule "Saying goodbye"
     dialect "java"
     when
-        m : DroolsMessage( intent.equals(Intent.SAYING_GOODBYE.getText()))
+        m : DroolsMessage( getIntent().equals(Intent.SAYING_GOODBYE.getText()))
     then
         modify( m ) { setText("Tschüss")};
 end
@@ -58,7 +58,7 @@ end
 rule "Show all dishes"
     dialect "java"
     when
-        m : DroolsMessage( intent.equals(Intent.SHOW_FOOD.getText()) && entities.isEmpty())
+        m : DroolsMessage( getIntent().equals(Intent.SHOW_FOOD.getText()) && getEntities().isEmpty())
     then
         modify ( m ) { setText("Heute gibt es folgende Gerichte: \n" + canteenData.getDishes())};
 end
@@ -66,7 +66,7 @@ end
 rule "Show dishes"
     dialect "java"
     when
-        m : DroolsMessage( intent.equals(Intent.SHOW_FOOD.getText()) && !entities.isEmpty() )
+        m : DroolsMessage( getIntent().equals(Intent.SHOW_FOOD.getText()) && !getEntities().isEmpty() )
     then
         modify( m ) {
             setText("Gerichte:\n" + canteenData.getDishesFiltered(
