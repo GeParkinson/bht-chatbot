@@ -47,7 +47,7 @@ public class ApiAiMessage implements NLUBotMessage, Serializable {
 
     @Override
     public String getText() {
-        return bm.getText()+"-Entities:"+getEntities().toString()+"-Intend:"+getIntent();
+        return bm.getText()+"-Entities:"+getEntities().toString()+"-Intent:"+getIntent();
     }
 
     @Override
