@@ -57,3 +57,9 @@ task chatbotStop(type: Exec) {
     workingDir 'src/main/docker'
     commandLine 'docker-compose', 'down'
 }
+
+task cleanWar(type: Delete) {
+    delete fileTree(dir: 'docker/wildfly/volumes/deployments/', include: '*.war')
+}
+
+tasks.war.dependsOn(cleanWar)
