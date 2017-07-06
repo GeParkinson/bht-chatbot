@@ -91,6 +91,7 @@ public class DroolsService implements MessageListener {
         ksession.setGlobal("canteenData", canteenData);
 
         // The application can insert facts into the session
+        logger.debug("Intent: " + botMessage.getIntent() + " entities: " + botMessage.getEntities());
         ksession.insert(botMessage);
 
         // and fire the rules
