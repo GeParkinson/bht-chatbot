@@ -44,8 +44,10 @@ public class MessageQueue {
                             break;
                         case UNKOWN:
                             addOutMessage(botMessageObject);
+                            return true;
                         default:
                             logger.error("new InMessage has Attachements but no defined case. Type should be UNKNOWN.");
+                            return false;
                     }
                 }
             } else {
