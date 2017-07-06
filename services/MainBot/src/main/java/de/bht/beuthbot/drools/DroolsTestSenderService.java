@@ -1,7 +1,7 @@
 package de.bht.beuthbot.drools;
 
 import de.bht.beuthbot.drools.model.DroolsMessage;
-import de.bht.beuthbot.jms.MessageQueue;
+import de.bht.beuthbot.jms.ProcessQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +18,7 @@ public class DroolsTestSenderService {
     private Logger logger = LoggerFactory.getLogger(DroolsTestSenderService.class);
 
     @Inject
-    private MessageQueue messageQueue;
+    private ProcessQueue processQueue;
 
     @GET
     @Path("/test0")
@@ -26,7 +26,7 @@ public class DroolsTestSenderService {
         DroolsMessage droolsMessage = new DroolsMessage();
         droolsMessage.setIntent("Test Parser0");
 
-        messageQueue.addMessage(droolsMessage, "Drools", "in");
+        processQueue.addMessage(droolsMessage, "Drools", "in");
 
         return "Test Ende";
     }
@@ -37,7 +37,7 @@ public class DroolsTestSenderService {
         DroolsMessage droolsMessage = new DroolsMessage();
         droolsMessage.setIntent("Test Parser1");
 
-        messageQueue.addMessage(droolsMessage, "Drools", "in");
+        processQueue.addMessage(droolsMessage, "Drools", "in");
 
         return "Test Ende";
     }
@@ -48,7 +48,7 @@ public class DroolsTestSenderService {
         DroolsMessage droolsMessage = new DroolsMessage();
         droolsMessage.setIntent("Test Parser2");
 
-        messageQueue.addMessage(droolsMessage, "Drools", "in");
+        processQueue.addMessage(droolsMessage, "Drools", "in");
 
         return "Test Ende";
     }
@@ -59,7 +59,7 @@ public class DroolsTestSenderService {
         DroolsMessage droolsMessage = new DroolsMessage();
         droolsMessage.setIntent("Test Parser3");
 
-        messageQueue.addMessage(droolsMessage, "Drools", "in");
+        processQueue.addMessage(droolsMessage, "Drools", "in");
 
         return "Test Ende";
     }
@@ -70,7 +70,7 @@ public class DroolsTestSenderService {
         DroolsMessage droolsMessage = new DroolsMessage();
         droolsMessage.setIntent("Test Parser4");
 
-        messageQueue.addMessage(droolsMessage, "Drools", "in");
+        processQueue.addMessage(droolsMessage, "Drools", "in");
 
         return "Test Ende";
     }

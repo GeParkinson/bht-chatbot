@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import de.bht.beuthbot.attachments.AttachmentStore;
 import de.bht.beuthbot.conf.Application;
 import de.bht.beuthbot.conf.Configuration;
-import de.bht.beuthbot.jms.MessageQueue;
+import de.bht.beuthbot.jms.ProcessQueue;
 import de.bht.beuthbot.messenger.facebook.model.FacebookAttachment;
 import de.bht.beuthbot.messenger.facebook.model.FacebookBotMessage;
 import de.bht.beuthbot.messenger.facebook.model.FacebookInput;
@@ -26,7 +26,7 @@ import java.util.Map;
 public class FacebookReceiveAdapter {
 
     @Inject
-    private MessageQueue messageQueue;
+    private ProcessQueue processQueue;
 
     @Inject
     private AttachmentStore attachmentStore;
@@ -93,7 +93,7 @@ public class FacebookReceiveAdapter {
                 }
 
                 //put message into JMS-queue
-                messageQueue.addInMessage(msg);
+                processQueue.addInMessage(msg);
             }
         }
 

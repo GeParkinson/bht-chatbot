@@ -4,7 +4,7 @@ package de.bht.beuthbot.drools;
 import com.google.gson.Gson;
 import de.bht.beuthbot.canteen.Parser;
 import de.bht.beuthbot.canteen.model.CanteenData;
-import de.bht.beuthbot.jms.MessageQueue;
+import de.bht.beuthbot.jms.ProcessQueue;
 import de.bht.beuthbot.model.NLUBotMessage;
 import de.bht.beuthbot.model.NLUBotMessageImpl;
 import org.kie.api.KieServices;
@@ -47,7 +47,7 @@ public class DroolsService implements MessageListener {
 
 
     @Inject
-    private MessageQueue messageQueue;
+    private ProcessQueue processQueue;
 
     @Inject
     private Parser parser;

@@ -3,7 +3,7 @@ package de.bht.beuthbot.nlp.apiai;
 import com.google.gson.Gson;
 import de.bht.beuthbot.conf.Application;
 import de.bht.beuthbot.conf.Configuration;
-import de.bht.beuthbot.jms.MessageQueue;
+import de.bht.beuthbot.jms.ProcessQueue;
 import de.bht.beuthbot.model.BotMessage;
 import de.bht.beuthbot.model.BotMessageImpl;
 import de.bht.beuthbot.nlp.apiai.model.ApiAiMessage;
@@ -46,7 +46,7 @@ public class ApiAiConnector implements MessageListener {
     private Gson gson;
 
     @Inject
-    private MessageQueue messageQueue;
+    private ProcessQueue processQueue;
 
     @Inject
     private Application application;
@@ -90,7 +90,7 @@ public class ApiAiConnector implements MessageListener {
             //System.out.println("API.AI RESPONSE:"+responseAsString);
 
             //put ApiAiMessage into messageQueue
-            messageQueue.addMessage(msg, "Drools", "in");
+            processQueue.addMessage(msg, "Drools", "in");
 
         } catch (JMSException e) {
             logger.error("Could not process message.", e);

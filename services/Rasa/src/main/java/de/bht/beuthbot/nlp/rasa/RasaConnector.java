@@ -1,9 +1,10 @@
 package de.bht.beuthbot.nlp.rasa;
 
 import com.google.gson.Gson;
-import de.bht.beuthbot.jms.MessageQueue;
+import de.bht.beuthbot.jms.ProcessQueue;
 import de.bht.beuthbot.model.BotMessage;
 import de.bht.beuthbot.model.BotMessageImpl;
+import de.bht.beuthbot.model.NLUBotMessage;
 import de.bht.beuthbot.nlp.rasa.model.RasaMessage;
 import de.bht.beuthbot.nlp.rasa.model.RasaResponse;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -13,7 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
+import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.inject.Inject;
 import javax.jms.JMSException;
@@ -46,8 +49,8 @@ public class RasaConnector implements MessageListener {
     private RasaRESTServiceInterface rasaProxy;
     private Gson gson;
 
-    @Inject
-    private MessageQueue messageQueue;
+    @Resource(lookup = "java:global/global/ProcessQueueBean")
+    private ProcessQueue processQueue;
     
 
     @PostConstruct
@@ -71,8 +74,8 @@ public class RasaConnector implements MessageListener {
             logger.debug("{}: {}", response.getStatus(), responseAsString);
 
             RasaResponse rasaResponse = gson.fromJson(responseAsString, RasaResponse.class);
-            
-            messageQueue.addMessage(new RasaMessage(incomingChatMessage, rasaResponse), "Drools", "in");
+            NLUBotMessage processRulesTask = new RasaMessage(incomingChatMessage, rasaResponse);
+            processQueue.addMessage(processRulesTask, "Drools", "in");
         } catch (JMSException e) {
             logger.error("Error while processing message.", e);
         }

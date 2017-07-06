@@ -20,7 +20,6 @@ public class RasaNLPTest {
     @Deployment
     public static JavaArchive createDeployment() {
         return ShrinkWrap.create(JavaArchive.class)
-                .addPackages(true, "de.bht.chatbot.message")
                 .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 

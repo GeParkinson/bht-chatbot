@@ -11,7 +11,7 @@ import com.pengrad.telegrambot.response.GetFileResponse;
 import de.bht.beuthbot.attachments.AttachmentStore;
 import de.bht.beuthbot.conf.Application;
 import de.bht.beuthbot.conf.Configuration;
-import de.bht.beuthbot.jms.MessageQueue;
+import de.bht.beuthbot.jms.ProcessQueue;
 import de.bht.beuthbot.model.Attachment;
 import de.bht.beuthbot.model.AttachmentType;
 import de.bht.beuthbot.messenger.telegram.model.TelegramAttachment;
@@ -31,7 +31,7 @@ public class TelegramReceiveAdapter {
 
     /** Injected JMS MessageQueue */
     @Inject
-    private MessageQueue messageQueue;
+    private ProcessQueue processQueue;
 
     /** BeuthBot Application Bean */
     @Inject
@@ -63,7 +63,7 @@ public class TelegramReceiveAdapter {
         TelegramMessage message = new TelegramMessage(update.message());
         // TODO Chris: fix this
         // message.setAttachments(getAttachments(update.message()));
-        messageQueue.addInMessage(message);
+        processQueue.addInMessage(message);
     }
 
     /**

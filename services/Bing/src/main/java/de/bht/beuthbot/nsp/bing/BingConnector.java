@@ -5,7 +5,7 @@ import de.bht.beuthbot.attachments.AttachmentStore;
 import de.bht.beuthbot.attachments.model.AttachmentStoreMode;
 import de.bht.beuthbot.conf.Application;
 import de.bht.beuthbot.conf.Configuration;
-import de.bht.beuthbot.jms.MessageQueue;
+import de.bht.beuthbot.jms.ProcessQueue;
 import de.bht.beuthbot.model.Attachment;
 import de.bht.beuthbot.model.AttachmentType;
 import de.bht.beuthbot.model.BotMessage;
@@ -37,11 +37,8 @@ import javax.jms.MessageListener;
 import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * @Author: Christopher Kümmel on 6/12/2017.
@@ -82,7 +79,7 @@ public class BingConnector implements MessageListener {
 
     /** Injected JMS MessageQueue */
     @Inject
-    private MessageQueue messageQueue;
+    private ProcessQueue processQueue;
 
     /** Injected AttachmentStore */
     @Inject
@@ -226,7 +223,7 @@ public class BingConnector implements MessageListener {
                             return;
                         }
                         // return message
-                        messageQueue.addInMessage(bingMessage);
+                        processQueue.addInMessage(bingMessage);
                     } catch (Exception e) {
                         logger.error("Error while parsing BingSpeechResponse: ", e);
                     }
@@ -287,7 +284,7 @@ public class BingConnector implements MessageListener {
 
                 BingMessage bingMessage = new BingMessage(botMessage, new BingAttachment(id, path));
 
-                messageQueue.addOutMessage(bingMessage);
+                processQueue.addOutMessage(bingMessage);
             } else {
                 logger.warn("Could not process Speech to Text request. Returns: " + "Speech to Text request returns: " + httpResponse.toString());
             }
