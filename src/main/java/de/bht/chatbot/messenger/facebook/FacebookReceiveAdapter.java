@@ -153,7 +153,7 @@ public class FacebookReceiveAdapter {
 
         String fields ="messages, messaging_postbacks, messaging_optins, message_deliveries, message_reads, messaging_payments, messaging_pre_checkouts, messaging_checkout_updates, messaging_account_linking, messaging_referrals, message_echoes";
 
-        String callback_url ="https://chatbot.ziemers.net/rest/webhook/facebook";//facebookUtils.webadress()+"/facebook/getUpdates";
+        String callback_url =facebookUtils.webadress()+"/facebook/getUpdates";
         Response response = facebookProxy.sendText("page", callback_url, fields, webhookToken, access_token);
 
         String responseAsString = response.readEntity(String.class);
