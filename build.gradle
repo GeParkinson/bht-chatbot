@@ -69,7 +69,7 @@ task chatbotStop(type: Exec) {
 }
 
 task cleanWar(type: Delete) {
-    delete fileTree(dir: 'docker/wildfly/volumes/deployments/', include: '*.war')
+    delete fileTree(dir: 'src/main/docker/wildfly/volumes/deployments/', include: '*.war')
 }
 
 tasks.war.dependsOn(cleanWar)
