@@ -50,7 +50,7 @@ public class DroolsMessage implements NLUBotMessage {
 
     @Override
     public String getText() {
-        return text+"---went through drools---";
+        return text;
     }
 
     public void setText(String text){
@@ -66,7 +66,6 @@ public class DroolsMessage implements NLUBotMessage {
     public Attachment[] getAttachments() {
         return null;
     }
-
 
     @Override
     public String getIntent() {
