@@ -232,6 +232,7 @@ public class BingConnector implements MessageListener {
                             case "simple":
                                 BingSimpleResponse bingSimpleResponse = new Gson().fromJson(result.toString(), BingSimpleResponse.class);
                                 bingMessage = new BingMessage(bingSimpleResponse, botMessage);
+                                logger.debug("Received message from bing: {}", result);
                                 break;
                             case "detailed":
                                 BingDetailedResponse bingDetailedResponse = new Gson().fromJson(result.toString(), BingDetailedResponse.class);

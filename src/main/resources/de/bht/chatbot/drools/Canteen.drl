@@ -16,8 +16,6 @@
 
 package de.bht.chatbot.drools
 
-import org.apache.commons.collections4.MapUtils;
-
 import java.util.List
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,53 +27,75 @@ import de.bht.chatbot.canteen.model.Dish
 import de.bht.chatbot.canteen.model.DishType;
 import de.bht.chatbot.message.Intent;
 import de.bht.chatbot.message.EntityName;
-import de.bht.chatbot.drools.model.DroolsMessage
+import de.bht.chatbot.drools.model.DroolsMessage;
 
 global de.bht.chatbot.canteen.model.CanteenData canteenData;
 
-rule "Test Rule"
+// ---------------------- GREETING ------------------------------------
+rule "Hello Drools"
     dialect "java"
     when
-        m : DroolsMessage( intent == "Test")
+        m : DroolsMessage( intent.equals(Intent.HELLO.getText()))
     then
-        modify ( m ) { setText("Test successful" )};
+        modify ( m ) { setText("Hallo zurück")};
 end
 
-rule "Greeting"
+rule "Greet Drools"
     dialect "java"
     when
-        m : DroolsMessage( intent.equals(Intent.GREETING.getText()))
+        m : DroolsMessage( intent.equals(Intent.GREET.getText()))
     then
-        modify ( m ) { setText("Hallo")};
+        modify ( m ) { setText("Hallo zurück2")};
 end
 
-rule "Saying goodbye"
+// ---------------------- SAYING GOODBYE ------------------------------------
+
+rule "Saying goodbye1"
     dialect "java"
     when
-        m : DroolsMessage( intent.equals(Intent.SAYING_GOODBYE.getText()))
+        m : DroolsMessage( intent.equals(Intent.BYE.getText()))
     then
         modify( m ) { setText("Tschüss")};
 end
 
+rule "Saying goodbye2"
+    dialect "java"
+    when
+        m : DroolsMessage( intent.equals(Intent.GOODBYE.getText()))
+    then
+        modify( m ) { setText("Tschüss2")};
+end
+
+// ------------------------ SHOW DISHES --------------------------------------
+
 rule "Show all dishes"
     dialect "java"
     when
-        m : DroolsMessage( intent.equals(Intent.SHOW_FOOD.getText()) && MapUtils.isEmpty(entities))
+        m : DroolsMessage( intent.equals(Intent.SHOW_FOOD.getText()) && entities.isEmpty())
     then
-        modify ( m ) { setText("Heute gibt es folgende Gerichte: \n" + canteenData.getDishes())};
+        modify ( m ) { setText("Alle Gerichte dieser und nächster Woche: \n" + canteenData.getDishes())};
 end
 
-rule "Show dishes"
+rule "Restaurant search"
     dialect "java"
     when
-        m : DroolsMessage( intent.equals(Intent.SHOW_FOOD.getText()) && !MapUtils.isEmpty(entities) )
+        m : DroolsMessage( intent.equals(Intent.RESTAURANT_SEARCH.getText()))
+    then
+        modify ( m ){ setText("Restaurant gesucht")}
+end
+
+
+rule "Show dishes filtered"
+    dialect "java"
+    when
+        m : DroolsMessage( getIntent().equals(Intent.SHOW_FOOD.getText()) && !entities.isEmpty() )
     then
         modify( m ) {
             setText("Gerichte:\n" + canteenData.getDishesFiltered(
-            (m.getEntities().containsKey(de.bht.chatbot.message.EntityName.DATE.getText()) ? m.getEntities().get(de.bht.chatbot.message.EntityName.DATE.getText()) : null),
-            (m.getEntities().containsKey(de.bht.chatbot.message.EntityName.HEALTHY.getText()) ? m.getEntities().get(de.bht.chatbot.message.EntityName.HEALTHY.getText()) : null),
-            (m.getEntities().containsKey(de.bht.chatbot.message.EntityName.DISH_TYPE.getText()) ? m.getEntities().get(de.bht.chatbot.message.EntityName.DISH_TYPE.getText()) : null),
-            (m.getEntities().containsKey(de.bht.chatbot.message.EntityName.INGREDIENTS.getText()) ? m.getEntities().get(de.bht.chatbot.message.EntityName.INGREDIENTS.getText()) : null)
+            (m.getEntities().containsKey(EntityName.DATE.getText()) ? m.getEntities().get(EntityName.DATE.getText()) : null),
+            (m.getEntities().containsKey(EntityName.HEALTHY.getText()) ? m.getEntities().get(EntityName.HEALTHY.getText()) : null),
+            (m.getEntities().containsKey(EntityName.DISH_TYPE.getText()) ? m.getEntities().get(EntityName.DISH_TYPE.getText()) : null),
+            (m.getEntities().containsKey(EntityName.INGREDIENTS.getText()) ? m.getEntities().get(EntityName.INGREDIENTS.getText()) : null)
             ))
         };
 end

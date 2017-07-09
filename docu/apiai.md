@@ -4,12 +4,13 @@
 
 - Create new [api.ai Account](https://console.api.ai/api-client)
 - Add a new agent "BHT-Chatbot"
-- You can import [our agent settings](files/apiai/BHT-Chatbot.zip)(which include all intents and entities we created) under 'Settings'->'Export and Import', search agents in the agent list or create an own one
+- You can import our agent settings(which include all intents and entities we created) under 'Settings'->'Export and Import', search agents in the agent list or create an own one
+- Our settings are located under src\main\docker\rasa_nlu\volumes\data\api ... put them into a zip and you are able to upload them as described above
 - The 'Training'-tab helps you to improve your bot in understanding requests
 
 ## Bot Setup
 - Get your 'Client access token' in the api.ai agent settings and place it under 'API_AI_TOKEN' in the 'config.properties'
-- If necessary, change the context in 'ApiAiConnector'->'onMessage'
+- If necessary, change the context and language in 'ApiAiConnector'->'onMessage'
 
 ## About apiai package
 
