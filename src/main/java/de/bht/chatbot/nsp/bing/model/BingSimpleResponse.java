@@ -9,9 +9,13 @@ import de.bht.chatbot.nsp.NSPResponse;
  */
 public class BingSimpleResponse implements NSPResponse {
 
+    @SerializedName("RecognitionStatus")
     private String recognitionStatus;
+    @SerializedName("DisplayText")
     private String displayText;
+    @SerializedName("Offset")
     private String offset;
+    @SerializedName("Duration")
     private String duration;
 
     @Override
