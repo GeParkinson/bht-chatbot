@@ -16,6 +16,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
@@ -170,31 +172,46 @@ public class BingConnector implements MessageListener {
             // HEADERS
             Map<String, String> postHeaders = new HashMap<>();
             postHeaders.put("Authorization", "Bearer " + accessToken);
-            postHeaders.put("Content-Type", "audio/wav; codec=\"audio/pcm\"; samplerate=16000");
+            postHeaders.put("Content-Type", "audio/mpeg; codec=\"audio/pcm\"; samplerate=16000");
 
             for (Map.Entry<String, String> entry : postHeaders.entrySet()) {
                 httpPost.setHeader(entry.getKey(), entry.getValue());
             }
 
             for (Attachment attachment : botMessage.getAttachments()) {
-                // get audio file
-                File file = new File(attachmentStore.loadAttachmentPath(attachment.getId(), AttachmentStoreMode.LOCAL_PATH));
-                FileBody fileBody = new FileBody(file, ContentType.DEFAULT_BINARY);
-                MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
-                multipartEntityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-                multipartEntityBuilder.addPart("bin", fileBody);
-                HttpEntity httpEntity = multipartEntityBuilder.build();
+                // AUDIO FILE DOWNLOAD
+                HttpGet get = new HttpGet(attachment.getFileURI());
+                CloseableHttpResponse execute = HttpClientBuilder.create().build().execute(get);
+                HttpEntity entity = execute.getEntity();
 
                 ByteArrayOutputStream bArrOS = new ByteArrayOutputStream();
-                httpEntity.writeTo(bArrOS);
+                entity.writeTo(bArrOS);
                 bArrOS.flush();
                 ByteArrayEntity bArrEntity = new ByteArrayEntity(bArrOS.toByteArray());
                 bArrOS.close();
 
-                // IMPORTANT! For Bing Speech API it is necessary to set Transfer-Encoding = chunked. Otherwise Bing wouldn't accept the file.
                 bArrEntity.setChunked(true);
                 bArrEntity.setContentEncoding(HttpMultipartMode.BROWSER_COMPATIBLE.toString());
                 bArrEntity.setContentType(ContentType.DEFAULT_BINARY.toString());
+
+//                // get audio file
+//                File file = new File(attachmentStore.loadAttachmentPath(attachment.getId(), AttachmentStoreMode.LOCAL_PATH));
+//                FileBody fileBody = new FileBody(file, ContentType.DEFAULT_BINARY);
+//                MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
+//                multipartEntityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+//                multipartEntityBuilder.addPart("bin", fileBody);
+//                HttpEntity httpEntity = multipartEntityBuilder.build();
+//
+//                ByteArrayOutputStream bArrOS = new ByteArrayOutputStream();
+//                httpEntity.writeTo(bArrOS);
+//                bArrOS.flush();
+//                ByteArrayEntity bArrEntity = new ByteArrayEntity(bArrOS.toByteArray());
+//                bArrOS.close();
+//
+//                // IMPORTANT! For Bing Speech API it is necessary to set Transfer-Encoding = chunked. Otherwise Bing wouldn't accept the file.
+//                bArrEntity.setChunked(true);
+//                bArrEntity.setContentEncoding(httpEntity.getContentEncoding());
+//                bArrEntity.setContentType(httpEntity.getContentType());
 
                 // set ByteArrayEntity to HttpPost
                 httpPost.setEntity(bArrEntity);

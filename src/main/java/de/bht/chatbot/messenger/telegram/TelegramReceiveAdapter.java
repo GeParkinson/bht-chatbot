@@ -94,12 +94,12 @@ public class TelegramReceiveAdapter {
             Long id;
             if (message.audio() != null) {
                 id = attachmentStore.storeAttachment(fullPath, AttachmentType.AUDIO);
-                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(id, AttachmentType.AUDIO, message.caption())};
+                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(id, AttachmentType.AUDIO, message.caption(), fullPath)};
                 return telegramAttachments;
             }
             if (message.voice() != null){
                 id = attachmentStore.storeAttachment(fullPath, AttachmentType.VOICE);
-                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(id, AttachmentType.VOICE, message.caption())};
+                TelegramAttachment[] telegramAttachments = {new TelegramAttachment(id, AttachmentType.VOICE, message.caption(), fullPath)};
                 return telegramAttachments;
             }
         }
