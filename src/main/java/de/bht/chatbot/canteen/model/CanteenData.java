@@ -1,7 +1,9 @@
 package de.bht.chatbot.canteen.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,6 +13,8 @@ import java.util.stream.Collectors;
  * Created by sJantzen on 11.06.2017.
  */
 public class CanteenData {
+
+    private Logger logger = LoggerFactory.getLogger(CanteenData.class);
 
     private String locationName;
     private String openingHoursKitchen;

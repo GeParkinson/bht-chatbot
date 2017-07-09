@@ -156,7 +156,7 @@ public class Dish {
         if (markings != null && markings.size() > 0) {
             sb.append("Zusätze: " + String.join(", ", markings));
         }
-
+        sb.append("\n");
         return sb.toString();
     }
 }
