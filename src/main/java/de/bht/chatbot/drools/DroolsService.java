@@ -99,6 +99,7 @@ public class DroolsService implements MessageListener {
         droolsMessage.setIntent(botMessage.getIntent());
         droolsMessage.setEntities(botMessage.getEntities());
         droolsMessage.setText(botMessage.getText());
+        droolsMessage.setMessenger(botMessage.getMessenger());
 
         logger.debug("Text: " + droolsMessage.getText());
 
