@@ -11,9 +11,13 @@ import java.util.List;
  */
 public class BingDetailedResponse implements NSPResponse {
 
+    @SerializedName("RecognitionStatus")
     private String recognitionStatus;
+    @SerializedName("Offset")
     private String offset;
+    @SerializedName("Duration")
     private String duration;
+    @SerializedName("N-Best")
     private List<BingNBest> nBest = null;
 
     @Override
