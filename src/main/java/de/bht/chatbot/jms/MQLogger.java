@@ -34,7 +34,7 @@ public class MQLogger implements MessageListener {
     @Override
     public void onMessage(final Message message) {
          try {
-             logger.info("Inbox receive message [{}]: {}", message.getJMSMessageID(), message.getBody(BotMessage.class));
+             logger.info("Inbox receive message [{}]: {}", message.getJMSMessageID(), message.getBody(BotMessage.class).getText());
          } catch (JMSException e) {
              logger.error("Error while interpreting message.", e);
          }

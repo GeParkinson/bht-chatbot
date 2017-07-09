@@ -62,6 +62,8 @@ public class RasaConnector implements MessageListener {
     public void onMessage(final Message message) {
         try {
             BotMessage incomingChatMessage = message.getBody(BotMessage.class);
+            logger.debug("Receive message: {}", incomingChatMessage.toString());
+
             String messageText = incomingChatMessage.getText();
 
             Response response = rasaProxy.processText(messageText);

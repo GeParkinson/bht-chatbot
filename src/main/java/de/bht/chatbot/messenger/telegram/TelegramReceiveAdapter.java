@@ -35,7 +35,7 @@ import java.util.Properties;
 public class TelegramReceiveAdapter {
 
     /** slf4j Logger */
-    private final Logger logger = LoggerFactory.getLogger(TelegramSendAdapter.class);
+    private final Logger logger = LoggerFactory.getLogger(TelegramReceiveAdapter.class);
 
     /** Injected JMS MessageQueue */
     @Inject
@@ -90,6 +90,7 @@ public class TelegramReceiveAdapter {
 
             File file = getFileResponse.file();
             String fullPath = bot.getFullFilePath(file);
+            logger.debug("Telegram attachment uri: {}", fullPath);
 
             Long id;
             if (message.audio() != null) {
