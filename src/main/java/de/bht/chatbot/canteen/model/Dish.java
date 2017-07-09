@@ -3,6 +3,7 @@ package de.bht.chatbot.canteen.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,6 +28,8 @@ public class Dish {
      * Default constructor.
      */
     public Dish(){
+        dishTypes = new ArrayList<>();
+        markings = new ArrayList<>();
     }
 
     /**
@@ -153,7 +156,7 @@ public class Dish {
         if (markings != null && markings.size() > 0) {
             sb.append("Zusätze: " + String.join(", ", markings));
         }
-
+        sb.append("\n");
         return sb.toString();
     }
 }

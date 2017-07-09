@@ -8,6 +8,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -22,6 +24,8 @@ import java.util.regex.Pattern;
  */
 public class Parser {
 
+    private Logger logger = LoggerFactory.getLogger(Parser.class);
+
     private static final Pattern DATE_PATTERN = Pattern.compile(".*([0-9]{4}-[0-9]{2}-[0-9]{2}).*");
     private static final Pattern ICON_PATTERN = Pattern.compile(".*/([0-9]{1,2})\\.png");
 
@@ -33,18 +37,12 @@ public class Parser {
 
     private static final String OPENING_HOURS = "Mo. - Fr. | 09:00 - 14:30";
 
-    public static void main(String [] args) {
-        CanteenData data = parse();
-
-        s(data.toString());
-    }
-
     /**
      * Creates new CanteenData with all dishes of the current and next week by parsing
      * the canteen url of the beuth university.
      * @return
      */
-    public static CanteenData parse() {
+    public CanteenData parse() {
 
         String canteenName = "";
 
@@ -121,22 +119,29 @@ public class Parser {
                         dish.setPrice(strPrice.text());
 
                         // check if 3 different prices are available or just one price for all
+                        /*
                         if(!"".equals(dish.getPrice())) {
                             if (dish.getPrice().contains("/")) {
                                 // 3 different prices
-                                String[] prices = dish.getPrice().replace("€", "").replace(",",".").trim().split("/");
+                                String[] prices = dish.getPrice().replace("€", "").replace("\\?", "").replace(",",".").trim().split("/");
                                 dish.setPriceStudent(new BigDecimal(prices[0]));
                                 dish.setPriceEmployee(new BigDecimal(prices[1]));
                                 dish.setPriceGuest(new BigDecimal(prices[2]));
                             }
                             else {
                                 // only 1 price
-                                BigDecimal price = new BigDecimal(dish.getPrice().replace("€", "").replace(",",".").trim());
+                                logger.info("1: " + dish.getPrice());
+                                logger.info("1: " + dish.getPrice().replace("€", ""));
+                                logger.info("1: " + dish.getPrice().replace("€", "").replace("\\?", ""));
+                                logger.info("1: " + dish.getPrice().replace("€", "").replace("\\?", "").replace(",","."));
+                                logger.info("1: " + dish.getPrice().replace("€", "").replace("\\?", "").replace(",",".").trim());
+                                BigDecimal price = new BigDecimal(dish.getPrice().replace("€", "").replace("\\?", "").replace(",",".").trim());
                                 dish.setPriceStudent(price);
                                 dish.setPriceEmployee(price);
                                 dish.setPriceGuest(price);
                             }
                         }
+                        */
 
                         /*
                          * Get name of dish.

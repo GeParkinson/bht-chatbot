@@ -1,5 +1,8 @@
 package de.bht.chatbot.canteen.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +13,8 @@ import java.util.stream.Collectors;
  * Created by sJantzen on 11.06.2017.
  */
 public class CanteenData {
+
+    private Logger logger = LoggerFactory.getLogger(CanteenData.class);
 
     private String locationName;
     private String openingHoursKitchen;
@@ -70,15 +75,22 @@ public class CanteenData {
 
     /**
      * Returns all dishes, matching the given parameters.
-     * @param date if you wish to get the dishes of the given date
-     * @param trafficLight gets all dishes having the given traffic light color
-     * @param dishTypes gets dishes, containing all given dishTypes
-     * @param dishCategories gets dishes, containing all given dishCategories
-     * @param markings gets dishes, containing all given markings
+     * @param pDate if you wish to get the dishes of the given date
+     * @param pHealthy gets all dishes having the given traffic light color
+     * @param pDishType gets dishes, containing all given dishTypes
+     * @param pMarkings gets dishes, containing all given markings
      * @return
      */
-    public final List<Dish> getDishesFiltered(final LocalDate date, final TrafficLight trafficLight, final List<DishType> dishTypes,
-                                              final List<DishCategory> dishCategories, final List<String> markings) {
+    public final List<Dish> getDishesFiltered(final String pDate, final String pHealthy, final String pDishType,
+                                              final String pMarkings) {
+
+        final LocalDate date = ("tomorrow".equals(pDate) ? LocalDate.now().plusDays(1) : LocalDate.now());
+
+        final TrafficLight trafficLight = (pHealthy != null && !"".equals(pHealthy) ? TrafficLight.getTrafficLight(pHealthy): null);
+
+        final DishType dishType = (pDishType != null && !"".equals(pDishType) ? DishType.getDishTypeByName(pDishType) : null);
+
+        //final List<String> markings = (pMarkings != null && !"".equals(pMarkings) ? Arrays.asList(pMarkings.split(",")) : null);
 
             /*
              * TODO man könnte noch Suchmodi hinzufügen, also so etwas wie:
@@ -87,11 +99,9 @@ public class CanteenData {
              * Ein Gericht darf KEINEN von beiden enthalten
               */
 
-        return dishes.stream().filter(dish -> (date == null || date.equals(dish.getDate())))
+        return dishes.stream().filter(dish -> (date.equals(dish.getDate())))
                 .filter(dish -> (trafficLight == null || trafficLight.equals(dish.getTrafficLight())))
-                .filter(dish -> (dishTypes != null && !dishTypes.isEmpty() ? dish.getDishTypes().containsAll(dishTypes) : true))
-                .filter(dish -> (dishCategories != null && !dishTypes.isEmpty() ? dishCategories.contains(dish.getDishCategory()) : true))
-                .filter(dish -> (markings != null && !markings.isEmpty() ? dish.getMarkings().containsAll(markings) : true))
+                .filter(dish -> (dishType == null || dish.getDishTypes().contains(dishType)))
                 .collect(Collectors.toList());
     }
 
@@ -100,8 +110,8 @@ public class CanteenData {
      * @param date
      * @return
      */
-    public final List<Dish> getDishesByDate(final LocalDate date) {
-        return getDishesFiltered(date, null, null, null, null);
+    public final List<Dish> getDishesByDate(final String date) {
+        return getDishesFiltered(date, null, null, null);
     }
 
     /**
@@ -109,17 +119,8 @@ public class CanteenData {
      * @param dishTypes
      * @return
      */
-    public final List<Dish> getDishesByDishType(final List<DishType> dishTypes) {
-        return getDishesFiltered(null, null, dishTypes, null, null);
-    }
-
-    /**
-     * Returns a list of dishes having a dishCategory in the given dishCategory-list.
-     * @param dishCategories
-     * @return
-     */
-    public final List<Dish> getDishesByDishCategory(final List<DishCategory> dishCategories) {
-        return getDishesFiltered(null, null, null, dishCategories, null);
+    public final List<Dish> getDishesByDishType(final String dishTypes) {
+        return getDishesFiltered(null, null, dishTypes, null);
     }
 
     /**
@@ -127,8 +128,8 @@ public class CanteenData {
      * @param trafficLight
      * @return
      */
-    public final List<Dish> getDishesByTrafficLight(final TrafficLight trafficLight) {
-        return getDishesFiltered(null, trafficLight, null, null, null);
+    public final List<Dish> getDishesByTrafficLight(final String trafficLight) {
+        return getDishesFiltered(null, trafficLight, null, null);
     }
 
     /**
@@ -136,8 +137,8 @@ public class CanteenData {
      * @param markings
      * @return
      */
-    public final List<Dish> getDishesByMarkings(final List<String> markings) {
-        return getDishesFiltered(null, null, null, null, markings);
+    public final List<Dish> getDishesByMarkings(final String markings) {
+        return getDishesFiltered(null, null, null, markings);
     }
 
     public final String toString(){
