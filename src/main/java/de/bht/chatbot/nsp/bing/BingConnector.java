@@ -179,7 +179,8 @@ public class BingConnector implements MessageListener {
             }
 
             for (Attachment attachment : botMessage.getAttachments()) {
-                // AUDIO FILE DOWNLOAD
+
+                // audio file download
                 HttpGet get = new HttpGet(attachment.getFileURI());
                 CloseableHttpResponse execute = HttpClientBuilder.create().build().execute(get);
                 HttpEntity entity = execute.getEntity();
@@ -190,11 +191,13 @@ public class BingConnector implements MessageListener {
                 ByteArrayEntity bArrEntity = new ByteArrayEntity(bArrOS.toByteArray());
                 bArrOS.close();
 
+                // IMPORTANT! For Bing Speech API it is necessary to set Transfer-Encoding = chunked. Otherwise Bing wouldn't accept the file.
                 bArrEntity.setChunked(true);
                 bArrEntity.setContentEncoding(HttpMultipartMode.BROWSER_COMPATIBLE.toString());
                 bArrEntity.setContentType(ContentType.DEFAULT_BINARY.toString());
 
-//                // get audio file
+                //THIS CODE IS NOT WORKING PROPERLY - Check AttachmentStore for correct implementation
+//                // get audio file from AttachmentStore
 //                File file = new File(attachmentStore.loadAttachmentPath(attachment.getId(), AttachmentStoreMode.LOCAL_PATH));
 //                FileBody fileBody = new FileBody(file, ContentType.DEFAULT_BINARY);
 //                MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
