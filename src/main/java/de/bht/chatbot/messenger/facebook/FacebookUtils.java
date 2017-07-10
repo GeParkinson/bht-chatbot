@@ -4,6 +4,7 @@ import de.bht.chatbot.messenger.utils.MessengerUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.json.JSONObject;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -73,7 +74,7 @@ public class FacebookUtils {
         ResteasyWebTarget target = client.target(UriBuilder.fromPath(requestUrl));
         FacebookRESTServiceInterface facebookProxy = target.proxy(FacebookRESTServiceInterface.class);
 
-        Response response = facebookProxy.sendMessage(payload, token);
+        Response response = facebookProxy.sendMessage((new JSONObject(payload)).toString(), token);
 
         String responseAsString = response.readEntity(String.class);
 
