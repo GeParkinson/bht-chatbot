@@ -16,6 +16,8 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -49,13 +51,36 @@ public class FacebookSendAdapter implements MessageListener {
      * build a payload from the given message and send it to the facebook url
      */
     private void sendMessage(Long recipient, String messageJson) {
-        String payload = "{\"recipient\": {\"id\": \"" + recipient + "\"}, \"message\": { \"text\": \""+messageJson+"\"}}";
         String requestUrl = "https://graph.facebook.com/v2.6/me/messages" ;
-        try {
-            facebookUtils.sendPostRequest(requestUrl, payload, facebookUtils.token());
+
+        //facebook allows a maximum of 640 characters, message must be split if necessary:
+        String linesOfMessage[] = messageJson.split("\\r?\\n");
+        List<String> outputPackages = new ArrayList<String>();
+
+        String currentOutput="";
+        for( String line: linesOfMessage ) {
+            if((currentOutput+System.lineSeparator()+line).length()>600){
+                //if appending new line would increase the chars over 600, save current output and start new one
+                outputPackages.add(currentOutput);
+                currentOutput=line;
+            }
+            else{
+                //append line if 6(0/4)0 char limit not reached
+                currentOutput=currentOutput+System.lineSeparator()+line;
+            }
         }
-        catch(Exception ex){
-            ex.printStackTrace();
+        //add last line(s) to output
+        outputPackages.add(currentOutput);
+
+        //send output packages
+        for( String currentPackage: outputPackages ) {
+            //send package
+            String payload = "{\"recipient\": {\"id\": \"" + recipient + "\"}, \"message\": { \"text\": \"" + currentPackage + "\"}}";
+            try {
+                facebookUtils.sendPostRequest(requestUrl, payload, facebookUtils.token());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
