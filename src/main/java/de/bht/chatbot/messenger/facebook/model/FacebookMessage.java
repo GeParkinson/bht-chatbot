@@ -21,7 +21,7 @@ public class FacebookMessage implements Serializable {
     private Integer seq;
     @SerializedName("text")
     @Expose
-    private String text="";
+    private String text;
     @SerializedName("attachments")
     @Expose
     private List<FacebookAttachment> attachments = null;
