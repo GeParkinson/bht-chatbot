@@ -107,7 +107,7 @@ public class TelegramReceiveAdapter {
 
         // "unkown" undefined attachments
         boolean unknownType = false;
-        if (fileID == null && (message.text().equals("") || message.text() == null)) unknownType = true;
+        if (fileID == null) unknownType = true;
 
         if (unknownType){
             TelegramAttachment[] telegramAttachments = {new TelegramAttachment(AttachmentType.UNKOWN)};
