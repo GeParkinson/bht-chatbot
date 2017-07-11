@@ -7,6 +7,8 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -80,5 +82,38 @@ public class FacebookUtils {
 
         return responseAsString;
 
+    }
+
+    public List<String> splitIntoMultipleMessages(String messageJson, int charLimit, Boolean seperateMessages, String seperator){
+        List<String> messages = new ArrayList<String>();
+
+        //facebook allows a maximum of 640 characters, message must be split if necessary:
+        String linesOfMessage[] = messageJson.split("\\r?\\n");
+
+        String currentOutput = "";
+        for (int i = 0; i < linesOfMessage.length; i++) {
+            String line = linesOfMessage[i];
+            if ((currentOutput + "\\n" + line).length() > charLimit || (line.contains(seperator)&&seperateMessages)) {
+                //if appending new line would increase the chars over charLimit, put current output and start new one
+                messages.add(currentOutput);
+
+                //hide seperator if message is split by entries
+                if(line.contains(seperator)&&seperateMessages) {
+                    line="";
+                }
+
+                //begin a new output with the current line (which was not send because 640 chars would have been reached)
+                currentOutput = line;
+            } else {
+                //append line if char limit not reached
+                currentOutput = currentOutput + "\\n" + line;
+            }
+
+
+        }
+        messages.add(currentOutput);
+
+
+        return messages;
     }
 }
