@@ -106,15 +106,8 @@ public class TelegramReceiveAdapter {
         }
 
         // "unkown" undefined attachments
-        //TODO: process attachments
         boolean unknownType = false;
-        if (message.video() != null) unknownType = true;
-        if (message.contact() != null) unknownType = true;
-        if (message.sticker() != null) unknownType = true;
-        if (message.location() != null) unknownType = true;
-        if (message.invoice() != null) unknownType = true;
-        if (message.game() != null) unknownType = true;
-        if (message.document() != null) unknownType = true;
+        if (fileID == null && (message.text().equals("") || message.text() == null)) unknownType = true;
 
         if (unknownType){
             TelegramAttachment[] telegramAttachments = {new TelegramAttachment(AttachmentType.UNKOWN)};
