@@ -16,7 +16,10 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 /**
  * Created by oliver on 22.05.2017.
@@ -49,13 +52,41 @@ public class FacebookSendAdapter implements MessageListener {
      * build a payload from the given message and send it to the facebook url
      */
     private void sendMessage(Long recipient, String messageJson) {
-        String payload = "{\"recipient\": {\"id\": \"" + recipient + "\"}, \"message\": { \"text\": \""+messageJson+"\"}}";
-        String requestUrl = "https://graph.facebook.com/v2.6/me/messages" ;
-        try {
-            facebookUtils.sendPostRequest(requestUrl, payload, facebookUtils.token());
-        }
-        catch(Exception ex){
-            ex.printStackTrace();
+        String requestUrl = "https://graph.facebook.com/v2.6/me/messages";
+
+        //do you want to put each entry (e.g. dish) into a seperate message? - this is suggested due to facebooks 640 characters limit
+        Boolean seperateMessages = true;
+        String seperator = ", --------------------------";
+
+        //facebook allows a maximum of 640 characters, message must be split if necessary:
+        String linesOfMessage[] = messageJson.split("\\r?\\n");
+
+        String currentOutput = "";
+        for (int i = 0; i < linesOfMessage.length; i++) {
+            String line = linesOfMessage[i];
+            if ((currentOutput + "\\n" + line).length() > 600 || i == linesOfMessage.length || (line.contains(seperator)&&seperateMessages)) {
+                //if appending new line would increase the chars over 600, send current output and start new one
+                String payload = "{\"recipient\": {\"id\": \"" + recipient + "\"}, \"message\": { \"text\": \"" + currentOutput + "\"}}";
+                try {
+                    //send message
+                    facebookUtils.sendPostRequest(requestUrl, payload, facebookUtils.token());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+                //hide seperator if message is split by entries
+                if(line.contains(seperator)&&seperateMessages) {
+                    line="";
+                }
+
+                //begin a new output with the current line (which was not send because 640 chars would have been reached)
+                currentOutput = line;
+            } else {
+                //append line if 6(0/4)0 char limit not reached
+                currentOutput = currentOutput + "\\n" + line;
+            }
+
+
         }
     }
 
