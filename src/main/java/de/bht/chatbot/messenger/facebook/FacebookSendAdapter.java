@@ -58,36 +58,17 @@ public class FacebookSendAdapter implements MessageListener {
         Boolean seperateMessages = true;
         String seperator = ", --------------------------";
 
-        //facebook allows a maximum of 640 characters, message must be split if necessary:
-        String linesOfMessage[] = messageJson.split("\\r?\\n");
-
-        String currentOutput = "";
-        for (int i = 0; i < linesOfMessage.length; i++) {
-            String line = linesOfMessage[i];
-            if ((currentOutput + "\\n" + line).length() > 600 || i == linesOfMessage.length || (line.contains(seperator)&&seperateMessages)) {
-                //if appending new line would increase the chars over 600, send current output and start new one
-                String payload = "{\"recipient\": {\"id\": \"" + recipient + "\"}, \"message\": { \"text\": \"" + currentOutput + "\"}}";
-                try {
-                    //send message
-                    facebookUtils.sendPostRequest(requestUrl, payload, facebookUtils.token());
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-
-                //hide seperator if message is split by entries
-                if(line.contains(seperator)&&seperateMessages) {
-                    line="";
-                }
-
-                //begin a new output with the current line (which was not send because 640 chars would have been reached)
-                currentOutput = line;
-            } else {
-                //append line if 6(0/4)0 char limit not reached
-                currentOutput = currentOutput + "\\n" + line;
+        //split (maybe) long message into multiple messages of sendable size
+        for( String currentMessage : facebookUtils.splitIntoMultipleMessages(messageJson,600,seperateMessages,seperator) ) {
+            String payload = "{\"recipient\": {\"id\": \"" + recipient + "\"}, \"message\": { \"text\": \"" + currentMessage + "\"}}";
+            try {
+                //send message
+                facebookUtils.sendPostRequest(requestUrl, payload, facebookUtils.token());
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-
-
         }
+
     }
 
     /** Send Media Method
@@ -112,37 +93,36 @@ public class FacebookSendAdapter implements MessageListener {
      */
     @Override
     public void onMessage(Message messageIn) {
-        BotMessage message = null;
         try {
-            message = messageIn.getBody(BotMessage.class);
+            BotMessage message = messageIn.getBody(BotMessage.class);
 
-        // if message has attachment(s), use sendMedia function depending on type
-        if(message.hasAttachments()) {
-            switch (message.getAttachments()[0].getAttachmentType()) {
-                case AUDIO:
-                    sendMedia(message, "audio");
-                    break;
-                case VOICE:
-                    sendMedia(message, "audio");
-                    break;
-                case VIDEO:
-                    sendMedia(message, "video");
-                    break;
-                case DOCUMENT:
-                    sendMedia(message, "file");
-                    break;
-                case PHOTO:
-                    sendMedia(message, "image");
-                    break;
-                case UNKOWN:
-                    sendMessage(message.getSenderID(), "Unknown AttachmentType");
-                    break;
+            // if message has attachment(s), use sendMedia function depending on type
+            if (message.hasAttachments()) {
+                switch (message.getAttachments()[0].getAttachmentType()) {
+                    case AUDIO:
+                        sendMedia(message, "audio");
+                        break;
+                    case VOICE:
+                        sendMedia(message, "audio");
+                        break;
+                    case VIDEO:
+                        sendMedia(message, "video");
+                        break;
+                    case DOCUMENT:
+                        sendMedia(message, "file");
+                        break;
+                    case PHOTO:
+                        sendMedia(message, "image");
+                        break;
+                    case UNKOWN:
+                       sendMessage(message.getSenderID(), "Sorry! I'm just a bot and my developers just implemented audio and voice attachments...");
+                        break;
+                }
             }
-        }
-        // else use simple text message sending
-        else{
-            sendMessage(message.getSenderID(), message.getText());
-        }
+            // else use simple text message sending
+            else {
+                sendMessage(message.getSenderID(), message.getText());
+            }
         } catch (JMSException e) {
             e.printStackTrace();
         }

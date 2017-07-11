@@ -3,6 +3,8 @@ package de.bht.chatbot.messenger.facebook;
 import com.google.gson.Gson;
 import de.bht.chatbot.attachments.AttachmentStore;
 import de.bht.chatbot.jms.MessageQueue;
+import de.bht.chatbot.message.Attachment;
+import de.bht.chatbot.message.AttachmentType;
 import de.bht.chatbot.messenger.facebook.model.FacebookAttachment;
 import de.bht.chatbot.messenger.facebook.model.FacebookBotMessage;
 import de.bht.chatbot.messenger.facebook.model.FacebookInput;
@@ -71,9 +73,6 @@ public class FacebookReceiveAdapter {
         //parse the message to a FacebookInput-object, which represents the Json-structure of Facebook messages
         FacebookInput gs=new Gson().fromJson(InputMessage, FacebookInput.class);
 
-        //create a new FacebookBotMessage from the Entry object of the FacebookInput
-        FacebookBotMessage msg = new FacebookBotMessage(gs.getEntry().get(0));
-
         //check if Message-node of BotMessage object exists
         if(gs.getEntry().get(0).getMessaging().get(0).getMessage()!=null) {
             // 'IsEcho' means whether the message is a new incoming message or just an 'echo' of a message the bot sends out
@@ -82,9 +81,16 @@ public class FacebookReceiveAdapter {
                 //if Attachment --> get ID via AttachmentStore and put it into attachment
                 if(gs.getEntry().get(0).getMessaging().get(0).getMessage().getAttachments()!=null) {
                     FacebookAttachment att=gs.getEntry().get(0).getMessaging().get(0).getMessage().getAttachments().get(0);
-                    Long id = attachmentStore.storeAttachment(att.getFileURI(), att.getAttachmentType());
-                    att.setID(id);
+
+                    //at the moment just audio files are supported --> saved
+                    if(att.getAttachmentType()== AttachmentType.AUDIO) {
+                        Long id = attachmentStore.storeAttachment(att.getFileURI(), att.getAttachmentType());
+                        gs.getEntry().get(0).getMessaging().get(0).getMessage().getAttachments().get(0).setID(id);
+                    }
                 }
+
+                //create a new FacebookBotMessage from the Entry object of the FacebookInput
+                FacebookBotMessage msg = new FacebookBotMessage(gs.getEntry().get(0));
 
                 //put message into JMS-queue
                 messageQueue.addInMessage(msg);

@@ -22,7 +22,7 @@ public class FacebookBotMessage implements BotMessage{
 
     @Override
     public Long getId() {
-        //TODO: generate ID
+        //TODO: generate Chatbot-intern-ID
         return 1L;
     }
 
