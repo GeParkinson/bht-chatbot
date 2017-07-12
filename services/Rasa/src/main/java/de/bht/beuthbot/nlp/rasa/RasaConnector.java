@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import de.bht.beuthbot.jms.ProcessQueue;
 import de.bht.beuthbot.jms.ProcessQueueMessageProtocol;
 import de.bht.beuthbot.jms.TaskMessage;
-import de.bht.beuthbot.model.BotMessage;
-import de.bht.beuthbot.model.BotMessageImpl;
 import de.bht.beuthbot.nlp.rasa.model.RasaMessage;
 import de.bht.beuthbot.nlp.rasa.model.RasaResponse;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -64,7 +62,7 @@ public class RasaConnector implements MessageListener {
     @Override
     public void onMessage(final Message message) {
         try {
-            ProcessQueueMessageProtocol incomingChatMessage = gson.fromJson(((TextMessage) message).getText(), TaskMessage.class);
+            ProcessQueueMessageProtocol incomingChatMessage = message.getBody(TaskMessage.class);
             String messageText = incomingChatMessage.getText();
 
             Response response = rasaProxy.processText(messageText);
@@ -73,8 +71,7 @@ public class RasaConnector implements MessageListener {
             logger.debug("{}: {}", response.getStatus(), responseAsString);
 
             RasaResponse rasaResponse = gson.fromJson(responseAsString, RasaResponse.class);
-            ProcessQueueMessageProtocol queueMessage = new TaskMessage(new RasaMessage(incomingChatMessage, rasaResponse));
-            processQueue.addMessage(queueMessage, "Drools", "in");
+            processQueue.route(new RasaMessage(incomingChatMessage, rasaResponse));
         } catch (JMSException e) {
             logger.error("Error while processing message.", e);
         }
