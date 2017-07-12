@@ -1,0 +1,24 @@
+{
+  "id": "92b3c202-7cd4-43b1-a9fb-856a20c2ff87",
+  "name": "price",
+  "isOverridable": true,
+  "entries": [
+    {
+      "value": "howmuch",
+      "synonyms": [
+        "howmuch",
+        "Was kostet",
+        "wie teuer"
+      ]
+    },
+    {
+      "value": "under",
+      "synonyms": [
+        "unter",
+        "under"
+      ]
+    }
+  ],
+  "isEnum": false,
+  "automatedExpansion": false
+}
