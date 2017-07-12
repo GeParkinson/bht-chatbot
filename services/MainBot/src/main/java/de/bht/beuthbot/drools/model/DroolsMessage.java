@@ -1,13 +1,18 @@
-package de.bht.chatbot.drools.model;
+package de.bht.beuthbot.drools.model;
 
-import de.bht.chatbot.message.*;
+import de.bht.beuthbot.jms.ProcessQueueMessageProtocol;
+import de.bht.beuthbot.jms.Target;
+import de.bht.beuthbot.model.Attachment;
+import de.bht.beuthbot.model.Messenger;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @Author: Christopher Kümmel on 6/19/2017.
  */
-public class DroolsMessage implements NLUBotMessage {
+public class DroolsMessage implements ProcessQueueMessageProtocol {
 
     private Long messageID;
     private Long senderID;
@@ -19,6 +24,11 @@ public class DroolsMessage implements NLUBotMessage {
     @Override
     public Long getId() {
         return 1L;
+    }
+
+    @Override
+    public Target getTarget() {
+        return Target.MESSENGER;
     }
 
     @Override
@@ -63,8 +73,8 @@ public class DroolsMessage implements NLUBotMessage {
     }
 
     @Override
-    public Attachment[] getAttachments() {
-        return null;
+    public List<Attachment> getAttachments() {
+        return Collections.emptyList();
     }
 
     @Override

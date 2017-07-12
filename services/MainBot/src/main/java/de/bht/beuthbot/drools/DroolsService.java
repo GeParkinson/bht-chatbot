@@ -1,20 +1,26 @@
-package de.bht.chatbot.drools;
+package de.bht.beuthbot.drools;
 
 
-import de.bht.chatbot.canteen.model.CanteenData;
-import de.bht.chatbot.canteen.Parser;
+
 
 import com.google.gson.Gson;
 
-import de.bht.chatbot.drools.model.DroolsMessage;
-import de.bht.chatbot.jms.MessageQueue;
-import de.bht.chatbot.message.NLUBotMessage;
+
+import de.bht.beuthbot.attachments.AttachmentStore;
+import de.bht.beuthbot.canteen.Parser;
+import de.bht.beuthbot.canteen.model.CanteenData;
+import de.bht.beuthbot.conf.Application;
+import de.bht.beuthbot.drools.model.DroolsMessage;
+import de.bht.beuthbot.jms.ProcessQueue;
+import de.bht.beuthbot.jms.ProcessQueueMessageProtocol;
+import de.bht.beuthbot.jms.TaskMessage;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.inject.Inject;
@@ -47,8 +53,17 @@ public class DroolsService implements MessageListener {
     private Gson gson = new Gson();
 
 
-    @Inject
-    private MessageQueue messageQueue;
+    /** Injected JMS MessageQueue */
+    @Resource(lookup = "java:global/global/ProcessQueueBean")
+    private ProcessQueue processQueue;
+
+    /** Injected AttachmentStore */
+    @Resource(lookup = "java:global/global/AttachmentStoreBean")
+    private AttachmentStore attachmentStore;
+
+    /** BeuthBot Application Bean */
+    @Resource(lookup = "java:global/global/ApplicationBean")
+    private Application application;
 
     @Inject
     private Parser parser;
@@ -56,13 +71,13 @@ public class DroolsService implements MessageListener {
     @Override
     public void onMessage(Message message) {
         try {
-            NLUBotMessage botMessage = message.getBody(NLUBotMessage.class);
+            ProcessQueueMessageProtocol botMessage = message.getBody(TaskMessage.class);
 
             botMessage = doRules(botMessage);
 
             logger.debug("ANSWER: " + botMessage.getText());
 
-            messageQueue.addOutMessage(botMessage);
+            processQueue.route(botMessage);
         } catch (JMSException e) {
             logger.error("Exception while setting bot message to the queue.", e);
         }
@@ -73,7 +88,7 @@ public class DroolsService implements MessageListener {
      * @param botMessage
      * @returns the botMessage with a new created answer text
      */
-    private NLUBotMessage doRules(final NLUBotMessage botMessage){
+    private ProcessQueueMessageProtocol doRules(final ProcessQueueMessageProtocol botMessage){
 
         // KieServices is the factory for all KIE services
         KieServices ks = KieServices.Factory.get();

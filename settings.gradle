@@ -5,7 +5,7 @@ include (
         'services:ApiAi',
         'services:Rasa',
         'services:Bing',
-//        'services:MainBot',
+        'services:MainBot',
         'services:LoggingStatistics',
         'services:Telegram'
 )

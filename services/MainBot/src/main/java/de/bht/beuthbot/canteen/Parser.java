@@ -1,9 +1,6 @@
-package de.bht.chatbot.canteen;
-import de.bht.chatbot.canteen.model.CanteenData;
-import de.bht.chatbot.canteen.model.TrafficLight;
-import de.bht.chatbot.canteen.model.Dish;
-import de.bht.chatbot.canteen.model.DishType;
-import de.bht.chatbot.canteen.model.DishCategory;
+package de.bht.beuthbot.canteen;
+
+import de.bht.beuthbot.canteen.model.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
