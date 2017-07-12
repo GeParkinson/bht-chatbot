@@ -14,7 +14,8 @@ RUN apt-get update -qq && \
 WORKDIR ${RASA_NLU_HOME}
 
 RUN pip install git+https://github.com/mit-nlp/MITIE.git
-RUN pip install rasa_nlu
+RUN pip install -U scikit-learn scipy sklearn-crfsuite
+RUN pip install rasa_nlu==0.9.1
 
 # download EN
 # RUN wget https://github.com/mit-nlp/MITIE/releases/download/v0.4/MITIE-models-v0.2.tar.bz2

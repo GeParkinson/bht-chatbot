@@ -1,5 +1,5 @@
 {
-  "pipeline": "mitie",
+  "pipeline": "mitie_sklearn",
   "language": "de",
   "mitie_file": "/app/data/de/total_word_feature_extractor.dat",
   "path": "/app/models",
