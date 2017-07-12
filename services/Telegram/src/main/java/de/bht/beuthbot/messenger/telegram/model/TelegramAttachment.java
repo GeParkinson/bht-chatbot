@@ -25,10 +25,11 @@ public class TelegramAttachment implements Attachment {
      * @param attachmentType type of Attachment e.g. AUDIO, VIDEO, ..
      * @param caption caption of that attachment
      */
-    public TelegramAttachment(final Long id, final AttachmentType attachmentType, final String caption){
+    public TelegramAttachment(final Long id, final AttachmentType attachmentType, final String caption, final String fileURI){
         this.attachmentType = attachmentType;
         this.caption = caption;
         this.id = id;
+        this.fileURI = fileURI;
     }
 
     /**

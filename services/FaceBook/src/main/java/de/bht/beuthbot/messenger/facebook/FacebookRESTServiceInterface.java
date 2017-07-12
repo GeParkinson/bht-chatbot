@@ -19,4 +19,17 @@ public interface FacebookRESTServiceInterface {
     @POST
     @Consumes({ MediaType.APPLICATION_JSON})
     Response sendMessage(String json, @QueryParam("access_token") String token);
+
+    /**
+     * update the webhook location for facebook
+     * @param object --> page because we use a facebook page for our bot
+     * @param callback_url --> url of our server were the webhook of facebook goes to
+     * @param fields --> fields we want to subscribe to
+     * @param verify_token --> webhook token
+     * @param access_token --> app access token
+     * @return answer of facebook
+     */
+    @POST
+    @Consumes("text/plain")
+    Response sendHook(@QueryParam("object") String object, @QueryParam("callback_url") String callback_url,@QueryParam("fields") String fields,@QueryParam("verify_token") String verify_token,@QueryParam("access_token") String access_token);
 }

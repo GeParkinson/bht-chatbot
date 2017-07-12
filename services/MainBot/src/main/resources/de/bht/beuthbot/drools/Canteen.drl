@@ -14,79 +14,88 @@
  * limitations under the License.
  */
 
-package de.bht.beuthbot.drools
+package de.bht.chatbot.drools
 
-import de.bht.beuthbot.drools.model.DroolsMessage
 import java.util.List
-import de.bht.beuthbot.canteen.model.Dish
-import de.bht.beuthbot.canteen.model.DishType;
-import de.bht.beuthbot.canteen.model.DishCategory;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+
 import java.time.LocalDate;
 
-global de.bht.beuthbot.canteen.model.CanteenData canteenData;
+import de.bht.chatbot.canteen.model.Dish
+import de.bht.chatbot.canteen.model.DishType;
+import de.bht.chatbot.message.Intent;
+import de.bht.chatbot.message.EntityName;
+import de.bht.chatbot.drools.model.DroolsMessage;
 
-rule "Test Rule"
+global de.bht.chatbot.canteen.model.CanteenData canteenData;
+
+// ---------------------- GREETING ------------------------------------
+rule "Hello Drools"
     dialect "java"
     when
-        m : DroolsMessage( intent == "Test")
+        m : DroolsMessage( intent.equals(Intent.HELLO.getText()))
     then
-        modify ( m ) { setText("Test successful" )};
+        modify ( m ) { setText("Hallo zurück")};
 end
 
-rule "Test Parser0"
+rule "Greet Drools"
     dialect "java"
     when
-        m : DroolsMessage( intent == "Test Parser0")
+        m : DroolsMessage( intent.equals(Intent.GREET.getText()))
     then
-        modify( m ){ setText("Test nach Ampel: " + canteenData.getDishesFiltered(null,
-         de.bht.beuthbot.canteen.model.TrafficLight.RED, null, null, null).size())}
+        modify ( m ) { setText("Hallo zurück2")};
 end
 
-rule "Test Parser1"
+// ---------------------- SAYING GOODBYE ------------------------------------
+
+rule "Saying goodbye1"
     dialect "java"
     when
-        m : DroolsMessage( intent == "Test Parser1")
+        m : DroolsMessage( intent.equals(Intent.BYE.getText()))
     then
-        modify( m ){ setText("Test für Heute dishes: " + canteenData.getDishesFiltered(LocalDate.parse("2017-06-26"),
-         null, null, null, null).size())}
+        modify( m ) { setText("Tschüss")};
 end
 
-rule "Test Parser2"
+rule "Saying goodbye2"
     dialect "java"
     when
-        m : DroolsMessage( intent == "Test Parser2")
+        m : DroolsMessage( intent.equals(Intent.GOODBYE.getText()))
     then
-        modify( m ){ setText("Test nach Kategorie: " + canteenData.getDishesFiltered(null,
-         null, null, Arrays.asList(new DishCategory[]{de.bht.beuthbot.canteen.model.DishCategory.SPECIAL,
-          de.bht.beuthbot.canteen.model.DishCategory.STARTER}), null).size())}
-end
-rule "Test Parser3"
-    dialect "java"
-    when
-        m : DroolsMessage( intent == "Test Parser3")
-    then
-        modify( m ){ setText("Test nach Markings: " + canteenData.getDishesFiltered(null,
-         null, null, null, Arrays.asList(new String[]{"Senf","Hefe"})).size())}
+        modify( m ) { setText("Tschüss2")};
 end
 
-rule "Test Parser4"
+// ------------------------ SHOW DISHES --------------------------------------
+
+rule "Show all dishes"
     dialect "java"
     when
-        m : DroolsMessage( intent == "Test Parser4")
+        m : DroolsMessage( intent.equals(Intent.SHOW_FOOD.getText()) && entities.isEmpty())
     then
-        modify( m ){ setText("Test 29.06.2017 alle vegan, orange, Farbstoff: " +
-        canteenData.getDishesFiltered(LocalDate.parse("2017-06-29"), de.bht.beuthbot.canteen.model.TrafficLight.ORANGE,
-        Arrays.asList(new DishType[]{de.bht.beuthbot.canteen.model.DishType.VEGAN}), null,
-        Arrays.asList(new String[]{"Farbstoff"})))}
+        modify ( m ) { setText("Alle Gerichte dieser und nächster Woche: \n" + canteenData.getDishes())};
+end
+
+rule "Restaurant search"
+    dialect "java"
+    when
+        m : DroolsMessage( intent.equals(Intent.RESTAURANT_SEARCH.getText()))
+    then
+        modify ( m ){ setText("Restaurant gesucht")}
 end
 
 
-rule "Show all meals"
+rule "Show dishes filtered"
     dialect "java"
     when
-        m : DroolsMessage( intent == "show_meals")
+        m : DroolsMessage( getIntent().equals(Intent.SHOW_FOOD.getText()) && !entities.isEmpty() )
     then
-        modify ( m ) { setText("Heute gibt es folgende Gerichte: \n" )};
+        modify( m ) {
+            setText("Gerichte:\n" + canteenData.getDishesFiltered(
+            (m.getEntities().containsKey(EntityName.DATE.getText()) ? m.getEntities().get(EntityName.DATE.getText()) : null),
+            (m.getEntities().containsKey(EntityName.HEALTHY.getText()) ? m.getEntities().get(EntityName.HEALTHY.getText()) : null),
+            (m.getEntities().containsKey(EntityName.DISH_TYPE.getText()) ? m.getEntities().get(EntityName.DISH_TYPE.getText()) : null),
+            (m.getEntities().containsKey(EntityName.INGREDIENTS.getText()) ? m.getEntities().get(EntityName.INGREDIENTS.getText()) : null)
+            ))
+        };
 end

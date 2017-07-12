@@ -17,6 +17,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
@@ -111,11 +113,11 @@ public class BingConnector implements MessageListener {
         }
     }
 
-    //TODO: generate Token at Systemstart -> at runtime every 9 minutes
+    //TODO: cyclically generate a Token - remove call in methods
     /**
      * Method to generate Bing Speech API Access Token. - Token decays after 10 minutes. -> Refresh every 9 minutes.
      */
-    private void generateAccesToken(){
+    private void generateAccessToken() {
         try {
             HttpClient client = HttpClientBuilder.create().build();
             String url = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken";
@@ -157,9 +159,8 @@ public class BingConnector implements MessageListener {
      * Send Bing Speech to Text Request.
      * @param botMessage Object to parse to Text
      */
-    private void sendSpeechToTextRequest(final BotMessage botMessage){
-        //TODO: remove and make sure Access Token is set
-        generateAccesToken();
+    private void sendSpeechToTextRequest(final BotMessage botMessage) {
+        generateAccessToken();
         //TODO: different languages
         String language = "de-DE";
         try {
@@ -171,23 +172,21 @@ public class BingConnector implements MessageListener {
             // HEADERS
             Map<String, String> postHeaders = new HashMap<>();
             postHeaders.put("Authorization", "Bearer " + accessToken);
-            postHeaders.put("Content-Type", "audio/wav; codec=\"audio/pcm\"; samplerate=16000");
+            postHeaders.put("Content-Type", "audio/mpeg; codec=\"audio/pcm\"; samplerate=16000");
 
             for (Map.Entry<String, String> entry : postHeaders.entrySet()) {
                 httpPost.setHeader(entry.getKey(), entry.getValue());
             }
 
             for (Attachment attachment : botMessage.getAttachments()) {
-                // get audio file
-                File file = new File(attachmentStore.loadAttachmentPath(attachment.getId(), AttachmentStoreMode.LOCAL_PATH));
-                FileBody fileBody = new FileBody(file, ContentType.DEFAULT_BINARY);
-                MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
-                multipartEntityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-                multipartEntityBuilder.addPart("bin", fileBody);
-                HttpEntity httpEntity = multipartEntityBuilder.build();
+
+                // audio file download
+                HttpGet get = new HttpGet(attachment.getFileURI());
+                CloseableHttpResponse execute = HttpClientBuilder.create().build().execute(get);
+                HttpEntity entity = execute.getEntity();
 
                 ByteArrayOutputStream bArrOS = new ByteArrayOutputStream();
-                httpEntity.writeTo(bArrOS);
+                entity.writeTo(bArrOS);
                 bArrOS.flush();
                 ByteArrayEntity bArrEntity = new ByteArrayEntity(bArrOS.toByteArray());
                 bArrOS.close();
@@ -196,6 +195,26 @@ public class BingConnector implements MessageListener {
                 bArrEntity.setChunked(true);
                 bArrEntity.setContentEncoding(HttpMultipartMode.BROWSER_COMPATIBLE.toString());
                 bArrEntity.setContentType(ContentType.DEFAULT_BINARY.toString());
+
+                //THIS CODE IS NOT WORKING PROPERLY - Check AttachmentStore for correct implementation
+//                // get audio file from AttachmentStore
+//                File file = new File(attachmentStore.loadAttachmentPath(attachment.getId(), AttachmentStoreMode.LOCAL_PATH));
+//                FileBody fileBody = new FileBody(file, ContentType.DEFAULT_BINARY);
+//                MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
+//                multipartEntityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+//                multipartEntityBuilder.addPart("bin", fileBody);
+//                HttpEntity httpEntity = multipartEntityBuilder.build();
+//
+//                ByteArrayOutputStream bArrOS = new ByteArrayOutputStream();
+//                httpEntity.writeTo(bArrOS);
+//                bArrOS.flush();
+//                ByteArrayEntity bArrEntity = new ByteArrayEntity(bArrOS.toByteArray());
+//                bArrOS.close();
+//
+//                // IMPORTANT! For Bing Speech API it is necessary to set Transfer-Encoding = chunked. Otherwise Bing wouldn't accept the file.
+//                bArrEntity.setChunked(true);
+//                bArrEntity.setContentEncoding(httpEntity.getContentEncoding());
+//                bArrEntity.setContentType(httpEntity.getContentType());
 
                 // set ByteArrayEntity to HttpPost
                 httpPost.setEntity(bArrEntity);
@@ -212,15 +231,19 @@ public class BingConnector implements MessageListener {
                     // process response message
                     BingMessage bingMessage;
                     try {
-                        if (format == "simple") {
-                            BingSimpleResponse bingSimpleResponse = new Gson().fromJson(result.toString(), BingSimpleResponse.class);
-                            bingMessage = new BingMessage(bingSimpleResponse, botMessage);
-                        } else if (format == "detailed") {
-                            BingDetailedResponse bingDetailedResponse = new Gson().fromJson(result.toString(), BingDetailedResponse.class);
-                            bingMessage = new BingMessage(bingDetailedResponse, botMessage);
-                        } else {
-                            logger.error("Could not parse BingSpeechResponse");
-                            return;
+                        switch (format){
+                            case "simple":
+                                BingSimpleResponse bingSimpleResponse = new Gson().fromJson(result, BingSimpleResponse.class);
+                                bingMessage = new BingMessage(bingSimpleResponse, botMessage);
+                                logger.debug("Received message from bing: {}", result);
+                                break;
+                            case "detailed":
+                                BingDetailedResponse bingDetailedResponse = new Gson().fromJson(result, BingDetailedResponse.class);
+                                bingMessage = new BingMessage(bingDetailedResponse, botMessage);
+                                break;
+                            default:
+                                logger.error("Could not parse BingSpeechResponse");
+                                return;
                         }
                         // return message
                         processQueue.addInMessage(bingMessage);
@@ -241,8 +264,7 @@ public class BingConnector implements MessageListener {
      * @param botMessage Object to parse to Speech
      */
     private void sendTextToSpeechRequest(final BotMessage botMessage){
-        //TODO: remove and make sure Access Token is set
-        generateAccesToken();
+        generateAccessToken();
 
         HttpClient client = HttpClientBuilder.create().build();
         String url = "https://speech.platform.bing.com/synthesize";

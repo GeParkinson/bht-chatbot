@@ -1,8 +1,6 @@
-package de.bht.beuthbot.drools.model;
+package de.bht.chatbot.drools.model;
 
-import de.bht.beuthbot.model.Attachment;
-import de.bht.beuthbot.model.Messenger;
-import de.bht.beuthbot.model.NLUBotMessage;
+import de.bht.chatbot.message.*;
 
 import java.util.Map;
 
@@ -52,7 +50,7 @@ public class DroolsMessage implements NLUBotMessage {
 
     @Override
     public String getText() {
-        return text+"---went through drools---";
+        return text;
     }
 
     public void setText(String text){
@@ -69,7 +67,6 @@ public class DroolsMessage implements NLUBotMessage {
         return null;
     }
 
-
     @Override
     public String getIntent() {
         return intent;
@@ -84,7 +81,7 @@ public class DroolsMessage implements NLUBotMessage {
         return entities;
     }
 
-    public void setEntity(Map<String,String> entities){
+    public void setEntities(Map<String,String> entities){
         this.entities = entities;
     }
 }

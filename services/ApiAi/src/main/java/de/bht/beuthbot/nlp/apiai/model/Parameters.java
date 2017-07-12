@@ -66,10 +66,10 @@ public class Parameters implements Serializable{
     public Map<String, String> getEntities(){
         Map<String, String> Entities = new HashMap<>();
 
-        Entities.put("date",date);
-        Entities.put("dishtype",dishtype);
-        Entities.put("healthy",healthy);
-        Entities.put("ingredients",ingredients);
+        if (date!=null)Entities.put("date",date);
+        if (dishtype!=null)Entities.put("dishtype",dishtype);
+        if (healthy!=null)Entities.put("healthy",healthy);
+        if (ingredients!=null)Entities.put("ingredients",ingredients);
 
         return Entities;
     }

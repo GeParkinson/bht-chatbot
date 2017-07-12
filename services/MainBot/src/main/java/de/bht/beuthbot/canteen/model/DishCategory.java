@@ -5,7 +5,7 @@ package de.bht.beuthbot.canteen.model;
  */
 public enum DishCategory {
 
-    STARTER("Vorspeise"), SALAD("Salat"),SOUP("Suppe"), SPECIAL("Aktionsstand"), FOOD("Essen"), SIDE_DISH("Beilage"), DESSERT("Dessert");
+    STARTER("Vorspeisen"), SALAD("Salate"),SOUP("Suppen"), SPECIAL("Aktionen"), FOOD("Essen"), SIDE_DISH("Beilagen"), DESSERT("Desserts");
 
     private String text;
 
@@ -34,7 +34,7 @@ public enum DishCategory {
                 return SALAD;
             case "suppen":
                 return SOUP;
-            case "aktionsstand":
+            case "aktionen":
                 return SPECIAL;
             case "essen":
                 return FOOD;

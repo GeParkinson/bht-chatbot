@@ -8,9 +8,13 @@ import de.bht.beuthbot.model.nsp.NSPResponse;
  */
 public class BingSimpleResponse implements NSPResponse {
 
+    @SerializedName("RecognitionStatus")
     private String recognitionStatus;
+    @SerializedName("DisplayText")
     private String displayText;
+    @SerializedName("Offset")
     private String offset;
+    @SerializedName("Duration")
     private String duration;
 
     @Override

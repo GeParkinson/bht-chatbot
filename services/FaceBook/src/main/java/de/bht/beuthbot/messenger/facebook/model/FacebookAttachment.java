@@ -56,12 +56,13 @@ public class FacebookAttachment implements Attachment {
         switch (type) {
             case "audio":
                 return AttachmentType.AUDIO;
-            case "video":
-                return AttachmentType.VIDEO;
-            case "file":
-                return AttachmentType.DOCUMENT;
-            case "image":
-                return AttachmentType.PHOTO;
+            //TODO: handle all attachment types; at the moment MessageQueue only allows unknown, audio, voice
+            //case "video":
+            //    return AttachmentType.VIDEO;
+            //case "file":
+            //    return AttachmentType.DOCUMENT;
+            //case "image":
+            //    return AttachmentType.PHOTO;
             default:
                 return AttachmentType.UNKOWN;
         }

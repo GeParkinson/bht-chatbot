@@ -49,67 +49,95 @@ public class AttachmentStoreBean implements AttachmentStore {
         fileURIPath = application.getConfiguration(Configuration.WEB_URL);
         // make directories
         File file = new File(localPath);
-        file.mkdirs();
+        try {
+            if (file.exists()) {
+                // WORKAROUND: delete old data at system start
+                deleteDirectory(file);
+            } else {
+                file.mkdirs();
+            }
+        } catch (Exception e) {
+            logger.error("Error while deleting or creating AttachmentStore Directory.", e);
+        }
+    }
+
+    /**
+     * Delete attachment directory.
+     * @param file directory to delete
+     */
+    private void deleteDirectory(final File file){
+        File[] directoryFiles = file.listFiles();
+        for (File directoryFile : directoryFiles) {
+            directoryFile.delete();
+        }
     }
 
     /**
      * Download and store file on Server.
      * @param fileURI to store on Server
      * @param attachmentType for file-ending and directory
-     * @return generated id for specific Attachment
+     * @return generated id for specific Attachment. null if attachment isn´t an audio or voice file
      */
     @Override
     public Long storeAttachment(final String fileURI, final AttachmentType attachmentType) {
 
         Long id = ++idCounter;
 
-        // download file then store it locally
-        try {
-            HttpGet get = new HttpGet(fileURI);
-            CloseableHttpResponse execute = HttpClientBuilder.create().build().execute(get);
-            HttpEntity entity = execute.getEntity();
+        if (attachmentType == AttachmentType.AUDIO || attachmentType == AttachmentType.VOICE) {
+            // download file then store it locally
+            try {
+                HttpGet get = new HttpGet(fileURI);
+                CloseableHttpResponse execute = HttpClientBuilder.create().build().execute(get);
+                HttpEntity entity = execute.getEntity();
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            entity.writeTo(byteArrayOutputStream);
-            byteArrayOutputStream.flush();
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                entity.writeTo(byteArrayOutputStream);
+                byteArrayOutputStream.flush();
 
-            OutputStream outputStream = getOutputStreamByAttachmentType(attachmentType);
+                OutputStream outputStream = getOutputStreamByAttachmentType(attachmentType);
 
-            byteArrayOutputStream.writeTo(outputStream);
-            outputStream.flush();
-            byteArrayOutputStream.close();
-            outputStream.close();
+                byteArrayOutputStream.writeTo(outputStream);
+                outputStream.flush();
+                byteArrayOutputStream.close();
+                outputStream.close();
 
-        } catch (Exception e) {
-            logger.error("Error occurred while try to store new attachment. ", e);
+            } catch (Exception e) {
+                logger.error("Error occurred while try to store new attachment. ", e);
+            }
+            return id;
+        } else {
+            return null;
         }
-        return id;
     }
 
     /**
      * Store file on Server.
      * @param byteArrayOutputStream to store on Server
      * @param attachmentType for file-ending and directory
-     * @return generated id for specific Attachment
+     * @return generated id for specific Attachment. null if attachment isn´t an audio or voice file
      */
     @Override
     public Long storeAttachment(final ByteArrayOutputStream byteArrayOutputStream, final AttachmentType attachmentType){
 
         Long id = ++idCounter;
 
-        // store file locally
-        try{
-            OutputStream outputStream = getOutputStreamByAttachmentType(attachmentType);
+        if (attachmentType == AttachmentType.AUDIO || attachmentType == AttachmentType.VOICE) {
+            // store file locally
+            try{
+                OutputStream outputStream = getOutputStreamByAttachmentType(attachmentType);
 
-            byteArrayOutputStream.writeTo(outputStream);
-            outputStream.flush();
-            byteArrayOutputStream.close();
-            outputStream.close();
+                byteArrayOutputStream.writeTo(outputStream);
+                outputStream.flush();
+                byteArrayOutputStream.close();
+                outputStream.close();
 
-        } catch (Exception e) {
-            logger.error("Error occurred while try to store new attachment. ", e);
+            } catch (Exception e) {
+                logger.error("Error occurred while try to store new attachment. ", e);
+            }
+            return id;
+        } else {
+            return null;
         }
-        return id;
     }
 
     /**

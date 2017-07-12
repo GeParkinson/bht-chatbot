@@ -1,19 +1,25 @@
-package de.bht.beuthbot.messenger.facebook;
+package de.bht.chatbot.messenger.facebook;
 
 import com.google.gson.Gson;
-import de.bht.beuthbot.attachments.AttachmentStore;
-import de.bht.beuthbot.conf.Application;
-import de.bht.beuthbot.conf.Configuration;
-import de.bht.beuthbot.jms.ProcessQueue;
-import de.bht.beuthbot.messenger.facebook.model.FacebookAttachment;
-import de.bht.beuthbot.messenger.facebook.model.FacebookBotMessage;
-import de.bht.beuthbot.messenger.facebook.model.FacebookInput;
+import de.bht.chatbot.attachments.AttachmentStore;
+import de.bht.chatbot.jms.MessageQueue;
+import de.bht.chatbot.message.Attachment;
+import de.bht.chatbot.message.AttachmentType;
+import de.bht.chatbot.messenger.facebook.model.FacebookAttachment;
+import de.bht.chatbot.messenger.facebook.model.FacebookBotMessage;
+import de.bht.chatbot.messenger.facebook.model.FacebookInput;
+import de.bht.chatbot.messenger.utils.MessengerUtils;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.util.Map;
 
@@ -22,21 +28,17 @@ import java.util.Map;
  * Created by Oliver on 14.05.2017.
  */
 
-@Path("/webhook")
+@Path("/facebook")
 public class FacebookReceiveAdapter {
 
     @Inject
-    private ProcessQueue processQueue;
+    private MessageQueue messageQueue;
 
     @Inject
     private AttachmentStore attachmentStore;
 
     @Inject
     private FacebookUtils facebookUtils;
-
-    /** BeuthBot Application Bean */
-    @Inject
-    private Application application;
 
     //---------------------------------------
     //Testing:
@@ -50,13 +52,7 @@ public class FacebookReceiveAdapter {
     //token: set in config.properties
     //---------------------------------------
 
-    private String accessToken;
-    private String webhookToken;
-
-    public FacebookReceiveAdapter() {
-        this.accessToken = application.getConfiguration(Configuration.FACEBOOK_BOT_TOKEN);
-        this.webhookToken = application.getConfiguration(Configuration.FACEBOOK_WEBHOOK_TOKEN);
-    }
+    String webhookToken = MessengerUtils.getProperties().getProperty("FACEBOOK_WEBHOOK_TOKEN");
 
     /**
      * listen to POST requests from facebook (which contain the received messages) and react to them
@@ -65,7 +61,7 @@ public class FacebookReceiveAdapter {
      * @throws IOException
      */
     @POST
-    @Path("/facebook")
+    @Path("/getUpdates")
     @Consumes("application/json")
     public String ReceiveMessage(String InputMessage) throws IOException {
 
@@ -77,9 +73,6 @@ public class FacebookReceiveAdapter {
         //parse the message to a FacebookInput-object, which represents the Json-structure of Facebook messages
         FacebookInput gs=new Gson().fromJson(InputMessage, FacebookInput.class);
 
-        //create a new FacebookBotMessage from the Entry object of the FacebookInput
-        FacebookBotMessage msg = new FacebookBotMessage(gs.getEntry().get(0));
-
         //check if Message-node of BotMessage object exists
         if(gs.getEntry().get(0).getMessaging().get(0).getMessage()!=null) {
             // 'IsEcho' means whether the message is a new incoming message or just an 'echo' of a message the bot sends out
@@ -88,12 +81,19 @@ public class FacebookReceiveAdapter {
                 //if Attachment --> get ID via AttachmentStore and put it into attachment
                 if(gs.getEntry().get(0).getMessaging().get(0).getMessage().getAttachments()!=null) {
                     FacebookAttachment att=gs.getEntry().get(0).getMessaging().get(0).getMessage().getAttachments().get(0);
-                    Long id = attachmentStore.storeAttachment(att.getFileURI(), att.getAttachmentType());
-                    att.setID(id);
+
+                    //at the moment just audio files are supported --> saved
+                    if(att.getAttachmentType()== AttachmentType.AUDIO) {
+                        Long id = attachmentStore.storeAttachment(att.getFileURI(), att.getAttachmentType());
+                        gs.getEntry().get(0).getMessaging().get(0).getMessage().getAttachments().get(0).setID(id);
+                    }
                 }
 
+                //create a new FacebookBotMessage from the Entry object of the FacebookInput
+                FacebookBotMessage msg = new FacebookBotMessage(gs.getEntry().get(0));
+
                 //put message into JMS-queue
-                processQueue.addInMessage(msg);
+                messageQueue.addInMessage(msg);
             }
         }
 
@@ -107,7 +107,7 @@ public class FacebookReceiveAdapter {
      * @return return hub.challenge to facebook to inform facebook about successful verification
      */
     @GET
-    @Path("/facebook")
+    @Path("/getUpdates")
     @Produces("text/plain")
     public String verification(@Context HttpServletRequest request){
 
@@ -135,8 +135,38 @@ public class FacebookReceiveAdapter {
         return "Webhook FAILED";
     }
 
+    /**
+     * makes it possible to set the Facebook webhook to the current server adress
+     * just open /rest/facebook/setWebhook to update your hook
+     * you need an APP! access token from https://developers.facebook.com/tools/explorer/
+     * @param request starts when user navigates to setWebhook page
+     * @return answer from Facebook "{"success":true}" if worked
+     */
+    @GET
+    @Path("/setWebhook")
+    @Produces("text/plain")
+    public String setWebhook(@Context HttpServletRequest request){
+
+        String access_token = facebookUtils.accessID();
+
+        //access token contains the App-ID, which we need for our call
+        String appid = access_token.substring(0 , access_token.indexOf("|"));
+
+        String registrationAdress="https://graph.facebook.com/v2.9/"+appid+"/subscriptions";
+        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyWebTarget target = client.target(UriBuilder.fromPath(registrationAdress));
+        FacebookRESTServiceInterface facebookProxy = target.proxy(FacebookRESTServiceInterface.class);
+
+        String fields ="messages, messaging_postbacks, messaging_optins, message_deliveries, message_reads, messaging_payments, messaging_pre_checkouts, messaging_checkout_updates, messaging_account_linking, messaging_referrals, message_echoes";
+
+        String callback_url =facebookUtils.webadress()+"/facebook/getUpdates";
+        Response response = facebookProxy.sendHook("page", callback_url, fields, webhookToken, access_token);
+
+        String responseAsString = response.readEntity(String.class);
 
 
+        return responseAsString;
+    }
 
 
 

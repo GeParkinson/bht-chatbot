@@ -1,6 +1,6 @@
 {
   "description": "",
-  "language": "en",
+  "language": "de",
   "enabledDomainFeatures": [
     "smalltalk-domain-on",
     "smalltalk-fulfillment-on"
@@ -19,7 +19,7 @@
     "capabilities": [],
     "protocolVersion": "V1"
   },
-  "defaultTimezone": "",
+  "defaultTimezone": "Europe/Madrid",
   "webhook": {
     "available": false,
     "useForDomains": false

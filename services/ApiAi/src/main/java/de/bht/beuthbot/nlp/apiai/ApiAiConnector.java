@@ -1,13 +1,11 @@
-package de.bht.beuthbot.nlp.apiai;
+package de.bht.chatbot.nlu.apiai;
 
 import com.google.gson.Gson;
-import de.bht.beuthbot.conf.Application;
-import de.bht.beuthbot.conf.Configuration;
-import de.bht.beuthbot.jms.ProcessQueue;
-import de.bht.beuthbot.model.BotMessage;
-import de.bht.beuthbot.model.BotMessageImpl;
-import de.bht.beuthbot.nlp.apiai.model.ApiAiMessage;
-import de.bht.beuthbot.nlp.apiai.model.ApiAiResponse;
+import de.bht.chatbot.jms.MessageQueue;
+import de.bht.chatbot.message.BotMessage;
+import de.bht.chatbot.messenger.utils.MessengerUtils;
+import de.bht.chatbot.nlu.apiai.model.ApiAiMessage;
+import de.bht.chatbot.nlu.apiai.model.ApiAiResponse;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -24,6 +22,7 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import java.util.Properties;
 
 /**
  * @authors: georg.glossmann@adesso.de (template) + oliverdavid@hotmail.de (content)
@@ -43,20 +42,15 @@ import javax.ws.rs.core.UriBuilder;
         }
 )
 public class ApiAiConnector implements MessageListener {
-    private Gson gson;
 
     @Inject
-    private ProcessQueue processQueue;
-
-    @Inject
-    private Application application;
+    private MessageQueue messageQueue;
 
     private final Logger logger = LoggerFactory.getLogger(ApiAiConnector.class);
     private ApiAiRESTServiceInterface apiaiProxy;
 
     @PostConstruct
     public void init() {
-        gson = new Gson();
         
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(UriBuilder.fromPath("https://api.api.ai/api/query"));
@@ -70,27 +64,29 @@ public class ApiAiConnector implements MessageListener {
     @Override
     public void onMessage(final Message message) {
         try {
-            BotMessage botMessage = gson.fromJson(((TextMessage) message).getText(), BotMessageImpl.class);
+            BotMessage botMessage = message.getBody(BotMessage.class);
+            logger.debug("Receive message: {}", botMessage.toString());
 
-            String token = application.getConfiguration(Configuration.API_AI_TOKEN);
+            Properties properties = MessengerUtils.getProperties();
+            String token = properties.getProperty("API_AI_TOKEN");
 
             String sessionID = String.valueOf(botMessage.getMessageID());
-            String language = "en";
+            String language = "de";
 
             //create a requests to te API.ai server
             Response response = apiaiProxy.processText(botMessage.getText(), language, sessionID,"BHT-Chatbot","Bearer " + token);
             String responseAsString = response.readEntity(String.class);
 
             //parse the response into ApiAiResponse
-            ApiAiResponse gs=new Gson().fromJson(responseAsString, ApiAiResponse.class);
+            ApiAiResponse gs = new Gson().fromJson(responseAsString, ApiAiResponse.class);
 
             //Create ApiAiMessage
-            ApiAiMessage msg = new ApiAiMessage(botMessage,gs);
+            ApiAiMessage msg = new ApiAiMessage(botMessage, gs);
 
             //System.out.println("API.AI RESPONSE:"+responseAsString);
 
             //put ApiAiMessage into messageQueue
-            processQueue.addMessage(msg, "Drools", "in");
+            messageQueue.addMessage(msg, "Drools", "in");
 
         } catch (JMSException e) {
             logger.error("Could not process message.", e);

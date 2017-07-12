@@ -1,6 +1,9 @@
-package de.bht.beuthbot.canteen;
-
-import de.bht.beuthbot.canteen.model.*;
+package de.bht.chatbot.canteen;
+import de.bht.chatbot.canteen.model.CanteenData;
+import de.bht.chatbot.canteen.model.TrafficLight;
+import de.bht.chatbot.canteen.model.Dish;
+import de.bht.chatbot.canteen.model.DishType;
+import de.bht.chatbot.canteen.model.DishCategory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,191 +14,205 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * Created by sJantzen on 22.06.2017.
- * Parser class, to parse a given url, leading to the de.bht.chatbot.canteen page of the Beuth-Hochschule.
+ * This class parses the current webpage of the beuth canteen.
+ * Created by sJantzen on 03.07.2017.
  */
 public class Parser {
 
-    private static Logger logger = LoggerFactory.getLogger(Parser.class);
+    private Logger logger = LoggerFactory.getLogger(Parser.class);
 
-    private static final DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    private static final String CANTEEN_CURRENT_WEEK_URL = "http://www.studentenwerk-berlin.de/print/mensen/speiseplan/beuth/woche.html";
-    private static final String CANTEEN_NEXT_WEEK_URL = "http://www.studentenwerk-berlin.de/print/mensen/speiseplan/beuth/naechste_woche.html";
+    private static final Pattern DATE_PATTERN = Pattern.compile(".*([0-9]{4}-[0-9]{2}-[0-9]{2}).*");
+    private static final Pattern ICON_PATTERN = Pattern.compile(".*/([0-9]{1,2})\\.png");
+
+    private static final String CANTEENS_URL = "https://www.stw.berlin/xhr/speiseplan-und-standortdaten.html";
+    private static final String DAYS_DISHES_URL = "https://www.stw.berlin/xhr/speiseplan-wochentag.html";
+    private static final String PARAM_RESOURCE_ID_NAME = "resources_id";
+    private static final String PARAM_RESOURCE_ID_VALUE = "527";
+    private static final String PARAM_DATE_NAME = "date";
+
+    private static final String OPENING_HOURS = "Mo. - Fr. | 09:00 - 14:30";
 
     /**
-     * Creates new CanteenData with the dishes of the current and the next week
-     * by parsing a given de.bht.chatbot.canteen website of Beuth HS.
+     * Creates new CanteenData with all dishes of the current and next week by parsing
+     * the canteen url of the beuth university.
      * @return
      */
-    public CanteenData parse(){
+    public CanteenData parse() {
 
-        logger.info("Parser invoked.");
+        String canteenName = "";
 
         List<Dish> dishes = new ArrayList<>();
 
-        dishes.addAll(getDishes(CANTEEN_CURRENT_WEEK_URL));     // parses data for the current week
-        dishes.addAll(getDishes(CANTEEN_NEXT_WEEK_URL));        // parses data for the next week
+        try {
+            Document doc = Jsoup.connect(CANTEENS_URL).data(PARAM_RESOURCE_ID_NAME, PARAM_RESOURCE_ID_VALUE).userAgent("Mozilla").post();
 
-        CanteenData data = new CanteenData("Mensa Beuth HS", "Küchen-Öffnungszeiten täglich von 11:00 bis 14:30 Uhr",
-                "Nach Küchenschluss, bis 18 Uhr, kann die Mensa zum Lernen und Arbeiten genutzt werden.", dishes);
+            Elements canteenNameEle = doc.select("#listboxEinrichtungen option[value=" + PARAM_RESOURCE_ID_VALUE + "]");
+            if(canteenNameEle != null && canteenNameEle.size() > 0) {
+                canteenName = canteenNameEle.first().text();
+            }
 
-        return data;
-    }
+            /*
+             * This is a list with dates of the current and next week.
+             * First we get all dates and than we will iterate over these dates,
+             * to get all dishes of the current and next week.
+             */
+            List<String> dates = new ArrayList<>();
 
-    /**
-     * Creates a list of dishes by parsing the given url.
-     * @param url
-     * @return
-     */
-    private List<Dish> getDishes(final String url) {
-        List<Dish> rv = new ArrayList<>();
+            // Get all dates of the current week.
+            dates.addAll(getDates(doc));
 
-        try{
-            Document doc = Jsoup.connect(url).get();
+            /*
+             * Loop all days.
+             */
+            Map<String, String> params = new HashMap<>();
+            params.put(PARAM_RESOURCE_ID_NAME, PARAM_RESOURCE_ID_VALUE);
 
-            Elements tables = doc.select("table.mensa_week_table");
+            for (String day : dates) {
+                params.put(PARAM_DATE_NAME, day);
+                doc = Jsoup.connect(DAYS_DISHES_URL).data(params).userAgent("Mozilla").post();
 
-            for(Element table : tables){
-                // Check if correct table
-                if(table.getElementsByTag("th").size() > 0 && table.getElementsByTag("th").get(0).text().contains("Speiseart")) {
-                    LocalDate[] dates = new LocalDate[5];
+                /*
+                 * Loop all dish categories of the current page.
+                 */
+                Elements dishCategories = doc.select("div.splGroupWrapper");
 
-                    // Get all dates
-                    Elements dateElements = table.select("th.mensa_week_head_col");
-                    int index = 0;
-                    for(Element dateElement : dateElements) {
-                        dates[index++] = LocalDate.parse(dateElement.text().split(", ")[1], DATEFORMATTER);
+                for (Element dishCategory : dishCategories) {
+
+                    /*
+                     * Get name of the current dishCategory.
+                     */
+                    Elements strCategories = dishCategory.select("div.splGroup");
+                    DishCategory category = null;
+                    if(strCategories != null && strCategories.size() > 0 ) {
+                        String strCategory = dishCategory.select("div.splGroup").first().text();
+                        category = DishCategory.getDishCategory(strCategory);
                     }
 
-                    // loop rows
-                    Elements dataRows = table.getElementsByTag("tbody").get(0).getElementsByTag("tr");
-                    for(Element row : dataRows) {
+                    /*
+                     * Loop all dishes of the current category.
+                     */
+                    Elements categoryDishes = dishCategory.select("div.splMeal");
 
-                        String rowHeader = row.getElementsByClass("mensa_week_speise_tag_title").get(0).text();
+                    for (Element categoryDish : categoryDishes) {
 
-                        // loop all columns of a row (category)
-                        for(int i = 0; i < row.getElementsByTag("td").size(); i++) {
+                        Dish dish = new Dish();
 
-                            TrafficLight trafficLight = null;
+                        dish.setDate(LocalDate.parse(day));
+                        dish.setDishCategory(category);
 
-                            List<DishType> dishTypes = new ArrayList<>();
+                        /*
+                         * Get markings for dish.
+                         */
+                        if(categoryDish.attr("lang") != null) {
+                            dish.getMarkings().addAll(Arrays.asList(categoryDish.attr("lang").trim().split(", ")));
+                        }
 
-                            // loop all dishes of a column
-                            for(Element element : row.getElementsByTag("td").get(i).getAllElements()) {
+                        /*
+                         * Get price string.
+                         */
+                        Element strPrice = categoryDish.select("div.text-right").first();
+                        dish.setPrice(strPrice.text());
 
-                                if (element.tagName().equals("p")) {
+                        // check if 3 different prices are available or just one price for all
+                        /*
+                        if(!"".equals(dish.getPrice())) {
+                            if (dish.getPrice().contains("/")) {
+                                // 3 different prices
+                                String[] prices = dish.getPrice().replace("€", "").replace("\\?", "").replace(",",".").trim().split("/");
+                                dish.setPriceStudent(new BigDecimal(prices[0]));
+                                dish.setPriceEmployee(new BigDecimal(prices[1]));
+                                dish.setPriceGuest(new BigDecimal(prices[2]));
+                            }
+                            else {
+                                // only 1 price
+                                logger.info("1: " + dish.getPrice());
+                                logger.info("1: " + dish.getPrice().replace("€", ""));
+                                logger.info("1: " + dish.getPrice().replace("€", "").replace("\\?", ""));
+                                logger.info("1: " + dish.getPrice().replace("€", "").replace("\\?", "").replace(",","."));
+                                logger.info("1: " + dish.getPrice().replace("€", "").replace("\\?", "").replace(",",".").trim());
+                                BigDecimal price = new BigDecimal(dish.getPrice().replace("€", "").replace("\\?", "").replace(",",".").trim());
+                                dish.setPriceStudent(price);
+                                dish.setPriceEmployee(price);
+                                dish.setPriceGuest(price);
+                            }
+                        }
+                        */
 
-                                    Dish dish = new Dish();
+                        /*
+                         * Get name of dish.
+                         */
+                        Element name = categoryDish.select("span.bold").first();
+                        dish.setName(name.text());
 
-                                    // ----------
-                                    // get date
-                                    dish.setDate(dates[i]);
+                        /*
+                         * Loop icons for traffic lights and dish types.
+                         */
+                        Elements icons = categoryDish.select("img.splIcon");
 
-                                    // ----------
-                                    // get dishCategory
-                                    dish.setDishCategory(DishCategory.getDishCategory(rowHeader));
+                        for (Element icon : icons) {
 
-                                    // ----------
-                                    // get name
-                                    dish.setName(element.select("strong").get(0).text() + " " + element.ownText());
-
-                                    // ----------
-                                    // get markings
-                                    List<String> markings = new ArrayList<>();
-                                    for(Element aTag : element.select("a.zusatz")) {
-                                        markings.add(aTag.attr("title"));
-                                    }
-                                    dish.setMarkings(markings);
-
-                                    // ----------
-                                    // get prices
-                                    String strPrice = element.select("span.mensa_preise").get(0).text();
-                                    dish.setPrice(strPrice);
-
-                                    // check if 3 different prices are available or just one price for all
-                                    if (strPrice.contains("/")) {
-                                        // 3 different prices
-                                        String[] prices = strPrice.replace("EUR", "").trim().split(" / ");
-                                        dish.setPriceStudent(new BigDecimal(prices[0]));
-                                        dish.setPriceEmployee(new BigDecimal(prices[1]));
-                                        dish.setPriceGuest(new BigDecimal(prices[2]));
-                                    }
-                                    else {
-                                        // only 1 price
-                                        BigDecimal price = new BigDecimal(strPrice.replace("EUR", "").trim());
-                                        dish.setPriceStudent(price);
-                                        dish.setPriceEmployee(price);
-                                        dish.setPriceGuest(price);
-                                    }
-
-                                    // ----------
-                                    // get dishTypes
-                                    dish.setDishTypes(dishTypes);
-
-                                    // ----------
-                                    // set traffic light
-                                    dish.setTrafficLight(trafficLight);
-
-                                    // ----------
-                                    // set dish types
-                                    List<DishType> currentDishTypes = new ArrayList<>();
-                                    currentDishTypes.addAll(dishTypes);
-                                    dish.setDishTypes(currentDishTypes);
-
-                                    rv.add(dish);
-
-                                    // RESET trafficLight, dishTypes
-                                    trafficLight = null;
-                                    dishTypes.clear();
+                            /*
+                             * Check if and set traffic light.
+                             */
+                            if(icon.attr("src").contains("ampel")) {
+                                if(icon.attr("src").contains("ampel_gelb")) {
+                                    dish.setTrafficLight(TrafficLight.YELLOW);
+                                } else if (icon.attr("src").contains("ampel_gruen")){
+                                    dish.setTrafficLight(TrafficLight.GREEN);
+                                } else if (icon.attr("src").contains("ampel_rot")) {
+                                    dish.setTrafficLight(TrafficLight.RED);
                                 }
-                                else if (element.tagName().equals("a") && element.attr("href").startsWith("#ampel")) {
-                                    // get traffic light
-                                    switch (element.attr("href")) {
-                                        case "#ampel_gruen":
-                                            trafficLight = TrafficLight.GREEN;
-                                            break;
-                                        case "#ampel_orange":
-                                            trafficLight = TrafficLight.ORANGE;
-                                            break;
-                                        case "#ampel_rot":
-                                            trafficLight = TrafficLight.RED;
-                                            break;
-                                    }
-                                }
-                                else if (element.tagName().equals("a") && (element.attr("href").endsWith("_siegel")
-                                        || element.attr("href").equals("#msc"))) {
-                                    // get dishType
-                                    switch (element.attr("href")) {
-                                        case "#vegan_siegel":
-                                            dishTypes.add(DishType.VEGAN);
-                                            break;
-                                        case "#vegetarisch_siegel":
-                                            dishTypes.add(DishType.VEGETARIAN);
-                                            break;
-                                        case "#klimabaum_siegel":
-                                            dishTypes.add(DishType.CLIMATE_NEUTRAL);
-                                            break;
-                                        case "#bio_siegel":
-                                            dishTypes.add(DishType.BIO);
-                                            break;
-                                        case "#msc":
-                                            dishTypes.add(DishType.MSC);
-                                            break;
+                            } else {
+                                /*
+                                 * Check for dishTypes and set them.
+                                 */
+                                Matcher m = ICON_PATTERN.matcher(icon.attr("src"));
+                                while ( m.find() ) {
+                                    if(DishType.getDishTypeByNumber(m.group(1)) != null) {
+                                        dish.getDishTypes().add(DishType.getDishTypeByNumber(m.group(1)));
                                     }
                                 }
                             }
                         }
+                        dishes.add(dish);
                     }
                 }
             }
-        } catch(IOException e){
-            logger.error("ERROR while parsing site: " + url, e);
+        } catch (IOException e) {
+            s("Got Error while parsing site: " + CANTEENS_URL);
         }
-        return rv;
+
+        return new CanteenData(canteenName, OPENING_HOURS, "", dishes);
+    }
+
+    /**
+     * This method returns a string list of dates for all possible days with dishes
+     * for the current shown week.
+     * @param doc
+     * @return
+     */
+    private static List<String> getDates(Document doc) {
+        List<String> dates = new ArrayList<>();
+        Elements canteenLinks = doc.select("li[id^=spltag]");
+        for(Element canteenLink : canteenLinks) {
+            Matcher m = DATE_PATTERN.matcher(canteenLink.attr("onClick"));
+            while ( m.find() ) {
+                dates.add(m.group(1));
+                // Get date for the same day of the next week.
+                LocalDate ld = LocalDate.parse(m.group(1));
+                ld = ld.plusDays(7);
+                dates.add(ld.toString());
+            }
+        }
+        return dates;
+    }
+
+    private static void s(final String str) {
+        System.out.println(str);
     }
 }

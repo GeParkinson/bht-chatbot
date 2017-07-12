@@ -5,7 +5,7 @@ package de.bht.beuthbot.canteen.model;
  */
 public enum TrafficLight {
 
-    GREEN("Grün"), ORANGE("Orange"), RED("Rot");
+    GREEN("green"), YELLOW("yellow"), RED("red");
 
     private String text;
 
@@ -15,6 +15,24 @@ public enum TrafficLight {
 
     public String getText(){
         return text;
+    }
+
+    /**
+     * Returns a trafficlight if matches with given text.
+     * @param text
+     * @returns null if no match was found.
+     */
+    public static TrafficLight getTrafficLight(final String text){
+        switch (text.toLowerCase()) {
+            case "green":
+                return TrafficLight.GREEN;
+            case "yellow":
+                return TrafficLight.YELLOW;
+            case "red":
+                return TrafficLight.RED;
+            default:
+                return null;
+        }
     }
 
     public String toString(){

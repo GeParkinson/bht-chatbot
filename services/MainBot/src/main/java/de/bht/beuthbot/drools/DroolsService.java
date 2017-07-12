@@ -1,12 +1,14 @@
-package de.bht.beuthbot.drools;
+package de.bht.chatbot.drools;
 
+
+import de.bht.chatbot.canteen.model.CanteenData;
+import de.bht.chatbot.canteen.Parser;
 
 import com.google.gson.Gson;
-import de.bht.beuthbot.canteen.Parser;
-import de.bht.beuthbot.canteen.model.CanteenData;
-import de.bht.beuthbot.jms.ProcessQueue;
-import de.bht.beuthbot.model.NLUBotMessage;
-import de.bht.beuthbot.model.NLUBotMessageImpl;
+
+import de.bht.chatbot.drools.model.DroolsMessage;
+import de.bht.chatbot.jms.MessageQueue;
+import de.bht.chatbot.message.NLUBotMessage;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -19,7 +21,6 @@ import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.TextMessage;
 
 /**
  * Created by sJantzen on 13.06.2017.
@@ -47,7 +48,7 @@ public class DroolsService implements MessageListener {
 
 
     @Inject
-    private ProcessQueue processQueue;
+    private MessageQueue messageQueue;
 
     @Inject
     private Parser parser;
@@ -55,13 +56,13 @@ public class DroolsService implements MessageListener {
     @Override
     public void onMessage(Message message) {
         try {
-            NLUBotMessage botMessage = gson.fromJson(((TextMessage) message).getText(), NLUBotMessageImpl.class);
+            NLUBotMessage botMessage = message.getBody(NLUBotMessage.class);
 
             botMessage = doRules(botMessage);
 
-            logger.info("ANSWER: " + botMessage.getText());
+            logger.debug("ANSWER: " + botMessage.getText());
 
-            //messageQueue.addOutMessage(botMessage);
+            messageQueue.addOutMessage(botMessage);
         } catch (JMSException e) {
             logger.error("Exception while setting bot message to the queue.", e);
         }
@@ -91,7 +92,20 @@ public class DroolsService implements MessageListener {
         ksession.setGlobal("canteenData", canteenData);
 
         // The application can insert facts into the session
-        ksession.insert(botMessage);
+        logger.debug("Intent: " + botMessage.getIntent() + " entities: " + botMessage.getEntities());
+
+        // Map incoming ApiAiMessages and RasaMessages to DroolsMessage
+        DroolsMessage droolsMessage = new DroolsMessage();
+        droolsMessage.setIntent(botMessage.getIntent());
+        droolsMessage.setEntities(botMessage.getEntities());
+        droolsMessage.setText(botMessage.getText());
+        droolsMessage.setMessenger(botMessage.getMessenger());
+        droolsMessage.setMessageID(botMessage.getMessageID());
+        droolsMessage.setSenderID(botMessage.getSenderID());
+
+        logger.debug("Text: " + droolsMessage.getText());
+
+        ksession.insert(droolsMessage);
 
         // and fire the rules
         ksession.fireAllRules();
@@ -99,6 +113,6 @@ public class DroolsService implements MessageListener {
         // and then dispose the session
         ksession.dispose();
 
-        return botMessage;
+        return droolsMessage;
     }
 }

@@ -1,30 +1,45 @@
-package de.bht.beuthbot.messenger.facebook;
+package de.bht.chatbot.messenger.facebook;
 
-import de.bht.beuthbot.conf.Application;
-import de.bht.beuthbot.conf.Configuration;
+import de.bht.chatbot.messenger.utils.MessengerUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
-import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by oliver on 03.07.2017.
  */
 public class FacebookUtils {
-
-    /** BeuthBot Application Bean */
-    @Inject
-    private Application application;
-
     /**
-     * get and return token from properties
+     * get and return messaging-token from properties
      * @return String Facebook-Message token
      */
     public String token(){
-        return application.getConfiguration(Configuration.FACEBOOK_BOT_TOKEN);
+        Properties properties = MessengerUtils.getProperties();
+        return properties.getProperty("FACEBOOK_BOT_TOKEN");
+    }
+
+    /**
+     * get and return access-token from properties
+     * @return String Facebook-access token
+     */
+    public String accessID(){
+        Properties properties = MessengerUtils.getProperties();
+        return properties.getProperty("FACEBOOK_ACCESS_TOKEN");
+    }
+
+    /**
+     * get and return url of server
+     * @return String Server URL
+     */
+    public String webadress(){
+        Properties properties = MessengerUtils.getProperties();
+        return properties.getProperty("WEB_URL");
     }
 
     /**
@@ -61,10 +76,44 @@ public class FacebookUtils {
         FacebookRESTServiceInterface facebookProxy = target.proxy(FacebookRESTServiceInterface.class);
 
         Response response = facebookProxy.sendMessage(payload, token);
+
         String responseAsString = response.readEntity(String.class);
 
 
         return responseAsString;
 
+    }
+
+    public List<String> splitIntoMultipleMessages(String messageJson, int charLimit, Boolean seperateMessages, String seperator){
+        List<String> messages = new ArrayList<String>();
+
+        //facebook allows a maximum of 640 characters, message must be split if necessary:
+        String linesOfMessage[] = messageJson.split("\\r?\\n");
+
+        String currentOutput = "";
+        for (int i = 0; i < linesOfMessage.length; i++) {
+            String line = linesOfMessage[i];
+            if ((currentOutput + "\\n" + line).length() > charLimit || (line.contains(seperator)&&seperateMessages)) {
+                //if appending new line would increase the chars over charLimit, put current output and start new one
+                messages.add(currentOutput);
+
+                //hide seperator if message is split by entries
+                if(line.contains(seperator)&&seperateMessages) {
+                    line="";
+                }
+
+                //begin a new output with the current line (which was not send because 640 chars would have been reached)
+                currentOutput = line;
+            } else {
+                //append line if char limit not reached
+                currentOutput = currentOutput + "\\n" + line;
+            }
+
+
+        }
+        messages.add(currentOutput);
+
+
+        return messages;
     }
 }
