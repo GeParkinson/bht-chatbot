@@ -1,0 +1,66 @@
+{
+  "id": "8a0a0ef7-e6b4-4abb-814d-482d5135bbec",
+  "name": "dishcategory",
+  "isOverridable": true,
+  "entries": [
+    {
+      "value": "vorspeisen",
+      "synonyms": [
+        "vorspeisen",
+        "Vorspeise",
+        "Vorspeisen"
+      ]
+    },
+    {
+      "value": "salate",
+      "synonyms": [
+        "salate",
+        "Salat",
+        "Salate"
+      ]
+    },
+    {
+      "value": "suppen",
+      "synonyms": [
+        "suppen",
+        "Suppe",
+        "Suppen"
+      ]
+    },
+    {
+      "value": "aktionen",
+      "synonyms": [
+        "aktionen",
+        "Aktion",
+        "Aktionen"
+      ]
+    },
+    {
+      "value": "essen",
+      "synonyms": [
+        "essen",
+        "Hauptgerichte",
+        "Hauptspeise"
+      ]
+    },
+    {
+      "value": "beilagen",
+      "synonyms": [
+        "beilagen",
+        "Beilage",
+        "Beilagen"
+      ]
+    },
+    {
+      "value": "desserts",
+      "synonyms": [
+        "desserts",
+        "Dessert",
+        "Nachspeise",
+        "Nachtisch"
+      ]
+    }
+  ],
+  "isEnum": false,
+  "automatedExpansion": false
+}
