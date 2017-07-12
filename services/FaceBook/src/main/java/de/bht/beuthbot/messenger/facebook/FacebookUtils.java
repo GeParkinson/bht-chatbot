@@ -1,46 +1,25 @@
-package de.bht.chatbot.messenger.facebook;
+package de.bht.beuthbot.messenger.facebook;
 
-import de.bht.chatbot.messenger.utils.MessengerUtils;
+import de.bht.beuthbot.conf.Application;
+import de.bht.beuthbot.conf.Configuration;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
+import javax.annotation.Resource;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Created by oliver on 03.07.2017.
  */
 public class FacebookUtils {
-    /**
-     * get and return messaging-token from properties
-     * @return String Facebook-Message token
-     */
-    public String token(){
-        Properties properties = MessengerUtils.getProperties();
-        return properties.getProperty("FACEBOOK_BOT_TOKEN");
-    }
 
-    /**
-     * get and return access-token from properties
-     * @return String Facebook-access token
-     */
-    public String accessID(){
-        Properties properties = MessengerUtils.getProperties();
-        return properties.getProperty("FACEBOOK_ACCESS_TOKEN");
-    }
-
-    /**
-     * get and return url of server
-     * @return String Server URL
-     */
-    public String webadress(){
-        Properties properties = MessengerUtils.getProperties();
-        return properties.getProperty("WEB_URL");
-    }
+    /** BeuthBot Application Bean */
+    @Resource(lookup = "java:global/global/ApplicationBean")
+    private Application application;
 
     /**
      * activate Webhook:
@@ -56,7 +35,7 @@ public class FacebookUtils {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                sendPostRequest("https://graph.facebook.com/v2.9/me/subscribed_apps","",token());
+                sendPostRequest("https://graph.facebook.com/v2.9/me/subscribed_apps","", application.getConfiguration(Configuration.FACEBOOK_BOT_TOKEN));
             }
         };
         new Thread(activation).start();

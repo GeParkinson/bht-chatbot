@@ -1,19 +1,20 @@
-package de.bht.chatbot.messenger.facebook;
+package de.bht.beuthbot.messenger.facebook;
 
 import com.google.gson.Gson;
-import de.bht.chatbot.attachments.AttachmentStore;
-import de.bht.chatbot.jms.MessageQueue;
-import de.bht.chatbot.message.Attachment;
-import de.bht.chatbot.message.AttachmentType;
-import de.bht.chatbot.messenger.facebook.model.FacebookAttachment;
-import de.bht.chatbot.messenger.facebook.model.FacebookBotMessage;
-import de.bht.chatbot.messenger.facebook.model.FacebookInput;
-import de.bht.chatbot.messenger.utils.MessengerUtils;
+import de.bht.beuthbot.attachments.AttachmentStore;
+import de.bht.beuthbot.conf.Application;
+import de.bht.beuthbot.conf.Configuration;
+import de.bht.beuthbot.jms.ProcessQueue;
+import de.bht.beuthbot.messenger.facebook.model.FacebookAttachment;
+import de.bht.beuthbot.messenger.facebook.model.FacebookBotMessage;
+import de.bht.beuthbot.messenger.facebook.model.FacebookInput;
+import de.bht.beuthbot.model.AttachmentType;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.json.JSONObject;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -31,11 +32,17 @@ import java.util.Map;
 @Path("/facebook")
 public class FacebookReceiveAdapter {
 
-    @Inject
-    private MessageQueue messageQueue;
+    /** Injected JMS MessageQueue */
+    @Resource(lookup = "java:global/global/ProcessQueueBean")
+    private ProcessQueue processQueue;
 
-    @Inject
+    /** Injected AttachmentStore */
+    @Resource(lookup = "java:global/global/AttachmentStoreBean")
     private AttachmentStore attachmentStore;
+
+    /** BeuthBot Application Bean */
+    @Resource(lookup = "java:global/global/ApplicationBean")
+    private Application application;
 
     @Inject
     private FacebookUtils facebookUtils;
@@ -52,9 +59,9 @@ public class FacebookReceiveAdapter {
     //token: set in config.properties
     //---------------------------------------
 
-    String webhookToken = MessengerUtils.getProperties().getProperty("FACEBOOK_WEBHOOK_TOKEN");
+    private String webhookToken = application.getConfiguration(Configuration.FACEBOOK_WEBHOOK_TOKEN);
 
-    /**
+                                                       /**
      * listen to POST requests from facebook (which contain the received messages) and react to them
      * @param InputMessage message send by facebook
      * @return request-answer to return to facebook
@@ -93,7 +100,7 @@ public class FacebookReceiveAdapter {
                 FacebookBotMessage msg = new FacebookBotMessage(gs.getEntry().get(0));
 
                 //put message into JMS-queue
-                messageQueue.addInMessage(msg);
+                processQueue.route(msg);
             }
         }
 
@@ -147,7 +154,7 @@ public class FacebookReceiveAdapter {
     @Produces("text/plain")
     public String setWebhook(@Context HttpServletRequest request){
 
-        String access_token = facebookUtils.accessID();
+        String access_token = application.getConfiguration(Configuration.FACEBOOK_ACCESS_TOKEN);
 
         //access token contains the App-ID, which we need for our call
         String appid = access_token.substring(0 , access_token.indexOf("|"));
@@ -159,7 +166,7 @@ public class FacebookReceiveAdapter {
 
         String fields ="messages, messaging_postbacks, messaging_optins, message_deliveries, message_reads, messaging_payments, messaging_pre_checkouts, messaging_checkout_updates, messaging_account_linking, messaging_referrals, message_echoes";
 
-        String callback_url =facebookUtils.webadress()+"/facebook/getUpdates";
+        String callback_url = application.getConfiguration(Configuration.WEB_URL) + "/facebook/getUpdates";
         Response response = facebookProxy.sendHook("page", callback_url, fields, webhookToken, access_token);
 
         String responseAsString = response.readEntity(String.class);

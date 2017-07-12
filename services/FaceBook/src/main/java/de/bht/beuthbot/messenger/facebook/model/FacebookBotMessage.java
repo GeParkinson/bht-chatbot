@@ -1,15 +1,21 @@
 package de.bht.beuthbot.messenger.facebook.model;
 
+import de.bht.beuthbot.jms.ProcessQueueMessageProtocol;
+import de.bht.beuthbot.jms.Target;
 import de.bht.beuthbot.model.Attachment;
-import de.bht.beuthbot.model.BotMessage;
 import de.bht.beuthbot.model.Messenger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by oliver on 15.06.2017.
  *
  * Facebook-specific class of the BotMessage Interface
  */
-public class FacebookBotMessage implements BotMessage{
+public class FacebookBotMessage implements ProcessQueueMessageProtocol{
 
     //stores a FacebookEntry object which contains all necessary information
     private FacebookEntry facebookEntry;
@@ -24,6 +30,11 @@ public class FacebookBotMessage implements BotMessage{
     public Long getId() {
         //TODO: generate Chatbot-intern-ID
         return 1L;
+    }
+
+    @Override
+    public Target getTarget() {
+        return Target.NTSP;
     }
 
     @Override
@@ -66,19 +77,29 @@ public class FacebookBotMessage implements BotMessage{
      * @return List of attachments found
      */
     @Override
-    public Attachment[] getAttachments() {
+    public List<Attachment> getAttachments() {
 
         if(hasAttachments()) {
-            Attachment[] atts = new Attachment[facebookEntry.getMessaging().get(0).getMessage().getAttachments().size()];
+            List<Attachment> atts = new ArrayList<>();
 
             for (int i = 0; i < facebookEntry.getMessaging().get(0).getMessage().getAttachments().size(); i++) {
-                atts[i] = facebookEntry.getMessaging().get(0).getMessage().getAttachments().get(i);
+                atts.add(facebookEntry.getMessaging().get(0).getMessage().getAttachments().get(i));
             }
 
             return atts;
         }
         else {
-            return new Attachment[0];
+            return Collections.EMPTY_LIST;
         }
+    }
+
+    @Override
+    public String getIntent() {
+        return null;
+    }
+
+    @Override
+    public Map<String, String> getEntities() {
+        return null;
     }
 }

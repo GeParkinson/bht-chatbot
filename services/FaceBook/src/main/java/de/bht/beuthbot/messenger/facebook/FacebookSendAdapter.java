@@ -1,25 +1,19 @@
-package de.bht.chatbot.messenger.facebook;
+package de.bht.beuthbot.messenger.facebook;
 
-import de.bht.chatbot.attachments.AttachmentStore;
-import de.bht.chatbot.attachments.model.AttachmentStoreMode;
-import de.bht.chatbot.message.BotMessage;
-import de.bht.chatbot.messenger.utils.MessengerUtils;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import de.bht.beuthbot.attachments.AttachmentStore;
+import de.bht.beuthbot.attachments.model.AttachmentStoreMode;
+import de.bht.beuthbot.conf.Application;
+import de.bht.beuthbot.conf.Configuration;
+import de.bht.beuthbot.jms.ProcessQueueMessageProtocol;
+import de.bht.beuthbot.jms.TaskMessage;
 
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.regex.Pattern;
 
 /**
  * Created by oliver on 22.05.2017.
@@ -42,8 +36,13 @@ import java.util.regex.Pattern;
 )
 public class FacebookSendAdapter implements MessageListener {
 
-    @Inject
+    /** Injected AttachmentStore */
+    @Resource(lookup = "java:global/global/AttachmentStoreBean")
     private AttachmentStore attachmentStore;
+
+    /** BeuthBot Application Bean */
+    @Resource(lookup = "java:global/global/ApplicationBean")
+    private Application application;
 
     @Inject
     private FacebookUtils facebookUtils;
@@ -63,7 +62,7 @@ public class FacebookSendAdapter implements MessageListener {
             String payload = "{\"recipient\": {\"id\": \"" + recipient + "\"}, \"message\": { \"text\": \"" + currentMessage + "\"}}";
             try {
                 //send message
-                facebookUtils.sendPostRequest(requestUrl, payload, facebookUtils.token());
+                facebookUtils.sendPostRequest(requestUrl, payload, application.getConfiguration(Configuration.FACEBOOK_BOT_TOKEN));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -74,13 +73,13 @@ public class FacebookSendAdapter implements MessageListener {
     /** Send Media Method
      * fill payload with media information and send it to facebook
      */
-    private void sendMedia(BotMessage message,String mediaType){
-        String fileURL=attachmentStore.loadAttachmentPath(message.getAttachments()[0].getId(), AttachmentStoreMode.FILE_URI);
+    private void sendMedia(ProcessQueueMessageProtocol message, String mediaType){
+        String fileURL=attachmentStore.loadAttachmentPath(message.getAttachments().get(0).getId(), AttachmentStoreMode.FILE_URI);
         String payload = "{recipient: { id: "+message.getSenderID()+" }, message: { attachment: { type: \""+mediaType+"\", payload: { url: \""+fileURL+"\"  } }   }} ";
         System.out.println("FACEBOOK_SEND:Output:"+payload);
         String requestUrl = "https://graph.facebook.com/v2.6/me/messages" ;
         try {
-            facebookUtils.sendPostRequest(requestUrl, payload,facebookUtils.token());
+            facebookUtils.sendPostRequest(requestUrl, payload, application.getConfiguration(Configuration.FACEBOOK_BOT_TOKEN));
         }
         catch(Exception ex){
             ex.printStackTrace();
@@ -94,11 +93,11 @@ public class FacebookSendAdapter implements MessageListener {
     @Override
     public void onMessage(Message messageIn) {
         try {
-            BotMessage message = messageIn.getBody(BotMessage.class);
+            ProcessQueueMessageProtocol message = messageIn.getBody(TaskMessage.class);
 
             // if message has attachment(s), use sendMedia function depending on type
             if (message.hasAttachments()) {
-                switch (message.getAttachments()[0].getAttachmentType()) {
+                switch (message.getAttachments().get(0).getAttachmentType()) {
                     case AUDIO:
                         sendMedia(message, "audio");
                         break;
