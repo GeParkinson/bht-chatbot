@@ -1,11 +1,14 @@
-package de.bht.chatbot.nlu.apiai;
+package de.bht.beuthbot.nlp.apiai;
 
 import com.google.gson.Gson;
-import de.bht.chatbot.jms.MessageQueue;
-import de.bht.chatbot.message.BotMessage;
-import de.bht.chatbot.messenger.utils.MessengerUtils;
-import de.bht.chatbot.nlu.apiai.model.ApiAiMessage;
-import de.bht.chatbot.nlu.apiai.model.ApiAiResponse;
+import de.bht.beuthbot.attachments.AttachmentStore;
+import de.bht.beuthbot.conf.Application;
+import de.bht.beuthbot.conf.Configuration;
+import de.bht.beuthbot.jms.ProcessQueue;
+import de.bht.beuthbot.jms.ProcessQueueMessageProtocol;
+import de.bht.beuthbot.jms.TaskMessage;
+import de.bht.beuthbot.nlp.apiai.model.ApiAiMessage;
+import de.bht.beuthbot.nlp.apiai.model.ApiAiResponse;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -13,13 +16,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.TextMessage;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.util.Properties;
@@ -43,8 +46,17 @@ import java.util.Properties;
 )
 public class ApiAiConnector implements MessageListener {
 
-    @Inject
-    private MessageQueue messageQueue;
+    /** Injected JMS MessageQueue */
+    @Resource(lookup = "java:global/global/ProcessQueueBean")
+    private ProcessQueue processQueue;
+
+    /** Injected AttachmentStore */
+    @Resource(lookup = "java:global/global/AttachmentStoreBean")
+    private AttachmentStore attachmentStore;
+
+    /** BeuthBot Application Bean */
+    @Resource(lookup = "java:global/global/ApplicationBean")
+    private Application application;
 
     private final Logger logger = LoggerFactory.getLogger(ApiAiConnector.class);
     private ApiAiRESTServiceInterface apiaiProxy;
@@ -64,11 +76,10 @@ public class ApiAiConnector implements MessageListener {
     @Override
     public void onMessage(final Message message) {
         try {
-            BotMessage botMessage = message.getBody(BotMessage.class);
+            ProcessQueueMessageProtocol botMessage = message.getBody(TaskMessage.class);
             logger.debug("Receive message: {}", botMessage.toString());
 
-            Properties properties = MessengerUtils.getProperties();
-            String token = properties.getProperty("API_AI_TOKEN");
+            String token = application.getConfiguration(Configuration.API_AI_TOKEN);
 
             String sessionID = String.valueOf(botMessage.getMessageID());
             String language = "de";
@@ -86,7 +97,7 @@ public class ApiAiConnector implements MessageListener {
             //System.out.println("API.AI RESPONSE:"+responseAsString);
 
             //put ApiAiMessage into messageQueue
-            messageQueue.addMessage(msg, "Drools", "in");
+            processQueue.route(msg);
 
         } catch (JMSException e) {
             logger.error("Could not process message.", e);

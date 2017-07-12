@@ -1,12 +1,12 @@
 package de.bht.beuthbot.nlp.apiai.model;
 
+import de.bht.beuthbot.jms.ProcessQueueMessageProtocol;
+import de.bht.beuthbot.jms.Target;
 import de.bht.beuthbot.model.Attachment;
-import de.bht.beuthbot.model.BotMessage;
 import de.bht.beuthbot.model.Messenger;
-import de.bht.beuthbot.model.NLUBotMessage;
 import de.bht.beuthbot.model.nlp.NLUResponse;
 
-import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,13 +14,13 @@ import java.util.Map;
  *
  * ApiAi-specific class of the NLUBotMessage Interface
  */
-public class ApiAiMessage implements NLUBotMessage, Serializable {
+public class ApiAiMessage implements ProcessQueueMessageProtocol {
 
     //store BotMessage and NLUResponse to query necessary information
-    BotMessage bm;
+    ProcessQueueMessageProtocol bm;
     NLUResponse nluResponse;
 
-    public ApiAiMessage(BotMessage bm, NLUResponse nluResponse){
+    public ApiAiMessage(ProcessQueueMessageProtocol bm, NLUResponse nluResponse){
         this.bm=bm;
         this.nluResponse=nluResponse;
     }
@@ -28,6 +28,11 @@ public class ApiAiMessage implements NLUBotMessage, Serializable {
     @Override
     public Long getId() {
         return bm.getId();
+    }
+
+    @Override
+    public Target getTarget() {
+        return Target.MAINBOT;
     }
 
     @Override
@@ -56,7 +61,7 @@ public class ApiAiMessage implements NLUBotMessage, Serializable {
     }
 
     @Override
-    public Attachment[] getAttachments() {
+    public List<Attachment> getAttachments() {
         return bm.getAttachments();
     }
 
