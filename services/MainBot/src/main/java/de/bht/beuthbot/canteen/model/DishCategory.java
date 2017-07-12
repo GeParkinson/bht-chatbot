@@ -43,7 +43,7 @@ public enum DishCategory {
             case "desserts":
                 return DESSERT;
             default:
-                return FOOD;
+                return null;
         }
     }
 }
