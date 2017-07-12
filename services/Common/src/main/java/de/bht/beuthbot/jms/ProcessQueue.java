@@ -8,9 +8,10 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface ProcessQueue {
-    boolean addInMessage(ProcessQueueMessageProtocol botMessageObject);
 
-    boolean addMessage(ProcessQueueMessageProtocol botMessageObject, String propertyName, String propertyValue);
-
-    boolean addOutMessage(ProcessQueueMessageProtocol botMessageObject);
+    /**
+     * Routing internal messages to there destination, based on the message content.
+     * @param processQueueMessage the internal message to route
+     */
+    void route(ProcessQueueMessageProtocol processQueueMessage);
 }

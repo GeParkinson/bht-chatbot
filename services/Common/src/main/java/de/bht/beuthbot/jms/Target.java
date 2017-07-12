@@ -5,5 +5,5 @@ package de.bht.beuthbot.jms;
  * Date: 06.07.17
  */
 public enum Target {
-    NLP, NSP, MAINBOT
+    MESSENGER, NTSP, MAINBOT
 }

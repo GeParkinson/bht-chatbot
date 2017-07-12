@@ -40,6 +40,22 @@ public class TaskMessage implements ProcessQueueMessageProtocol {
         this.entities.putAll(message.getEntities());
     }
 
+    public TaskMessage(final ProcessQueueMessageProtocol message, final Target target) {
+        this.id = message.getId();
+        this.target = target;
+        this.messageID = message.getMessageID();
+        this.senderID = message.getSenderID();
+        this.messenger = message.getMessenger();
+        this.text = message.getText();
+
+        this.attachments = new ArrayList<>();
+        this.attachments.addAll(message.getAttachments());
+
+        this.intent = message.getIntent();
+        this.entities = new HashMap<>();
+        this.entities.putAll(message.getEntities());
+    }
+
     @Override
     public Long getId() {
         return id;
