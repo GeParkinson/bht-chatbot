@@ -120,3 +120,12 @@ rule "Show price"
     then
         modify(m){setText(canteenData.showPriceOfDish(m.getEntities().containsKey(EntityName.DISH_NAME.getText()) ? m.getEntities().get(EntityName.DISH_NAME.getText()) : ""))}
 end
+
+// --------------------------- Fallback -------------------------
+rule "Fallback"
+    dialect "java"
+    when
+        m : DroolsMessage(getIntent().equals(Intent.FALLBACK.getText()))
+    then
+        modify(m){setText("Die Anfrage konnte ich leider nicht verarbeiten. \n Versuche eine präzisere Formulierung.")}
+end
