@@ -1,8 +1,5 @@
 package de.bht.beuthbot.jms;
 
-import de.bht.beuthbot.model.BotMessage;
-
-import javax.ejb.Local;
 import javax.ejb.Remote;
 
 /**
@@ -11,9 +8,9 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface ProcessQueue {
-    boolean addInMessage(BotMessage botMessageObject);
+    boolean addInMessage(ProcessQueueMessageProtocol botMessageObject);
 
-    boolean addMessage(BotMessage botMessageObject, String propertyName, String propertyValue);
+    boolean addMessage(ProcessQueueMessageProtocol botMessageObject, String propertyName, String propertyValue);
 
-    boolean addOutMessage(BotMessage botMessageObject);
+    boolean addOutMessage(ProcessQueueMessageProtocol botMessageObject);
 }
