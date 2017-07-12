@@ -1,5 +1,6 @@
 package de.bht.beuthbot.nsp.bing.model;
 
+import com.google.gson.annotations.SerializedName;
 import de.bht.beuthbot.model.nsp.NSPResponse;
 
 /**

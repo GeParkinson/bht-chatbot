@@ -6,9 +6,10 @@ import de.bht.beuthbot.attachments.model.AttachmentStoreMode;
 import de.bht.beuthbot.conf.Application;
 import de.bht.beuthbot.conf.Configuration;
 import de.bht.beuthbot.jms.ProcessQueue;
+import de.bht.beuthbot.jms.ProcessQueueMessageProtocol;
+import de.bht.beuthbot.jms.TaskMessage;
 import de.bht.beuthbot.model.Attachment;
 import de.bht.beuthbot.model.AttachmentType;
-import de.bht.beuthbot.model.BotMessage;
 import de.bht.beuthbot.nsp.bing.model.BingAttachment;
 import de.bht.beuthbot.nsp.bing.model.BingDetailedResponse;
 import de.bht.beuthbot.nsp.bing.model.BingMessage;
@@ -23,22 +24,19 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
-import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,15 +78,15 @@ public class BingConnector implements MessageListener {
     private String format = "simple";
 
     /** Injected JMS MessageQueue */
-    @Inject
+    @Resource(lookup = "java:global/global/ProcessQueueBean")
     private ProcessQueue processQueue;
 
     /** Injected AttachmentStore */
-    @Inject
+    @Resource(lookup = "java:global/global/AttachmentStoreBean")
     private AttachmentStore attachmentStore;
 
     /** BeuthBot Application Bean */
-    @Inject
+    @Resource(lookup = "java:global/global/ApplicationBean")
     private Application application;
 
     /**
@@ -98,7 +96,7 @@ public class BingConnector implements MessageListener {
     @Override
     public void onMessage(final Message message) {
         try {
-            BotMessage botMessage = message.getBody(BotMessage.class);
+            ProcessQueueMessageProtocol botMessage = message.getBody(TaskMessage.class);
             if (botMessage.hasAttachments()) {
                 // Speech to Text Request
                 for (Attachment attachment : botMessage.getAttachments()) {
@@ -159,7 +157,7 @@ public class BingConnector implements MessageListener {
      * Send Bing Speech to Text Request.
      * @param botMessage Object to parse to Text
      */
-    private void sendSpeechToTextRequest(final BotMessage botMessage) {
+    private void sendSpeechToTextRequest(final ProcessQueueMessageProtocol botMessage) {
         generateAccessToken();
         //TODO: different languages
         String language = "de-DE";
@@ -246,7 +244,7 @@ public class BingConnector implements MessageListener {
                                 return;
                         }
                         // return message
-                        processQueue.addInMessage(bingMessage);
+                        processQueue.route(bingMessage);
                     } catch (Exception e) {
                         logger.error("Error while parsing BingSpeechResponse: ", e);
                     }
@@ -263,7 +261,7 @@ public class BingConnector implements MessageListener {
      * Send Bing Text to Speech Request.
      * @param botMessage Object to parse to Speech
      */
-    private void sendTextToSpeechRequest(final BotMessage botMessage){
+    private void sendTextToSpeechRequest(final ProcessQueueMessageProtocol botMessage){
         generateAccessToken();
 
         HttpClient client = HttpClientBuilder.create().build();
@@ -306,7 +304,7 @@ public class BingConnector implements MessageListener {
 
                 BingMessage bingMessage = new BingMessage(botMessage, new BingAttachment(id, path));
 
-                processQueue.addOutMessage(bingMessage);
+                processQueue.route(bingMessage);
             } else {
                 logger.warn("Could not process Speech to Text request. Returns: " + "Speech to Text request returns: " + httpResponse.toString());
             }

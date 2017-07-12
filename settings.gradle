@@ -4,7 +4,7 @@ include (
         'services:FaceBook',
         'services:ApiAi',
         'services:Rasa',
-//        'services:Bing',
+        'services:Bing',
 //        'services:MainBot',
         'services:LoggingStatistics',
         'services:Telegram'
