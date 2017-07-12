@@ -1,7 +1,6 @@
 package de.bht.beuthbot.nlp.apiai;
 
 import com.google.gson.Gson;
-import de.bht.beuthbot.attachments.AttachmentStore;
 import de.bht.beuthbot.conf.Application;
 import de.bht.beuthbot.conf.Configuration;
 import de.bht.beuthbot.jms.ProcessQueue;
@@ -19,13 +18,11 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
-import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import java.util.Properties;
 
 /**
  * @authors: georg.glossmann@adesso.de (template) + oliverdavid@hotmail.de (content)
@@ -49,10 +46,6 @@ public class ApiAiConnector implements MessageListener {
     /** Injected JMS MessageQueue */
     @Resource(lookup = "java:global/global/ProcessQueueBean")
     private ProcessQueue processQueue;
-
-    /** Injected AttachmentStore */
-    @Resource(lookup = "java:global/global/AttachmentStoreBean")
-    private AttachmentStore attachmentStore;
 
     /** BeuthBot Application Bean */
     @Resource(lookup = "java:global/global/ApplicationBean")
