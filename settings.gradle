@@ -1,11 +1,11 @@
 include (
         'services:Common',
         'services:Global',
-//        'services:FaceBook',
+        'services:FaceBook',
 //        'services:ApiAi',
         'services:Rasa',
 //        'services:Bing',
 //        'services:MainBot',
         'services:LoggingStatistics',
-//        'services:Telegram'
+        'services:Telegram'
 )
