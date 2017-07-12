@@ -1,22 +1,27 @@
-package de.bht.chatbot.messenger.telegram.model;
+package de.bht.beuthbot.messenger.telegram.model;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.pengrad.telegrambot.model.Message;
-import de.bht.chatbot.message.Attachment;
-import de.bht.chatbot.message.BotMessage;
-import de.bht.chatbot.message.Messenger;
+import de.bht.beuthbot.jms.ProcessQueueMessageProtocol;
+import de.bht.beuthbot.jms.Target;
+import de.bht.beuthbot.model.Attachment;
+import de.bht.beuthbot.model.Messenger;
+import de.bht.beuthbot.utils.GsonUtils;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: Christopher Kümmel on 6/15/2017.
  */
-public class TelegramMessage implements BotMessage{
+public class TelegramMessage implements ProcessQueueMessageProtocol{
 
     /** com.pengrad.telegrambot.model.Message */
     private Message message;
 
     /** Attachment[] */
-    private Attachment[] attachments;
+    private List<Attachment> attachments;
 
     /**
      * Constructor
@@ -29,6 +34,11 @@ public class TelegramMessage implements BotMessage{
     @Override
     public Long getId() {
         return 1L;
+    }
+
+    @Override
+    public Target getTarget() {
+        return Target.NTSP;
     }
 
     @Override
@@ -57,8 +67,18 @@ public class TelegramMessage implements BotMessage{
     }
 
     @Override
-    public Attachment[] getAttachments() {
+    public List<Attachment> getAttachments() {
         return attachments;
+    }
+
+    @Override
+    public String getIntent() {
+        return null;
+    }
+
+    @Override
+    public Map<String, String> getEntities() {
+        return Collections.emptyMap();
     }
 
     /**
@@ -66,12 +86,14 @@ public class TelegramMessage implements BotMessage{
      * @param attachments
      */
     public void setAttachments(final Attachment[] attachments){
-        this.attachments = attachments;
+        this.attachments = new ArrayList<>(attachments.length);
+        for (Attachment attachment : attachments) {
+           this.attachments.add(attachment);
+        }
     }
 
     @Override
     public String toString() {
-        Gson gson = new GsonBuilder().create();
-        return gson.toJson(this);
+        return GsonUtils.toJson(this);
     }
 }

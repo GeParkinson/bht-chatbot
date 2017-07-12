@@ -1,4 +1,4 @@
-package de.bht.chatbot.messenger.telegram;
+package de.bht.beuthbot.messenger.telegram;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.TelegramBotAdapter;
@@ -6,18 +6,20 @@ import com.pengrad.telegrambot.request.SendAudio;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SendVoice;
 import com.pengrad.telegrambot.response.SendResponse;
-import de.bht.chatbot.message.Attachment;
-import de.bht.chatbot.message.BotMessage;
-import de.bht.chatbot.messenger.utils.MessengerUtils;
+import de.bht.beuthbot.conf.Application;
+import de.bht.beuthbot.conf.Configuration;
+import de.bht.beuthbot.jms.ProcessQueueMessageProtocol;
+import de.bht.beuthbot.jms.TaskMessage;
+import de.bht.beuthbot.model.Attachment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import java.util.Properties;
 
 /**
  * @Author: Christopher Kümmel on 5/22/2017.
@@ -43,6 +45,10 @@ public class TelegramSendAdapter implements MessageListener {
     /** slf4j Logger */
     private final Logger logger = LoggerFactory.getLogger(TelegramSendAdapter.class);
 
+    /** BeuthBot Application Bean */
+    @Resource(lookup = "java:global/global/ApplicationBean")
+    private Application application;
+
     /** com.pengrad.telegrambot.TelegramBot; */
     private TelegramBot bot;
 
@@ -50,8 +56,7 @@ public class TelegramSendAdapter implements MessageListener {
      * Constructor: Initialize TelegramBot with Token
      */
     public TelegramSendAdapter(){
-        Properties properties = MessengerUtils.getProperties();
-        bot = TelegramBotAdapter.build(properties.getProperty("TELEGRAM_BOT_TOKEN"));
+        bot = TelegramBotAdapter.build(application.getConfiguration(Configuration.TELEGRAM_BOT_TOKEN));
     }
 
 
@@ -62,7 +67,7 @@ public class TelegramSendAdapter implements MessageListener {
     @Override
     public void onMessage(final Message message) {
         try {
-            BotMessage botMessage = message.getBody(BotMessage.class);
+            ProcessQueueMessageProtocol botMessage = message.getBody(TaskMessage.class);
             if (botMessage.hasAttachments()){
                 for (Attachment attachment : botMessage.getAttachments()) {
                     switch (attachment.getAttachmentType()) {
@@ -105,7 +110,7 @@ public class TelegramSendAdapter implements MessageListener {
      * Send Telegram Audio message
      * @param botMessage to send
      */
-    private void sendAudio(final BotMessage botMessage){
+    private void sendAudio(final ProcessQueueMessageProtocol botMessage){
         SendAudio request;
 
         // check & send each attachement
@@ -124,7 +129,7 @@ public class TelegramSendAdapter implements MessageListener {
      * Send Telegram Voice message
      * @param botMessage to send
      */
-    private void sendVoice(final BotMessage botMessage){
+    private void sendVoice(final ProcessQueueMessageProtocol botMessage){
         SendVoice request;
 
         for (Attachment attachment : botMessage.getAttachments()) {

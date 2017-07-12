@@ -1,4 +1,4 @@
-package de.bht.chatbot.messenger.telegram;
+package de.bht.beuthbot.messenger.telegram;
 
 import com.pengrad.telegrambot.BotUtils;
 import com.pengrad.telegrambot.TelegramBot;
@@ -10,18 +10,19 @@ import com.pengrad.telegrambot.request.GetFile;
 import com.pengrad.telegrambot.request.SetWebhook;
 import com.pengrad.telegrambot.response.BaseResponse;
 import com.pengrad.telegrambot.response.GetFileResponse;
-import de.bht.chatbot.attachments.AttachmentStore;
-import de.bht.chatbot.jms.MessageQueue;
-import de.bht.chatbot.message.Attachment;
-import de.bht.chatbot.message.AttachmentType;
-import de.bht.chatbot.messenger.telegram.model.TelegramAttachment;
-import de.bht.chatbot.messenger.telegram.model.TelegramMessage;
-import de.bht.chatbot.messenger.utils.MessengerUtils;
+import de.bht.beuthbot.attachments.AttachmentStore;
+import de.bht.beuthbot.conf.Application;
+import de.bht.beuthbot.conf.Configuration;
+import de.bht.beuthbot.jms.ProcessQueue;
+import de.bht.beuthbot.messenger.telegram.model.TelegramAttachment;
+import de.bht.beuthbot.messenger.telegram.model.TelegramMessage;
+import de.bht.beuthbot.model.Attachment;
+import de.bht.beuthbot.model.AttachmentType;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
+import javax.annotation.Resource;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -38,12 +39,16 @@ public class TelegramReceiveAdapter {
     private final Logger logger = LoggerFactory.getLogger(TelegramReceiveAdapter.class);
 
     /** Injected JMS MessageQueue */
-    @Inject
-    private MessageQueue messageQueue;
+    @Resource(lookup = "java:global/global/ProcessQueueBean")
+    private ProcessQueue processQueue;
 
     /** Injected AttachmentStore */
-    @Inject
+    @Resource(lookup = "java:global/global/AttachmentStoreBean")
     private AttachmentStore attachmentStore;
+
+    /** BeuthBot Application Bean */
+    @Resource(lookup = "java:global/global/ApplicationBean")
+    private Application application;
 
     /** com.pengrad.telegrambot.TelegramBot; */
     private TelegramBot bot;
@@ -52,8 +57,7 @@ public class TelegramReceiveAdapter {
      * Constructor: Initialize TelegramBot with Token
      */
     public TelegramReceiveAdapter(){
-        Properties properties = MessengerUtils.getProperties();
-        bot = TelegramBotAdapter.build(properties.getProperty("TELEGRAM_BOT_TOKEN"));
+        bot = TelegramBotAdapter.build(application.getConfiguration(Configuration.TELEGRAM_BOT_TOKEN));
     }
 
     /**
@@ -67,7 +71,7 @@ public class TelegramReceiveAdapter {
         logger.debug("Received new Telegram message: " + update.message().text());
         TelegramMessage message = new TelegramMessage(update.message());
         message.setAttachments(getAttachments(update.message()));
-        messageQueue.addInMessage(message);
+        processQueue.route(message);
     }
 
     /**
@@ -132,8 +136,7 @@ public class TelegramReceiveAdapter {
      * Method to set TelegramWebhook
      */
     private int verifyWebhook() {
-        Properties properties = MessengerUtils.getProperties();
-        SetWebhook webhook = new SetWebhook().url(properties.getProperty("WEB_URL") + properties.getProperty("TELEGRAM_WEBHOOK_URL"));
+        SetWebhook webhook = new SetWebhook().url(application.getConfiguration(Configuration.WEB_URL) + application.getConfiguration(Configuration.TELEGRAM_WEBHOOK_URL));
 
         BaseResponse response = bot.execute(webhook);
         if (response.isOk()) {
