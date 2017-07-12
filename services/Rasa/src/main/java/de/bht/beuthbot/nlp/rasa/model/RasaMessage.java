@@ -1,78 +1,74 @@
 package de.bht.beuthbot.nlp.rasa.model;
 
+import de.bht.beuthbot.jms.ProcessQueueMessageProtocol;
+import de.bht.beuthbot.jms.Target;
 import de.bht.beuthbot.model.Attachment;
-import de.bht.beuthbot.model.BotMessage;
 import de.bht.beuthbot.model.Messenger;
-import de.bht.beuthbot.model.NLUBotMessage;
 
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author: georg.glossmann@adesso.de
  * Date: 26.06.17
  */
-public class RasaMessage implements NLUBotMessage {
+public class RasaMessage implements ProcessQueueMessageProtocol {
 
-    private Long id, messageID, senderID;
-    private Messenger messenger;
-    private String text, intent;
-    private Attachment[] attachments;
-    private Map<String, String> entities;
+    private ProcessQueueMessageProtocol inMessage;
+    private RasaResponse rasaResponse;
 
-
-    public RasaMessage(BotMessage botMessage, RasaResponse rasaResponse) {
-        this.id = botMessage.getId();
-        this.messageID = botMessage.getMessageID();
-        this.senderID = botMessage.getSenderID();
-        this.messenger = botMessage.getMessenger();
-        this.text = botMessage.getText();
-        this.attachments = botMessage.getAttachments();
-        this.intent = rasaResponse.getIntent();
-        this.entities = rasaResponse.getEntities();
+    public RasaMessage(final ProcessQueueMessageProtocol inMessage, final RasaResponse rasaResponse) {
+        this.inMessage = inMessage;
+        this.rasaResponse = rasaResponse;
     }
 
     @Override
     public Long getId() {
-        return id;
+        return inMessage.getId();
+    }
+
+    @Override
+    public Target getTarget() {
+        return Target.MAINBOT;
     }
 
     @Override
     public Long getMessageID() {
-        return messageID;
+        return inMessage.getMessageID();
     }
 
     @Override
     public Long getSenderID() {
-        return senderID;
+        return inMessage.getSenderID();
     }
 
     @Override
     public Messenger getMessenger() {
-        return messenger;
+        return inMessage.getMessenger();
     }
 
     @Override
     public String getText() {
-        return text;
+        return inMessage.getText();
     }
 
     @Override
     public boolean hasAttachments() {
-        return attachments.length > 0 ? true : false;
+        return inMessage.hasAttachments();
     }
 
     @Override
-    public Attachment[] getAttachments() {
-        return attachments;
-    }
-
-    @Override
-    public String getIntent() {
-        return intent;
+    public List<Attachment> getAttachments() {
+        return inMessage.getAttachments();
     }
 
     @Override
     public Map<String, String> getEntities() {
-        return entities;
+        return rasaResponse.getEntities();
+    }
+
+    @Override
+    public String getIntent() {
+        return rasaResponse.getIntent();
     }
 }
