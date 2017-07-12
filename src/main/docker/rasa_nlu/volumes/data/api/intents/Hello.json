@@ -1,6 +1,88 @@
 {
   "userSays": [
     {
+      "id": "a46d8cf9-13f8-4f7e-a6b6-701b616d3b1b",
+      "data": [
+        {
+          "text": "Mahlzeit!"
+        }
+      ],
+      "isTemplate": false,
+      "count": 2
+    },
+    {
+      "id": "7e2cb139-ac8c-48f8-937f-5e561d7a5b21",
+      "data": [
+        {
+          "text": "Hallo"
+        }
+      ],
+      "isTemplate": false,
+      "count": 1
+    },
+    {
+      "id": "c071bead-c204-416b-b6ed-74965cb1f12c",
+      "data": [
+        {
+          "text": "Hallo bot."
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "6aec7f9f-1ea8-4004-a6e2-eb0dd8274d5f",
+      "data": [
+        {
+          "text": "hallo"
+        }
+      ],
+      "isTemplate": false,
+      "count": 7
+    },
+    {
+      "id": "55cd7273-87cf-472a-89b7-2664fd45982c",
+      "data": [
+        {
+          "text": "Hallo Bot",
+          "userDefined": false
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "fe2d3681-3461-4e71-a80a-f3755d03db89",
+      "data": [
+        {
+          "text": "Hallo du",
+          "userDefined": false
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "f39e8b17-6baf-4a7f-a130-029ed0486190",
+      "data": [
+        {
+          "text": "Heyho"
+        }
+      ],
+      "isTemplate": false,
+      "count": 2
+    },
+    {
+      "id": "8a034279-2ae7-41f8-ace2-0be60fc11843",
+      "data": [
+        {
+          "text": "Hallo Welt"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
       "id": "27ade6fd-22a8-4026-80a0-dc464a133e5d",
       "data": [
         {
@@ -71,16 +153,6 @@
       ],
       "isTemplate": false,
       "count": 0
-    },
-    {
-      "id": "6324a668-ee31-45ea-a175-afed03b3e6c1",
-      "data": [
-        {
-          "text": "Hallo"
-        }
-      ],
-      "isTemplate": false,
-      "count": 0
     }
   ],
   "id": "298d49fa-5122-430d-bd63-ee2d4316274d",
@@ -92,7 +164,13 @@
       "resetContexts": false,
       "affectedContexts": [],
       "parameters": [],
-      "messages": []
+      "messages": [
+        {
+          "type": 0,
+          "speech": []
+        }
+      ],
+      "defaultResponsePlatforms": {}
     }
   ],
   "priority": 500000,

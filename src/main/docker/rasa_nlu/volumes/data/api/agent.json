@@ -1,7 +1,7 @@
 {
   "description": "",
   "language": "de",
-  "enabledDomainFeatures": [
+  "activeAssistantAgents": [
     "smalltalk-domain-on",
     "smalltalk-fulfillment-on"
   ],

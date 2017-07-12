@@ -1,6 +1,17 @@
 {
   "userSays": [
     {
+      "id": "540dc163-d340-4ccf-ac32-2a4b46af9ad7",
+      "data": [
+        {
+          "text": "Bye",
+          "userDefined": false
+        }
+      ],
+      "isTemplate": false,
+      "count": 1
+    },
+    {
       "id": "45422bce-8688-45e8-bcf0-88a4db4c3fb0",
       "data": [
         {
@@ -45,16 +56,6 @@
       "data": [
         {
           "text": "lebe wohl"
-        }
-      ],
-      "isTemplate": false,
-      "count": 0
-    },
-    {
-      "id": "e4907025-708b-4438-9b9a-f9e1b27c1562",
-      "data": [
-        {
-          "text": "Bye"
         }
       ],
       "isTemplate": false,

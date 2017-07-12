@@ -1,6 +1,644 @@
 {
   "userSays": [
     {
+      "id": "fcd4493e-a39e-457b-801b-9514d4312b8c",
+      "data": [
+        {
+          "text": "Was gibt es heute in der Mensa "
+        },
+        {
+          "text": "unter",
+          "alias": "price",
+          "meta": "@price",
+          "userDefined": true
+        },
+        {
+          "text": " "
+        },
+        {
+          "text": "2",
+          "alias": "number",
+          "meta": "@sys.number",
+          "userDefined": true
+        },
+        {
+          "text": " Euro?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "c7bccc6f-4bcd-43a7-bf82-6edf055fb9f1",
+      "data": [
+        {
+          "text": "Wie teuer",
+          "alias": "price",
+          "meta": "@price",
+          "userDefined": true
+        },
+        {
+          "text": " ist ein großer "
+        },
+        {
+          "text": "Salat",
+          "alias": "ingredients",
+          "meta": "@ingredients",
+          "userDefined": true
+        },
+        {
+          "text": "?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "76d924f8-3ebb-452b-834b-a701d0294112",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "Ã¼ber morgen",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": true
+        },
+        {
+          "text": " in der Mensa?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 1
+    },
+    {
+      "id": "03c11ea5-acca-4903-aee3-12ccc005fd27",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "morgen",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": true
+        },
+        {
+          "text": " zu essen?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "659ad693-d0bf-4586-a831-fb9fd83d2f57",
+      "data": [
+        {
+          "text": "Was gibt es am "
+        },
+        {
+          "text": "Dienstag",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": true
+        },
+        {
+          "text": " zu essen?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "dbfd7a39-dd3c-4d67-8190-5293d17efb72",
+      "data": [
+        {
+          "text": "Was kostet",
+          "alias": "price",
+          "meta": "@price",
+          "userDefined": true
+        },
+        {
+          "text": " die "
+        },
+        {
+          "text": "Currywurst",
+          "alias": "ingredients",
+          "meta": "@ingredients",
+          "userDefined": true
+        },
+        {
+          "text": "?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "e5883e1d-4fba-457a-93d1-8c42827864f3",
+      "data": [
+        {
+          "text": "Habe Lust auf "
+        },
+        {
+          "text": "Suppe",
+          "alias": "ingredients",
+          "meta": "@ingredients",
+          "userDefined": true
+        },
+        {
+          "text": ". Gibt es da heute was?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "9133cd15-77ae-456d-b645-f4cb006a6e88",
+      "data": [
+        {
+          "text": "was gibt es "
+        },
+        {
+          "text": "heute",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": false
+        },
+        {
+          "text": " in der mensa"
+        }
+      ],
+      "isTemplate": false,
+      "count": 23
+    },
+    {
+      "id": "d9491ecb-a4ef-4890-8c11-e1a74e3f6821",
+      "data": [
+        {
+          "text": "was gibt es ",
+          "userDefined": false
+        },
+        {
+          "text": "heute",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": false
+        },
+        {
+          "text": " ",
+          "userDefined": false
+        },
+        {
+          "text": "veganes",
+          "alias": "dishtype",
+          "meta": "@dishtype",
+          "userDefined": false
+        },
+        {
+          "text": " in der mensa",
+          "userDefined": false
+        }
+      ],
+      "isTemplate": false,
+      "count": 4
+    },
+    {
+      "id": "23bbbd06-8919-49b4-8b77-f4f7167a71fa",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "morgen",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": false
+        },
+        {
+          "text": " fÃ¼r "
+        },
+        {
+          "text": "vegane",
+          "alias": "dishtype",
+          "meta": "@dishtype",
+          "userDefined": true
+        },
+        {
+          "text": " Gerichte?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 2
+    },
+    {
+      "id": "d288cb87-12fc-4875-947d-71d6094690ab",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "heute",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": false
+        },
+        {
+          "text": " "
+        },
+        {
+          "text": "vegetarisches",
+          "alias": "dishtype",
+          "meta": "@dishtype",
+          "userDefined": true
+        },
+        {
+          "text": " in der Mensa?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 1
+    },
+    {
+      "id": "65af4b91-d76c-4c98-a1d4-5dda5534a374",
+      "data": [
+        {
+          "text": "Hallo Bot was gibt es "
+        },
+        {
+          "text": "morgen",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": false
+        },
+        {
+          "text": " in der Mensa."
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "b35b3289-8345-4cf2-8f59-736f2b61004f",
+      "data": [
+        {
+          "text": "Zeige mir alle Gerichte."
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "70acf56e-8e2d-4d9a-b2d6-12cbc838b2ae",
+      "data": [
+        {
+          "text": "Habe Lust auf "
+        },
+        {
+          "text": "Suppe",
+          "alias": "ingredients",
+          "meta": "@ingredients",
+          "userDefined": true
+        },
+        {
+          "text": ". Gibt es da "
+        },
+        {
+          "text": "heute",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": false
+        },
+        {
+          "text": " was?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "cce7e036-4b08-4a0c-9a4f-219db43e3a18",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "morgen",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": false
+        },
+        {
+          "text": " in der Mensa?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "c87d3aff-b7c1-4ae7-a85e-b7d51081cb7c",
+      "data": [
+        {
+          "text": "Was gab es "
+        },
+        {
+          "text": "gestern",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": true
+        },
+        {
+          "text": " in der Mensa?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "c37a2f00-d350-4670-b7bb-0b7018c8840a",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "übermorgen",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": false
+        },
+        {
+          "text": " in der Mensa?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 1
+    },
+    {
+      "id": "749033aa-ff61-4fc4-8105-2a6e89e9db64",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "Freitag",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": true
+        },
+        {
+          "text": " in der Mensa?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "5db0b947-d27d-452a-b84c-85440876d490",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "Donnerstag",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": true
+        },
+        {
+          "text": " in der Mensa?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "ea2aa68e-3bb7-4902-a56d-36f96275800a",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "Mittwoch",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": true
+        },
+        {
+          "text": " in der Mensa?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "63084452-c279-40ac-b6bc-3baf51fb144f",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "Dienstag",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": true
+        },
+        {
+          "text": " in der Mensa?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "9c35b6e8-ea88-4165-94b0-6be5f83ba76c",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "Montag",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": true
+        },
+        {
+          "text": " in der Mensa?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "900221fa-f3d3-463b-b224-604521c503e3",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "heute",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": false
+        },
+        {
+          "text": " in der Mensa?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "0d64638d-fe5d-47c9-807d-1be539af917c",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "morgen",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": false
+        },
+        {
+          "text": " "
+        },
+        {
+          "text": "Ungesundes",
+          "alias": "healthy",
+          "meta": "@healthy",
+          "userDefined": false
+        },
+        {
+          "text": " in der Mensa?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "8def9d65-14e0-4980-a57f-31be651b8e9f",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "heute",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": false
+        },
+        {
+          "text": " "
+        },
+        {
+          "text": "gesundes",
+          "alias": "healthy",
+          "meta": "@healthy",
+          "userDefined": false
+        },
+        {
+          "text": " in der Mensa?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "abbe2177-b8e7-4801-9872-3c9a359fa7fb",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "morgen",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": false
+        },
+        {
+          "text": " "
+        },
+        {
+          "text": "vegetarisches",
+          "alias": "dishtype",
+          "meta": "@dishtype",
+          "userDefined": false
+        },
+        {
+          "text": " in der Mensa?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "4255baf9-704a-4749-a441-0b24d8d716ad",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "morgen",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": false
+        },
+        {
+          "text": " "
+        },
+        {
+          "text": "gesundes",
+          "alias": "healthy",
+          "meta": "@healthy",
+          "userDefined": true
+        },
+        {
+          "text": " in der Mensa?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "b64b3772-e3cf-4818-a32c-b0e9cc5ed87e",
+      "data": [
+        {
+          "text": "Gibt\u0027s "
+        },
+        {
+          "text": "heut",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": true
+        },
+        {
+          "text": " was mit "
+        },
+        {
+          "text": "Nudeln",
+          "alias": "ingredients",
+          "meta": "@ingredients",
+          "userDefined": true
+        },
+        {
+          "text": "?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 1
+    },
+    {
+      "id": "05c9c76f-e7cc-417f-990d-fc9c0c3d202a",
+      "data": [
+        {
+          "text": "Ick hab Hunger..."
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
       "id": "4c28ddca-a35e-475d-967b-bc513645cf19",
       "data": [
         {
@@ -211,9 +849,27 @@
           "name": "ingredients",
           "value": "$ingredients",
           "isList": false
+        },
+        {
+          "dataType": "@price",
+          "name": "price",
+          "value": "$price",
+          "isList": false
+        },
+        {
+          "dataType": "@sys.number",
+          "name": "number",
+          "value": "$number",
+          "isList": false
         }
       ],
-      "messages": []
+      "messages": [
+        {
+          "type": 0,
+          "speech": []
+        }
+      ],
+      "defaultResponsePlatforms": {}
     }
   ],
   "priority": 500000,

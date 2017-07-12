@@ -7,7 +7,8 @@
       "value": "today",
       "synonyms": [
         "today",
-        "heute"
+        "heute",
+        "heut"
       ]
     },
     {
@@ -15,6 +16,50 @@
       "synonyms": [
         "tomorrow",
         "morgen"
+      ]
+    },
+    {
+      "value": "dayaftertomorrow",
+      "synonyms": [
+        "übermorgen",
+        "day after tomorrow"
+      ]
+    },
+    {
+      "value": "Montag",
+      "synonyms": [
+        "Montag"
+      ]
+    },
+    {
+      "value": "Dienstag",
+      "synonyms": [
+        "Dienstag"
+      ]
+    },
+    {
+      "value": "Mittwoch",
+      "synonyms": [
+        "Mittwoch"
+      ]
+    },
+    {
+      "value": "Donnerstag",
+      "synonyms": [
+        "Donnerstag"
+      ]
+    },
+    {
+      "value": "Freitag",
+      "synonyms": [
+        "Freitag"
+      ]
+    },
+    {
+      "value": "yesterday",
+      "synonyms": [
+        "gestern",
+        "yesterday"
       ]
     }
   ],
