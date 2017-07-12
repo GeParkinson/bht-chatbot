@@ -89,7 +89,7 @@ public class FacebookBotMessage implements ProcessQueueMessageProtocol{
             return atts;
         }
         else {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 
