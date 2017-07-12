@@ -1,13 +1,9 @@
 package de.bht.beuthbot.jms;
 
-import com.google.gson.Gson;
 import de.bht.beuthbot.model.Attachment;
-import de.bht.beuthbot.model.BotMessage;
 import de.bht.beuthbot.model.Messenger;
-import de.bht.beuthbot.model.NLUBotMessage;
-import de.bht.beuthbot.utils.GsonUtil;
+import de.bht.beuthbot.utils.GsonUtils;
 
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -105,6 +101,6 @@ public class TaskMessage implements ProcessQueueMessageProtocol {
 
     @Override
     public String toString() {
-        return GsonUtil.toJson(this);
+        return GsonUtils.toJson(this);
     }
 }
