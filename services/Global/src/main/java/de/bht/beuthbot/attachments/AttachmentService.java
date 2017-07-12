@@ -4,7 +4,6 @@ import de.bht.beuthbot.attachments.model.AttachmentStoreMode;
 import org.apache.http.HttpStatus;
 
 import javax.annotation.Resource;
-import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;

@@ -2,7 +2,6 @@ package de.bht.beuthbot.attachments;
 
 import de.bht.beuthbot.attachments.model.AttachmentStoreMode;
 import de.bht.beuthbot.conf.Application;
-import de.bht.beuthbot.conf.ApplicationBean;
 import de.bht.beuthbot.conf.Configuration;
 import de.bht.beuthbot.model.AttachmentType;
 import org.apache.http.HttpEntity;
