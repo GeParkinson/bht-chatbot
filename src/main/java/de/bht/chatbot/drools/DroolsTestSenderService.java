@@ -91,7 +91,7 @@ public class DroolsTestSenderService {
         DroolsMessage droolsMessage = new DroolsMessage();
         droolsMessage.setText("Bye");
 
-        messageQueue.addMessage(droolsMessage, "NLU", "in");
+        messageQueue.addMessage(droolsMessage, "NLU_2", "in");
 
         return "Test Ende";
     }
@@ -102,7 +102,7 @@ public class DroolsTestSenderService {
         DroolsMessage droolsMessage = new DroolsMessage();
         droolsMessage.setText("Was gibt es heute");
 
-        messageQueue.addMessage(droolsMessage, "NLU", "in");
+        messageQueue.addMessage(droolsMessage, "NLU_2", "in");
 
         return "Test Ende";
     }
@@ -113,7 +113,7 @@ public class DroolsTestSenderService {
         DroolsMessage droolsMessage = new DroolsMessage();
         droolsMessage.setText("Was gibt es morgen für vegane Gerichte?");
 
-        messageQueue.addMessage(droolsMessage, "NLU", "in");
+        messageQueue.addMessage(droolsMessage, "NLU_2", "in");
 
         return "Test Ende";
     }
@@ -124,7 +124,7 @@ public class DroolsTestSenderService {
         DroolsMessage droolsMessage = new DroolsMessage();
         droolsMessage.setText("Was gibt es veganes?");
 
-        messageQueue.addMessage(droolsMessage, "NLU", "in");
+        messageQueue.addMessage(droolsMessage, "NLU_2", "in");
 
         return "Test Ende";
     }
@@ -135,7 +135,7 @@ public class DroolsTestSenderService {
         DroolsMessage droolsMessage = new DroolsMessage();
         droolsMessage.setText("Zeige gesunde Gerichte");
 
-        messageQueue.addMessage(droolsMessage, "NLU", "in");
+        messageQueue.addMessage(droolsMessage, "NLU_2", "in");
 
         return "Test Ende";
     }
@@ -146,7 +146,7 @@ public class DroolsTestSenderService {
         DroolsMessage droolsMessage = new DroolsMessage();
         droolsMessage.setText("Was gibt es heute in der Mensa?");
 
-        messageQueue.addMessage(droolsMessage, "NLU", "in");
+        messageQueue.addMessage(droolsMessage, "NLU_2", "in");
 
         return "Test Ende";
     }
@@ -157,7 +157,7 @@ public class DroolsTestSenderService {
         DroolsMessage droolsMessage = new DroolsMessage();
         droolsMessage.setText("Zeige Gerichte");
 
-        messageQueue.addMessage(droolsMessage, "NLU", "in");
+        messageQueue.addMessage(droolsMessage, "NLU_2", "in");
 
         return "Test Ende";
     }
@@ -168,7 +168,7 @@ public class DroolsTestSenderService {
         DroolsMessage droolsMessage = new DroolsMessage();
         droolsMessage.setText("Ich habe Hunger");
 
-        messageQueue.addMessage(droolsMessage, "NLU", "in");
+        messageQueue.addMessage(droolsMessage, "NLU_2", "in");
 
         return "Test Ende";
     }
@@ -179,7 +179,18 @@ public class DroolsTestSenderService {
         DroolsMessage droolsMessage = new DroolsMessage();
         droolsMessage.setText("Wie ist der aktuelle Speiseplan?");
 
-        messageQueue.addMessage(droolsMessage, "NLU", "in");
+        messageQueue.addMessage(droolsMessage, "NLU_2", "in");
+
+        return "Test Ende";
+    }
+
+    @GET
+    @Path("/test3")
+    public String getDroolsTest3() {
+        DroolsMessage droolsMessage = new DroolsMessage();
+        droolsMessage.setText("start");
+
+        messageQueue.addMessage(droolsMessage, "NLU_2", "in");
 
         return "Test Ende";
     }

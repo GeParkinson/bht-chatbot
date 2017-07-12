@@ -15,6 +15,7 @@ public class DroolsMessage implements NLUBotMessage {
     private String text;
     private String intent;
     private Map<String,String> entities;
+    private boolean asVoiceMessage;
 
     @Override
     public Long getId() {
@@ -83,5 +84,13 @@ public class DroolsMessage implements NLUBotMessage {
 
     public void setEntities(Map<String,String> entities){
         this.entities = entities;
+    }
+
+    public boolean isAsVoiceMessage() {
+        return asVoiceMessage;
+    }
+
+    public void setAsVoiceMessage(boolean asVoiceMessage) {
+        this.asVoiceMessage = asVoiceMessage;
     }
 }

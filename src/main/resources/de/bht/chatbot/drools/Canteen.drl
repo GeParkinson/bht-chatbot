@@ -55,7 +55,10 @@ rule "Saying goodbye1"
     when
         m : DroolsMessage( intent.equals(Intent.BYE.getText()))
     then
-        modify( m ) { setText("Tschüss")};
+        modify( m ) {
+            setText("Auf Wiedersehen. Bis zum nächsten Mal."),
+            setAsVoiceMessage(true)
+        };
 end
 
 rule "Saying goodbye2"
@@ -91,11 +94,29 @@ rule "Show dishes filtered"
         m : DroolsMessage( getIntent().equals(Intent.SHOW_FOOD.getText()) && !entities.isEmpty() )
     then
         modify( m ) {
-            setText("Gerichte:\n" + canteenData.getDishesFiltered(
+            setText("Gerichte:\n" + canteenData.getDishesFilteredAsString(
             (m.getEntities().containsKey(EntityName.DATE.getText()) ? m.getEntities().get(EntityName.DATE.getText()) : null),
             (m.getEntities().containsKey(EntityName.HEALTHY.getText()) ? m.getEntities().get(EntityName.HEALTHY.getText()) : null),
             (m.getEntities().containsKey(EntityName.DISH_TYPE.getText()) ? m.getEntities().get(EntityName.DISH_TYPE.getText()) : null),
-            (m.getEntities().containsKey(EntityName.INGREDIENTS.getText()) ? m.getEntities().get(EntityName.INGREDIENTS.getText()) : null)
+            (m.getEntities().containsKey(EntityName.INGREDIENTS.getText()) ? m.getEntities().get(EntityName.INGREDIENTS.getText()) : null),
+            (m.getEntities().containsKey(EntityName.DISH_CATEGORY.getText()) ? m.getEntities().get(EntityName.DISH_CATEGORY.getText()) : null)
             ))
         };
+end
+// ----------------------------- START ---------------------------
+rule "Start"
+    dialect "java"
+    when
+        m : DroolsMessage( getIntent().equals(Intent.START.getText()))
+    then
+        modify(m) {setText("Hallo und herzlich willkommen!\n\n Ich bin der BeuthBot.\n Ich gebe dir gerne aktuelle Informationen über die Gerichte der Mensa.")}
+end
+
+// ---------------------------- PRICE -----------------------------
+rule "Show price"
+    dialect "java"
+    when
+        m : DroolsMessage(getIntent().equals(Intent.SHOW_PRICE.getText()))
+    then
+        modify(m){setText(canteenData.showPriceOfDish(m.getEntities().containsKey(EntityName.DISH_NAME.getText()) ? m.getEntities().get(EntityName.DISH_NAME.getText()) : ""))}
 end
