@@ -1,5 +1,6 @@
 {
   "pipeline": "mitie_sklearn",
+  "num_threads": 4,
   "language": "de",
   "mitie_file": "/app/data/de/total_word_feature_extractor.dat",
   "path": "/app/models",
