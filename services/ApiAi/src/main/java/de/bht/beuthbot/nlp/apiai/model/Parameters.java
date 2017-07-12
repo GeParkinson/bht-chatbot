@@ -27,6 +27,12 @@ public class Parameters implements Serializable{
     @SerializedName("ingredients")
     @Expose
     private String ingredients;
+    @SerializedName("price")
+    @Expose
+    private String price;
+    @SerializedName("number")
+    @Expose
+    private String number;
 
     public String getDate() {
         return date;
@@ -60,6 +66,22 @@ public class Parameters implements Serializable{
         this.ingredients = ingredients;
     }
 
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
     /**
      * @return puts the given entities with their values into a Map
      */
@@ -70,6 +92,8 @@ public class Parameters implements Serializable{
         if (dishtype!=null)Entities.put("dishtype",dishtype);
         if (healthy!=null)Entities.put("healthy",healthy);
         if (ingredients!=null)Entities.put("ingredients",ingredients);
+        if (price!=null)Entities.put("price",price);
+        if (number!=null)Entities.put("number",number);
 
         return Entities;
     }
