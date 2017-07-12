@@ -9,6 +9,9 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author: georg.parkinson@adesso.de
@@ -34,7 +37,15 @@ public class ProcessQueueLogger implements MessageListener {
     @Override
     public void onMessage(final Message message) {
          try {
-             logger.info("Message [{}] with header [{}]: {}", message.getJMSMessageID(), message.getStringProperty("messageSelector"), ((TextMessage) message).getText());
+             Map<String, String> customMessageHeaders = new HashMap<>();
+             Enumeration propertyNames = message.getPropertyNames();
+             while (propertyNames.hasMoreElements()) {
+                 String propertyName = propertyNames.nextElement().toString();
+                 if (!propertyName.startsWith("JMS")) {
+                     customMessageHeaders.put(propertyName, message.getStringProperty(propertyName));
+                 }
+             }
+             logger.info("Message [{}] with header {}: {}", message.getJMSMessageID(), customMessageHeaders, ((TextMessage) message).getText());
          } catch (JMSException e) {
              logger.error("Error while interpreting message.", e);
          }

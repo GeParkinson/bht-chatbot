@@ -8,7 +8,8 @@ repositories {
 
 dependencies {
 
-    compile "org.jboss.spec:jboss-javaee-7.0:1.1.0.Final"
+    compile project(':services:Common'),
+            "org.jboss.spec:jboss-javaee-7.0:1.1.0.Final"
 
     providedCompile "org.slf4j:slf4j-api:1.7.25"
 
