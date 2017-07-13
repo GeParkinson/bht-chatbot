@@ -60,7 +60,7 @@ public class DroolsService implements MessageListener {
 
             botMessage = doRules(botMessage);
 
-            logger.debug("ANSWER: " + botMessage.getText());
+            logger.info("ANSWER: " + botMessage.getText());
 
             if(((DroolsMessage)botMessage).isAsVoiceMessage()){
                 messageQueue.addMessage(botMessage, "BingConnector", "in");
@@ -93,14 +93,12 @@ public class DroolsService implements MessageListener {
         // In this case it is setting a global as defined in the
         // org/drools/examples/helloworld/HelloWorld.drl file
         CanteenData canteenData = parser.parse();
+
         ksession.setGlobal("canteenData", canteenData);
 
         // The application can insert facts into the session
         // Map incoming ApiAiMessages and RasaMessages to DroolsMessage
-        DroolsMessage droolsMessage = new DroolsMessage();
-        droolsMessage.setIntent(botMessage.getIntent());
-        droolsMessage.setEntities(botMessage.getEntities());
-        droolsMessage.setText(botMessage.getText());
+        DroolsMessage droolsMessage = new DroolsMessage(botMessage);
 
         ksession.insert(droolsMessage);
 
