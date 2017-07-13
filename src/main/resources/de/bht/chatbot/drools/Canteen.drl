@@ -33,40 +33,24 @@ global de.bht.chatbot.canteen.model.CanteenData canteenData;
 
 // ---------------------- GREETING ------------------------------------
 rule "Hello Drools"
-    dialect "java"
-    when
-        m : DroolsMessage( intent.equals(Intent.HELLO.getText()))
-    then
-        modify ( m ) { setText("Hallo zurück")};
-end
-
-rule "Greet Drools"
-    dialect "java"
-    when
-        m : DroolsMessage( intent.equals(Intent.GREET.getText()))
-    then
-        modify ( m ) { setText("Hallo zurück2")};
+   dialect "java"
+   when
+       m : DroolsMessage( intent.equals(Intent.HELLO.getText()))
+   then
+       modify ( m ) { setText("Guten Tag.")};
 end
 
 // ---------------------- SAYING GOODBYE ------------------------------------
 
-rule "Saying goodbye1"
+rule "Saying goodbye"
     dialect "java"
     when
         m : DroolsMessage( intent.equals(Intent.BYE.getText()))
     then
         modify( m ) {
-            setText("Auf Wiedersehen. Bis zum nächsten Mal."),
+            setText("Auf Wiedersehen. Bis dann."),
             setAsVoiceMessage(true)
         };
-end
-
-rule "Saying goodbye2"
-    dialect "java"
-    when
-        m : DroolsMessage( intent.equals(Intent.GOODBYE.getText()))
-    then
-        modify( m ) { setText("Tschüss2")};
 end
 
 // ------------------------ SHOW DISHES --------------------------------------
@@ -109,7 +93,7 @@ rule "Start"
     when
         m : DroolsMessage( getIntent().equals(Intent.START.getText()))
     then
-        modify(m) {setText("Hallo und herzlich willkommen!\n\n Ich bin der BeuthBot.\n Ich gebe dir gerne aktuelle Informationen über die Gerichte der Mensa.")}
+        modify(m) {setText("Hallo und herzlich willkommen!\n\n Ich bin der BeuthBot.\n Ich gebe dir gerne aktuelle Informationen der Gerichte der Mensa.")}
 end
 
 // ---------------------------- PRICE -----------------------------
@@ -127,5 +111,5 @@ rule "Fallback"
     when
         m : DroolsMessage(getIntent().equals(Intent.FALLBACK.getText()))
     then
-        modify(m){setText("Die Anfrage konnte ich leider nicht verarbeiten. \n Versuche eine präzisere Formulierung.")}
+        modify(m){setText("Die Anfrage konnte ich leider nicht verarbeiten. \nVersuche eine genauere Formulierung.")}
 end
