@@ -12,15 +12,15 @@ services:
     volumes:
       - ./wildfly/volumes/deployments/:/opt/jboss/wildfly/standalone/deployments/
       - ./wildfly/volumes/logs/:/opt/jboss/wildfly/standalone/log/
-    links:
-      - rasa-server
+#    links:
+#      - rasa-server
     command: /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0 --debug
-  rasa-server:
-    build: ./rasa_nlu
-    container_name: rasa_nlu
-    image: rasa_nlu:latest
-    ports:
-      - "5000:5000"
-    volumes:
-      - ./rasa_nlu/volumes/data/api/:/app/data/api
-    command: python -m rasa_nlu.server -c config/chatbot_config.json --server_model_dirs=default
+#  rasa-server:
+#    build: ./rasa_nlu
+#    container_name: rasa_nlu
+#    image: rasa_nlu:latest
+#    ports:
+#      - "5000:5000"
+#    volumes:
+#      - ./rasa_nlu/volumes/data/api/:/app/data/api
+#    command: python -m rasa_nlu.server -c config/chatbot_config.json --server_model_dirs=default
