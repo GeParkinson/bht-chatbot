@@ -86,8 +86,7 @@ public class ApiAiConnector implements MessageListener {
             //System.out.println("API.AI RESPONSE:"+responseAsString);
 
             //put ApiAiMessage into messageQueue
-            //TODO: reactivate if you want to use api.ai instead of rasa
-            //messageQueue.addMessage(msg, "Drools", "in");
+            messageQueue.addMessage(msg, "Drools", "in");
 
         } catch (JMSException e) {
             logger.error("Could not process message.", e);
