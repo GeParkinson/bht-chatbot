@@ -62,7 +62,11 @@ public class DroolsService implements MessageListener {
 
             logger.debug("ANSWER: " + botMessage.getText());
 
-            messageQueue.addOutMessage(botMessage);
+            if(((DroolsMessage)botMessage).isAsVoiceMessage()){
+                messageQueue.addMessage(botMessage, "BingConnector", "in");
+            }else{
+                messageQueue.addOutMessage(botMessage);
+            }
         } catch (JMSException e) {
             logger.error("Exception while setting bot message to the queue.", e);
         }
@@ -92,18 +96,11 @@ public class DroolsService implements MessageListener {
         ksession.setGlobal("canteenData", canteenData);
 
         // The application can insert facts into the session
-        logger.debug("Intent: " + botMessage.getIntent() + " entities: " + botMessage.getEntities());
-
         // Map incoming ApiAiMessages and RasaMessages to DroolsMessage
         DroolsMessage droolsMessage = new DroolsMessage();
         droolsMessage.setIntent(botMessage.getIntent());
         droolsMessage.setEntities(botMessage.getEntities());
         droolsMessage.setText(botMessage.getText());
-        droolsMessage.setMessenger(botMessage.getMessenger());
-        droolsMessage.setMessageID(botMessage.getMessageID());
-        droolsMessage.setSenderID(botMessage.getSenderID());
-
-        logger.debug("Text: " + droolsMessage.getText());
 
         ksession.insert(droolsMessage);
 
