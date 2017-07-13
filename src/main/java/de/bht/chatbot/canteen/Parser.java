@@ -55,7 +55,7 @@ public class Parser {
     public CanteenData parse() {
 
         if(currentCanteenData.containsKey(CURRENT_DATA_KEY)){
-            logger.info("Canteen Data already exists in Map.");
+            logger.debug("Canteen Data already exists in Map.");
             return currentCanteenData.get(CURRENT_DATA_KEY);
         }
 
@@ -86,11 +86,17 @@ public class Parser {
              */
             Map<String, String> params = new HashMap<>();
             params.put(PARAM_RESOURCE_ID_NAME, PARAM_RESOURCE_ID_VALUE);
-
             for (String day : dates) {
 
                 params.put(PARAM_DATE_NAME, day);
-                doc = Jsoup.connect(DAYS_DISHES_URL).data(params).userAgent("Mozilla").post();
+
+                try {
+                    doc = Jsoup.connect(DAYS_DISHES_URL).data(params).userAgent("Mozilla").post();
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    logger.debug("Exception while connecting to site: " + DAYS_DISHES_URL, e);
+                    continue;
+                }
 
                 /*
                  * Loop all dish categories of the current page.
@@ -200,7 +206,7 @@ public class Parser {
                 }
             }
         } catch (IOException e) {
-            s("Got Error while parsing site: " + CANTEENS_URL);
+            logger.info("Got Error while parsing site: " + CANTEENS_URL, e);
         }
 
         currentCanteenData.put(CURRENT_DATA_KEY, new CanteenData(canteenName, OPENING_HOURS, "", dishes));
@@ -230,7 +236,4 @@ public class Parser {
         return dates;
     }
 
-    private static void s(final String str) {
-        System.out.println(str);
-    }
 }

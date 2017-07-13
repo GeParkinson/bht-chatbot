@@ -17,6 +17,25 @@ public class DroolsMessage implements NLUBotMessage {
     private Map<String,String> entities;
     private boolean asVoiceMessage;
 
+    /**
+     * Default constructor.
+     */
+    public DroolsMessage() {
+    }
+
+    /**
+     * Copy constructor.
+     * @param nluBotMessage
+     */
+    public DroolsMessage(final NLUBotMessage nluBotMessage) {
+        this.messageID = nluBotMessage.getMessageID();
+        this.senderID = nluBotMessage.getSenderID();
+        this.messenger = nluBotMessage.getMessenger();
+        this.text = nluBotMessage.getText();
+        this.intent = nluBotMessage.getIntent();
+        this.entities = nluBotMessage.getEntities();
+    }
+
     @Override
     public Long getId() {
         return 1L;
