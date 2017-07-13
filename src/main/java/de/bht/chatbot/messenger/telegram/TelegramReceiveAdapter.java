@@ -64,7 +64,7 @@ public class TelegramReceiveAdapter {
     @Path("/getUpdates")
     public void getUpdates(final String msg) {
         Update update = BotUtils.parseUpdate(msg);
-        logger.debug("Received new Telegram message: " + update.message().text());
+        logger.debug("Received new Telegram message: {}", update);
         TelegramMessage message = new TelegramMessage(update.message());
         message.setAttachments(getAttachments(update.message()));
         messageQueue.addInMessage(message);
