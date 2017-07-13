@@ -69,6 +69,8 @@ public class TelegramReceiveAdapter {
             TelegramMessage message = new TelegramMessage(update.message());
             message.setAttachments(getAttachments(update.message()));
             messageQueue.addInMessage(message);
+        } catch (Exception e) {
+            logger.error("Something went wrong while getting updates from Telegram!", e);
         } finally {
             return Response.status(HttpStatus.SC_OK).build();
         }
