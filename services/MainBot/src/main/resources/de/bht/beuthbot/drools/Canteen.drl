@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.bht.chatbot.drools
+package de.bht.beuthbot.drools
 
 import java.util.List
 import java.util.ArrayList;
@@ -23,13 +23,13 @@ import java.util.HashMap;
 
 import java.time.LocalDate;
 
-import de.bht.chatbot.canteen.model.Dish
-import de.bht.chatbot.canteen.model.DishType;
-import de.bht.chatbot.message.Intent;
-import de.bht.chatbot.message.EntityName;
-import de.bht.chatbot.drools.model.DroolsMessage;
+import de.bht.beuthbot.canteen.model.Dish
+import de.bht.beuthbot.canteen.model.DishType;
+import de.bht.beuthbot.model.Intent;
+import de.bht.beuthbot.model.EntityName;
+import de.bht.beuthbot.drools.model.DroolsMessage;
 
-global de.bht.chatbot.canteen.model.CanteenData canteenData;
+global de.bht.beuthbot.canteen.model.CanteenData canteenData;
 
 // ---------------------- GREETING ------------------------------------
 rule "Hello Drools"

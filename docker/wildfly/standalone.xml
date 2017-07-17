@@ -113,7 +113,7 @@
             <logger category="sun.rmi">
                 <level name="WARN"/>
             </logger>
-            <logger category="de.bht.chatbot">
+            <logger category="de.bht.beuthbot">
                 <level name="DEBUG"/>
             </logger>
             <root-logger>

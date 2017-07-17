@@ -74,15 +74,16 @@ public class DroolsService implements MessageListener {
         try {
             ProcessQueueMessageProtocol botMessage = message.getBody(TaskMessage.class);
 
-            botMessage = doRules(botMessage);
+            DroolsMessage droolsMessage = doRules(botMessage);
 
             logger.info("ANSWER: " + botMessage.getText());
 
-            if(((DroolsMessage)botMessage).isAsVoiceMessage()){
-               ((DroolsMessage) botMessage).setTarget(Target.NTSP);
-               processQueue.route(new TaskMessage(botMessage));
-            }else{
-                processQueue.route(new TaskMessage(botMessage));
+            if (droolsMessage.isAsVoiceMessage()) {
+                droolsMessage.setTarget(Target.NTSP);
+                processQueue.route(new TaskMessage(droolsMessage));
+            } else {
+                droolsMessage.setTarget(Target.MESSENGER);
+                processQueue.route(new TaskMessage(droolsMessage));
             }
         } catch (JMSException e) {
             logger.error("Exception while setting bot message to the queue.", e);
@@ -94,7 +95,7 @@ public class DroolsService implements MessageListener {
      * @param botMessage
      * @returns the botMessage with a new created answer text
      */
-    private ProcessQueueMessageProtocol doRules(final ProcessQueueMessageProtocol botMessage){
+    private DroolsMessage doRules(final ProcessQueueMessageProtocol botMessage){
 
         // KieServices is the factory for all KIE services
         KieServices ks = KieServices.Factory.get();

@@ -1,4 +1,4 @@
-package de.bht.chatbot.message;
+package de.bht.beuthbot.model;
 
 /**
  * Created by sJantzen on 29.06.2017.

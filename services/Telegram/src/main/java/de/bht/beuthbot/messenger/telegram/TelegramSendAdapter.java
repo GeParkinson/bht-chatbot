@@ -105,7 +105,7 @@ public class TelegramSendAdapter implements MessageListener {
     private void sendMessage(final Long senderId, final String message) {
         SendMessage request = new SendMessage(senderId, message);
         SendResponse sendResponse = bot.execute(request);
-        logger.debug("Send de.bht.chatbot.message: " + sendResponse.isOk());
+        logger.debug("Send message: " + sendResponse.isOk());
     }
 
     /**
