@@ -23,7 +23,7 @@ import java.util.Map;
  * Date: 04.06.17
  */
 @RunWith(Arquillian.class)
-public class RasaNLPTest {
+public class DebugMessageGenerator {
 
     @Deployment
     public static JavaArchive createDeployment() {
