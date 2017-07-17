@@ -1,247 +1,6 @@
 {
   "userSays": [
     {
-      "id": "d43ca85f-202c-463a-9b59-5ef9feb22b27",
-      "data": [
-        {
-          "text": "Zeige mir "
-        },
-        {
-          "text": "gesunde",
-          "alias": "healthy",
-          "meta": "@healthy",
-          "userDefined": true
-        },
-        {
-          "text": " "
-        },
-        {
-          "text": "Hauptgerichte",
-          "alias": "dishcategory",
-          "meta": "@dishcategory",
-          "userDefined": true
-        },
-        {
-          "text": " "
-        },
-        {
-          "text": "unter",
-          "alias": "price",
-          "meta": "@price",
-          "userDefined": true
-        },
-        {
-          "text": " "
-        },
-        {
-          "text": "5",
-          "alias": "number",
-          "meta": "@sys.number",
-          "userDefined": true
-        },
-        {
-          "text": " Euro"
-        }
-      ],
-      "isTemplate": false,
-      "count": 0
-    },
-    {
-      "id": "8efb4896-f4ff-4864-af90-7e2b594afd4a",
-      "data": [
-        {
-          "text": "Gibt es "
-        },
-        {
-          "text": "heute",
-          "alias": "date",
-          "meta": "@date",
-          "userDefined": true
-        },
-        {
-          "text": " "
-        },
-        {
-          "text": "Hauptgerichte",
-          "alias": "dishcategory",
-          "meta": "@dishcategory",
-          "userDefined": true
-        },
-        {
-          "text": " mit "
-        },
-        {
-          "text": "Nudeln",
-          "alias": "ingredients",
-          "meta": "@ingredients",
-          "userDefined": true
-        },
-        {
-          "text": "?"
-        }
-      ],
-      "isTemplate": false,
-      "count": 0
-    },
-    {
-      "id": "daab71ce-3882-42e9-8749-30cb4e1b41ee",
-      "data": [
-        {
-          "text": "Gibt es "
-        },
-        {
-          "text": "heute",
-          "alias": "date",
-          "meta": "@date",
-          "userDefined": true
-        },
-        {
-          "text": " "
-        },
-        {
-          "text": "vegetarische",
-          "alias": "dishtype",
-          "meta": "@dishtype",
-          "userDefined": true
-        },
-        {
-          "text": " "
-        },
-        {
-          "text": "Hauptgerichte",
-          "alias": "dishcategory",
-          "meta": "@dishcategory",
-          "userDefined": true
-        },
-        {
-          "text": "?"
-        }
-      ],
-      "isTemplate": false,
-      "count": 0
-    },
-    {
-      "id": "ca1f84cc-504e-4c2c-9ba4-b6917653d396",
-      "data": [
-        {
-          "text": "Was für "
-        },
-        {
-          "text": "Hauptgerichte",
-          "alias": "dishcategory",
-          "meta": "@dishcategory",
-          "userDefined": true
-        },
-        {
-          "text": " gibt es "
-        },
-        {
-          "text": "heute",
-          "alias": "date",
-          "meta": "@date",
-          "userDefined": true
-        },
-        {
-          "text": "?"
-        }
-      ],
-      "isTemplate": false,
-      "count": 0
-    },
-    {
-      "id": "3635fca1-e08b-49e2-93f5-754244a0b895",
-      "data": [
-        {
-          "text": "Zeige mir "
-        },
-        {
-          "text": "Suppen",
-          "alias": "dishcategory",
-          "meta": "@dishcategory",
-          "userDefined": true
-        },
-        {
-          "text": " für "
-        },
-        {
-          "text": "weniger als",
-          "alias": "price",
-          "meta": "@price",
-          "userDefined": true
-        },
-        {
-          "text": " "
-        },
-        {
-          "text": "2",
-          "alias": "number",
-          "meta": "@sys.number",
-          "userDefined": true
-        },
-        {
-          "text": "€"
-        }
-      ],
-      "isTemplate": false,
-      "count": 0
-    },
-    {
-      "id": "68051902-f5a0-4c6e-8233-f390cd37299e",
-      "data": [
-        {
-          "text": "Zeige "
-        },
-        {
-          "text": "Hauptgerichte",
-          "alias": "dishcategory",
-          "meta": "@dishcategory",
-          "userDefined": true
-        },
-        {
-          "text": " unter "
-        },
-        {
-          "text": "5",
-          "alias": "number",
-          "meta": "@sys.number",
-          "userDefined": true
-        },
-        {
-          "text": " Euro"
-        }
-      ],
-      "isTemplate": false,
-      "count": 0
-    },
-    {
-      "id": "76436c32-a320-4e39-929e-74fd301ea362",
-      "data": [
-        {
-          "text": "Was kostet "
-        },
-        {
-          "text": "weniger als",
-          "alias": "price",
-          "meta": "@price",
-          "userDefined": true
-        },
-        {
-          "text": " "
-        },
-        {
-          "text": "5",
-          "alias": "number",
-          "meta": "@sys.number",
-          "userDefined": true
-        },
-        {
-          "text": "€?"
-        }
-      ],
-      "isTemplate": false,
-      "count": 0
-    },
-    {
       "id": "fcd4493e-a39e-457b-801b-9514d4312b8c",
       "data": [
         {
@@ -283,8 +42,8 @@
         },
         {
           "text": "Salat",
-          "alias": "dishcategory",
-          "meta": "@dishcategory",
+          "alias": "ingredients",
+          "meta": "@ingredients",
           "userDefined": true
         },
         {
@@ -384,8 +143,8 @@
         },
         {
           "text": "Suppe",
-          "alias": "dishcategory",
-          "meta": "@dishcategory",
+          "alias": "ingredients",
+          "meta": "@ingredients",
           "userDefined": true
         },
         {
@@ -418,7 +177,8 @@
       "id": "d9491ecb-a4ef-4890-8c11-e1a74e3f6821",
       "data": [
         {
-          "text": "was gibt es "
+          "text": "was gibt es ",
+          "userDefined": false
         },
         {
           "text": "heute",
@@ -427,7 +187,8 @@
           "userDefined": false
         },
         {
-          "text": " "
+          "text": " ",
+          "userDefined": false
         },
         {
           "text": "veganes",
@@ -436,7 +197,8 @@
           "userDefined": false
         },
         {
-          "text": " in der mensa"
+          "text": " in der mensa",
+          "userDefined": false
         }
       ],
       "isTemplate": false,
@@ -535,8 +297,8 @@
         },
         {
           "text": "Suppe",
-          "alias": "dishcategory",
-          "meta": "@dishcategory",
+          "alias": "ingredients",
+          "meta": "@ingredients",
           "userDefined": true
         },
         {
@@ -1098,12 +860,6 @@
           "dataType": "@sys.number",
           "name": "number",
           "value": "$number",
-          "isList": false
-        },
-        {
-          "dataType": "@dishcategory",
-          "name": "dishcategory",
-          "value": "$dishcategory",
           "isList": false
         }
       ],

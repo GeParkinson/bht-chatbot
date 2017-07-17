@@ -33,6 +33,9 @@ public class Parameters implements Serializable{
     @SerializedName("number")
     @Expose
     private String number;
+    @SerializedName("dishcategory")
+    @Expose
+    private String dishcategory;
 
     public String getDate() {
         return date;
@@ -82,6 +85,14 @@ public class Parameters implements Serializable{
         this.number = number;
     }
 
+    public String getDishcategory() {
+        return dishcategory;
+    }
+
+    public void setDishcategory(String dishcategory) {
+        this.dishcategory = dishcategory;
+    }
+
     /**
      * @return puts the given entities with their values into a Map
      */
@@ -94,6 +105,7 @@ public class Parameters implements Serializable{
         if (ingredients!=null)Entities.put("ingredients",ingredients);
         if (price!=null)Entities.put("price",price);
         if (number!=null)Entities.put("number",number);
+        if (dishcategory!=null)Entities.put("dishcategory",dishcategory);
 
         return Entities;
     }

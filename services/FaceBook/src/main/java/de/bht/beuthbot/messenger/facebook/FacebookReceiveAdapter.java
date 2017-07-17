@@ -62,7 +62,7 @@ public class FacebookReceiveAdapter {
 
     private String webhookToken = application.getConfiguration(Configuration.FACEBOOK_WEBHOOK_TOKEN);
 
-                                                       /**
+    /**
      * listen to POST requests from facebook (which contain the received messages) and react to them
      * @param InputMessage message send by facebook
      * @return request-answer to return to facebook

@@ -21,6 +21,26 @@ public class DroolsMessage implements ProcessQueueMessageProtocol {
     private String intent;
     private Map<String,String> entities;
     private boolean asVoiceMessage;
+    private Target target;
+
+    /**
+     * Default constructor.
+     */
+    public DroolsMessage() {
+    }
+
+    /**
+     * Copy constructor.
+     * @param nluBotMessage
+     */
+    public DroolsMessage(final ProcessQueueMessageProtocol nluBotMessage) {
+        this.messageID = nluBotMessage.getMessageID();
+        this.senderID = nluBotMessage.getSenderID();
+        this.messenger = nluBotMessage.getMessenger();
+        this.text = nluBotMessage.getText();
+        this.intent = nluBotMessage.getIntent();
+        this.entities = nluBotMessage.getEntities();
+    }
 
     @Override
     public Long getId() {
@@ -29,7 +49,11 @@ public class DroolsMessage implements ProcessQueueMessageProtocol {
 
     @Override
     public Target getTarget() {
-        return Target.MESSENGER;
+        return target;
+    }
+
+    public void setTarget(Target target) {
+        this.target = target;
     }
 
     @Override
