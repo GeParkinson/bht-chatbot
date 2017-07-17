@@ -1,5 +1,6 @@
 package de.bht.beuthbot.logging;
 
+import de.bht.beuthbot.jms.TaskMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,7 @@ public class ProcessQueueLogger implements MessageListener {
                      customMessageHeaders.put(propertyName, message.getStringProperty(propertyName));
                  }
              }
-             logger.info("Message [{}] with header {}: {}", message.getJMSMessageID(), customMessageHeaders, ((TextMessage) message).getText());
+             logger.info("Message [{}] with header {}: {}", message.getJMSMessageID(), customMessageHeaders, message.getBody(TaskMessage.class));
          } catch (JMSException e) {
              logger.error("Error while interpreting message.", e);
          }

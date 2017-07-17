@@ -14,6 +14,7 @@ import de.bht.beuthbot.attachments.AttachmentStore;
 import de.bht.beuthbot.conf.Application;
 import de.bht.beuthbot.conf.Configuration;
 import de.bht.beuthbot.jms.ProcessQueue;
+import de.bht.beuthbot.jms.TaskMessage;
 import de.bht.beuthbot.messenger.telegram.model.TelegramAttachment;
 import de.bht.beuthbot.messenger.telegram.model.TelegramMessage;
 import de.bht.beuthbot.model.Attachment;
@@ -71,7 +72,7 @@ public class TelegramReceiveAdapter {
         logger.debug("Received new Telegram message: " + update.message().text());
         TelegramMessage message = new TelegramMessage(update.message());
         message.setAttachments(getAttachments(update.message()));
-        processQueue.route(message);
+        processQueue.route(new TaskMessage(message));
     }
 
     /**

@@ -51,8 +51,7 @@ public class ProcessQueueBean implements ProcessQueue {
 
 
     @Override
-    public void route(final ProcessQueueMessageProtocol processQueueMessage) {
-        TaskMessage taskMessage = new TaskMessage(processQueueMessage);
+    public void route(final TaskMessage taskMessage) {
         Message message = context.createObjectMessage(taskMessage);
         try {
             switch (taskMessage.getTarget()) {
@@ -68,7 +67,9 @@ public class ProcessQueueBean implements ProcessQueue {
                     } else {
                         Attachment attachment = taskMessage.getAttachments().get(0);
                         if (attachment.getAttachmentType() == AttachmentType.AUDIO || attachment.getAttachmentType() == AttachmentType.VOICE) {
-                            message.setStringProperty("BingConnector", "in");
+                            if ("on".equals(application.getConfiguration(Configuration.BING_UNIT_ON))) {
+                                message.setStringProperty("BingConnector", "in");
+                            }
                         } else {
                             logger.warn("Unsupported attachment! Reroute message to {}.\nMessage: {}", Target.MAINBOT, taskMessage);
                             route(new TaskMessage(taskMessage, Target.MAINBOT));
@@ -76,7 +77,9 @@ public class ProcessQueueBean implements ProcessQueue {
                     }
                     break;
                 case MAINBOT:
-                    message.setStringProperty("DROOLS", "drools");
+                    if ("on".equals(application.getConfiguration(Configuration.MAINBOT_UNIT_ON))) {
+                        message.setStringProperty("DROOLS", "drools");
+                    }
                     break;
                 case MESSENGER:
                     switch (taskMessage.getMessenger()) {

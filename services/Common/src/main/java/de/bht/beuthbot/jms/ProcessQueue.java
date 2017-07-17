@@ -11,7 +11,7 @@ public interface ProcessQueue {
 
     /**
      * Routing internal messages to there destination, based on the message content.
-     * @param processQueueMessage the internal message to route
+     * @param taskMessage the internal message to route
      */
-    void route(ProcessQueueMessageProtocol processQueueMessage);
+    void route(TaskMessage taskMessage);
 }

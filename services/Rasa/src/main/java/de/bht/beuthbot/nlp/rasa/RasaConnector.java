@@ -1,6 +1,8 @@
 package de.bht.beuthbot.nlp.rasa;
 
 import com.google.gson.Gson;
+import de.bht.beuthbot.conf.Application;
+import de.bht.beuthbot.conf.Configuration;
 import de.bht.beuthbot.jms.ProcessQueue;
 import de.bht.beuthbot.jms.ProcessQueueMessageProtocol;
 import de.bht.beuthbot.jms.TaskMessage;
@@ -37,7 +39,7 @@ import javax.ws.rs.core.UriBuilder;
                         propertyName = "destination",
                         propertyValue = "jms/messages/inbox"),
                 @ActivationConfigProperty(
-                        propertyName = "messageSelector", propertyValue = "NLU = 'in'")
+                        propertyName = "messageSelector", propertyValue = "NLP IS NOT NULL AND RASA IS NOT NULL")
         }
 )
 public class RasaConnector implements MessageListener {
@@ -48,13 +50,18 @@ public class RasaConnector implements MessageListener {
 
     @Resource(lookup = "java:global/global/ProcessQueueBean")
     private ProcessQueue processQueue;
+
+    /** BeuthBot Application Bean */
+    @Resource(lookup = "java:global/global/ApplicationBean")
+    private Application application;
     
 
     @PostConstruct
     public void init() {
         gson = new Gson();
         ResteasyClient client = new ResteasyClientBuilder().build();
-        ResteasyWebTarget target = client.target(UriBuilder.fromPath("http://rasa_nlu:5000"));
+        final String localRasaURL = application.getConfiguration(Configuration.RASA_URL);
+        ResteasyWebTarget target = client.target(UriBuilder.fromPath(localRasaURL));
         rasaProxy = target.proxy(RasaRESTServiceInterface.class);
     }
 
@@ -71,7 +78,8 @@ public class RasaConnector implements MessageListener {
             logger.debug("{}: {}", response.getStatus(), responseAsString);
 
             RasaResponse rasaResponse = gson.fromJson(responseAsString, RasaResponse.class);
-            processQueue.route(new RasaMessage(incomingChatMessage, rasaResponse));
+            TaskMessage messageToMainBot = new TaskMessage(new RasaMessage(incomingChatMessage, rasaResponse));
+            processQueue.route(messageToMainBot);
         } catch (JMSException e) {
             logger.error("Error while processing message.", e);
         }

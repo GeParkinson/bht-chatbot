@@ -90,7 +90,7 @@ public class ApiAiConnector implements MessageListener {
             //System.out.println("API.AI RESPONSE:"+responseAsString);
 
             //put ApiAiMessage into messageQueue
-            processQueue.route(msg);
+            processQueue.route(new TaskMessage(msg));
 
         } catch (JMSException e) {
             logger.error("Could not process message.", e);

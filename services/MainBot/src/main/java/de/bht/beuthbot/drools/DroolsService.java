@@ -43,7 +43,7 @@ import javax.jms.MessageListener;
                 @ActivationConfigProperty(
                         propertyName = "maxSession", propertyValue = "1"),
                 @ActivationConfigProperty(
-                        propertyName = "messageSelector", propertyValue = "Drools = 'in'"
+                        propertyName = "messageSelector", propertyValue = "DROOLS IS NOT NULL"
                 )
         }
 )
@@ -80,7 +80,7 @@ public class DroolsService implements MessageListener {
             if(((DroolsMessage)botMessage).isAsVoiceMessage()){
                // processQueue.route(botMessage, "BingConnector", "in");
             }else{
-                processQueue.route(botMessage);
+                processQueue.route(new TaskMessage(botMessage));
             }
         } catch (JMSException e) {
             logger.error("Exception while setting bot message to the queue.", e);

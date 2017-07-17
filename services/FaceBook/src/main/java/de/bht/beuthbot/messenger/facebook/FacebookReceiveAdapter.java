@@ -5,6 +5,7 @@ import de.bht.beuthbot.attachments.AttachmentStore;
 import de.bht.beuthbot.conf.Application;
 import de.bht.beuthbot.conf.Configuration;
 import de.bht.beuthbot.jms.ProcessQueue;
+import de.bht.beuthbot.jms.TaskMessage;
 import de.bht.beuthbot.messenger.facebook.model.FacebookAttachment;
 import de.bht.beuthbot.messenger.facebook.model.FacebookBotMessage;
 import de.bht.beuthbot.messenger.facebook.model.FacebookInput;
@@ -100,7 +101,7 @@ public class FacebookReceiveAdapter {
                 FacebookBotMessage msg = new FacebookBotMessage(gs.getEntry().get(0));
 
                 //put message into JMS-queue
-                processQueue.route(msg);
+                processQueue.route(new TaskMessage(msg));
             }
         }
 

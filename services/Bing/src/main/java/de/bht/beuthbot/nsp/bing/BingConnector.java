@@ -244,7 +244,7 @@ public class BingConnector implements MessageListener {
                                 return;
                         }
                         // return message
-                        processQueue.route(bingMessage);
+                        processQueue.route(new TaskMessage(bingMessage));
                     } catch (Exception e) {
                         logger.error("Error while parsing BingSpeechResponse: ", e);
                     }
@@ -304,7 +304,7 @@ public class BingConnector implements MessageListener {
 
                 BingMessage bingMessage = new BingMessage(botMessage, new BingAttachment(id, path));
 
-                processQueue.route(bingMessage);
+                processQueue.route(new TaskMessage(bingMessage));
             } else {
                 logger.warn("Could not process Speech to Text request. Returns: " + "Speech to Text request returns: " + httpResponse.toString());
             }
