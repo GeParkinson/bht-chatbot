@@ -22,6 +22,8 @@ public enum Configuration {
 
     LOCAL_ATTACHMENT_PATH,
 
+    RASA_URL,
+
     RASA_UNIT_ON,
     APIAI_UNIT_ON,
     FACEBOOK_UNIT_ON,
