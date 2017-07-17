@@ -21,7 +21,6 @@ import javax.ejb.MessageDriven;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.TextMessage;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
@@ -54,7 +53,7 @@ public class RasaConnector implements MessageListener {
     /** BeuthBot Application Bean */
     @Resource(lookup = "java:global/global/ApplicationBean")
     private Application application;
-    
+
 
     @PostConstruct
     public void init() {
