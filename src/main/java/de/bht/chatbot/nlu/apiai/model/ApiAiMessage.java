@@ -11,53 +11,53 @@ import java.util.Map;
 
 /**
  * Created by oliver on 19.06.2017.
- *
+ * <p>
  * ApiAi-specific class of the NLUBotMessage Interface
  */
 public class ApiAiMessage implements NLUBotMessage, Serializable {
 
     //store BotMessage and NLUResponse to query necessary information
-    BotMessage bm;
+    BotMessage botMessage;
     NLUResponse nluResponse;
 
-    public ApiAiMessage(BotMessage bm, NLUResponse nluResponse){
-        this.bm=bm;
-        this.nluResponse=nluResponse;
+    public ApiAiMessage(BotMessage botMessage, NLUResponse nluResponse) {
+        this.botMessage = botMessage;
+        this.nluResponse = nluResponse;
     }
 
     @Override
     public Long getId() {
-        return bm.getId();
+        return botMessage.getId();
     }
 
     @Override
     public Long getMessageID() {
-        return bm.getMessageID();
+        return botMessage.getMessageID();
     }
 
     @Override
     public Long getSenderID() {
-        return bm.getSenderID();
+        return botMessage.getSenderID();
     }
 
     @Override
     public Messenger getMessenger() {
-        return bm.getMessenger();
+        return botMessage.getMessenger();
     }
 
     @Override
     public String getText() {
-        return bm.getText()+"-Entities:"+getEntities().toString()+"-Intent:"+getIntent();
+        return botMessage.getText();
     }
 
     @Override
     public boolean hasAttachments() {
-        return bm.hasAttachments();
+        return botMessage.hasAttachments();
     }
 
     @Override
     public Attachment[] getAttachments() {
-        return bm.getAttachments();
+        return botMessage.getAttachments();
     }
 
     @Override

@@ -5,12 +5,13 @@ import com.google.gson.annotations.SerializedName;
 import de.bht.chatbot.nlu.NLUResponse;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author: Oliver
  * Date: 19.06.17
- * 
+ *
  * ApiAi-specific class of the NLUResponse Interface
  * class which represents the JSON received from ApiAI
  */
@@ -45,7 +46,10 @@ public class ApiAiResponse implements NLUResponse, Serializable {
 
     @Override
     public Map<String, String> getEntities() {
-        return result.getParameters().getEntities();
+        if (result.getParameters() != null) {
+            return result.getParameters().getEntities();
+        }
+        else return new HashMap<String, String>();
     }
 
     public String getId() {
