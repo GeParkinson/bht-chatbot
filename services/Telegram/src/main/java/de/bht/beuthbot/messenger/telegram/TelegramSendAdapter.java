@@ -14,6 +14,7 @@ import de.bht.beuthbot.model.Attachment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
@@ -53,9 +54,10 @@ public class TelegramSendAdapter implements MessageListener {
     private TelegramBot bot;
 
     /**
-     * Constructor: Initialize TelegramBot with Token
+     * Initialize TelegramBot with Token
      */
-    public TelegramSendAdapter(){
+    @PostConstruct
+    public void init(){
         bot = TelegramBotAdapter.build(application.getConfiguration(Configuration.TELEGRAM_BOT_TOKEN));
     }
 
