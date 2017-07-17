@@ -38,9 +38,9 @@
     {
       "value": "essen",
       "synonyms": [
-        "essen",
         "Hauptgerichte",
-        "Hauptspeise"
+        "Hauptspeise",
+        "Hauptspeisen"
       ]
     },
     {
@@ -57,7 +57,9 @@
         "desserts",
         "Dessert",
         "Nachspeise",
-        "Nachtisch"
+        "Nachtisch",
+        "Nachspeisen",
+        "Desserts"
       ]
     }
   ],

@@ -1,7 +1,295 @@
 {
   "userSays": [
     {
-      "id": "d43ca85f-202c-463a-9b59-5ef9feb22b27",
+      "id": "fd32ca0d-bb7f-4d03-b1c8-5ad41ae4847a",
+      "data": [
+        {
+          "text": "Bitte nur "
+        },
+        {
+          "text": "vegetarisches",
+          "alias": "dishtype",
+          "meta": "@dishtype",
+          "userDefined": false
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "7b2cce20-9ea4-4532-90f6-d86374d4ece6",
+      "data": [
+        {
+          "text": "Schön "
+        },
+        {
+          "text": "fettig",
+          "alias": "healthy",
+          "meta": "@healthy",
+          "userDefined": false
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "56891d52-fe5c-4669-b4f4-20d394d0f291",
+      "data": [
+        {
+          "text": "was gibt\u0027s zum "
+        },
+        {
+          "text": "Nachtisch",
+          "alias": "dishcategory",
+          "meta": "@dishcategory",
+          "userDefined": false
+        },
+        {
+          "text": "?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "b85b0135-3a69-4564-9fea-d6dc168673c5",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "gesundes",
+          "alias": "healthy",
+          "meta": "@healthy",
+          "userDefined": false
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "86306079-6fb2-4a85-a024-a415f67d17c2",
+      "data": [
+        {
+          "text": "Wat gibts "
+        },
+        {
+          "text": "gesundes",
+          "alias": "healthy",
+          "meta": "@healthy",
+          "userDefined": false
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "d3bddb57-2a96-42d4-9517-2fe39b7eb81b",
+      "data": [
+        {
+          "text": "Ick hab Knast"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "762b3473-f577-4b6f-9130-4cc36c9fea6c",
+      "data": [
+        {
+          "text": "Man...! Sach mir was es zu "
+        },
+        {
+          "text": "essen",
+          "meta": "@sys.ignore",
+          "userDefined": false
+        },
+        {
+          "text": " gibt!"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "024e9b2b-6030-4e71-8a26-c1b2dcd302d2",
+      "data": [
+        {
+          "text": "Zeig mir "
+        },
+        {
+          "text": "futter",
+          "meta": "@sys.ignore",
+          "userDefined": false
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "37884b73-ef5c-4788-8286-48741d1687ab",
+      "data": [
+        {
+          "text": "Was gibbet"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "900ae728-5008-4ac1-a27e-9a5663b1f8a0",
+      "data": [
+        {
+          "text": "Grün",
+          "alias": "healthy",
+          "meta": "@healthy",
+          "userDefined": false
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "add47ed0-8ef8-4ff9-90e6-acdc33ea4b3c",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "heute",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": false
+        },
+        {
+          "text": " zu Essen?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "76068d03-8dfa-4053-a4d7-f9580d7c1269",
+      "data": [
+        {
+          "text": "Gibt es irgendetwas "
+        },
+        {
+          "text": "vegetarisches",
+          "alias": "dishtype",
+          "meta": "@dishtype",
+          "userDefined": false
+        },
+        {
+          "text": "?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "4fe7e652-929b-4a3b-840b-b24e1ecb9fcc",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "morgen",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": false
+        },
+        {
+          "text": " "
+        },
+        {
+          "text": "veganes",
+          "alias": "dishtype",
+          "meta": "@dishtype",
+          "userDefined": false
+        },
+        {
+          "text": "?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "7bac360a-65db-4698-b9fc-81024a052f7c",
+      "data": [
+        {
+          "text": "Was gibt es für "
+        },
+        {
+          "text": "Suppen",
+          "alias": "dishcategory",
+          "meta": "@dishcategory",
+          "userDefined": false
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "1407d888-0d5a-451b-8d30-6c804dec373c",
+      "data": [
+        {
+          "text": "Welche "
+        },
+        {
+          "text": "Vorspeisen",
+          "alias": "dishcategory",
+          "meta": "@dishcategory",
+          "userDefined": false
+        },
+        {
+          "text": " gibt es "
+        },
+        {
+          "text": "heute",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": false
+        },
+        {
+          "text": "?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "d7fc8387-d1c6-4ed2-aeeb-a12466ebb7bb",
+      "data": [
+        {
+          "text": "Was gibt es "
+        },
+        {
+          "text": "heute",
+          "alias": "date",
+          "meta": "@date",
+          "userDefined": false
+        },
+        {
+          "text": " zu essen?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "3589c50d-8ec0-4276-aa21-a88145530ddb",
+      "data": [
+        {
+          "text": "Was gibt es zu essen?"
+        }
+      ],
+      "isTemplate": false,
+      "count": 0
+    },
+    {
+      "id": "1f9d235d-eaae-4999-b5d2-0d19720e90e9",
       "data": [
         {
           "text": "Zeige mir "
@@ -35,8 +323,7 @@
         },
         {
           "text": "5",
-          "alias": "number",
-          "meta": "@sys.number",
+          "meta": "@sys.ignore",
           "userDefined": true
         },
         {
@@ -65,15 +352,6 @@
           "text": "Hauptgerichte",
           "alias": "dishcategory",
           "meta": "@dishcategory",
-          "userDefined": true
-        },
-        {
-          "text": " mit "
-        },
-        {
-          "text": "Nudeln",
-          "alias": "ingredients",
-          "meta": "@ingredients",
           "userDefined": true
         },
         {
@@ -174,8 +452,7 @@
         },
         {
           "text": "2",
-          "alias": "number",
-          "meta": "@sys.number",
+          "meta": "@sys.ignore",
           "userDefined": true
         },
         {
@@ -202,8 +479,7 @@
         },
         {
           "text": "5",
-          "alias": "number",
-          "meta": "@sys.number",
+          "meta": "@sys.ignore",
           "userDefined": true
         },
         {
@@ -230,8 +506,7 @@
         },
         {
           "text": "5",
-          "alias": "number",
-          "meta": "@sys.number",
+          "meta": "@sys.ignore",
           "userDefined": true
         },
         {
@@ -258,8 +533,7 @@
         },
         {
           "text": "2",
-          "alias": "number",
-          "meta": "@sys.number",
+          "meta": "@sys.ignore",
           "userDefined": true
         },
         {
@@ -839,34 +1113,6 @@
       "count": 0
     },
     {
-      "id": "b64b3772-e3cf-4818-a32c-b0e9cc5ed87e",
-      "data": [
-        {
-          "text": "Gibt\u0027s "
-        },
-        {
-          "text": "heut",
-          "alias": "date",
-          "meta": "@date",
-          "userDefined": true
-        },
-        {
-          "text": " was mit "
-        },
-        {
-          "text": "Nudeln",
-          "alias": "ingredients",
-          "meta": "@ingredients",
-          "userDefined": true
-        },
-        {
-          "text": "?"
-        }
-      ],
-      "isTemplate": false,
-      "count": 1
-    },
-    {
       "id": "05c9c76f-e7cc-417f-990d-fc9c0c3d202a",
       "data": [
         {
@@ -1092,12 +1338,6 @@
           "dataType": "@price",
           "name": "price",
           "value": "$price",
-          "isList": false
-        },
-        {
-          "dataType": "@sys.number",
-          "name": "number",
-          "value": "$number",
           "isList": false
         },
         {

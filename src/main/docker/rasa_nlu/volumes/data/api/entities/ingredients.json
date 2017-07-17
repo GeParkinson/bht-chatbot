@@ -23,21 +23,8 @@
         "zuckerfrei",
         "ohne Zucker"
       ]
-    },
-    {
-      "value": "Nudel",
-      "synonyms": [
-        "Nudeln",
-        "Nudel"
-      ]
-    },
-    {
-      "value": "Currywurst",
-      "synonyms": [
-        "Currywurst"
-      ]
     }
   ],
   "isEnum": false,
-  "automatedExpansion": true
+  "automatedExpansion": false
 }
