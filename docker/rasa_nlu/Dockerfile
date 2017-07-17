@@ -13,24 +13,17 @@ RUN apt-get update -qq && \
 
 WORKDIR ${RASA_NLU_HOME}
 
-RUN pip install git+https://github.com/mit-nlp/MITIE.git
-RUN pip install -U scikit-learn scipy sklearn-crfsuite
+# Install rasa and its dependencies
+RUN pip install -U spacy scikit-learn scipy sklearn-crfsuite
+RUN python -m spacy download de
 RUN pip install rasa_nlu==0.9.1
-
-# download EN
-# RUN wget https://github.com/mit-nlp/MITIE/releases/download/v0.4/MITIE-models-v0.2.tar.bz2
-# RUN tar xvjf MITIE-models-v0.2.tar.bz2
-# RUN mkdir -p data/en && mv MITIE-models/english/total_word_feature_extractor.dat data/en/
-
-# download DE
-RUN wget https://github.com/mit-nlp/MITIE/releases/download/v0.4/MITIE-models-v0.2-German.tar.bz2
-RUN tar xvjf MITIE-models-v0.2-German.tar.bz2
-RUN mkdir -p data/de && mv MITIE-models/german/total_word_feature_extractor.dat data/de/
 
 # train the model
 COPY rasa_config.json config/chatbot_config.json
 COPY volumes/data/api/ data/api
 RUN python -m rasa_nlu.train -c config/chatbot_config.json
+
+# Cleanup
 RUN mv models/model_* models/default && rm -r data/api
 
 EXPOSE 5000

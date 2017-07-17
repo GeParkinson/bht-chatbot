@@ -1,8 +1,8 @@
 {
-  "pipeline": "mitie_sklearn",
-  "num_threads": 4,
+  "pipeline": "spacy_sklearn",
+  "num_threads": 2,
   "language": "de",
-  "mitie_file": "/app/data/de/total_word_feature_extractor.dat",
   "path": "/app/models",
-  "data": "/app/data/api"
+  "data": "/app/data/api",
+  "response_log": "/app/logs"
 }

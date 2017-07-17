@@ -24,4 +24,5 @@ services:
       - "5000:5000"
     volumes:
       - ./rasa_nlu/volumes/data/api/:/app/data/api
+      - ./rasa_nlu/volumes/logs/:/app/logs/
     command: python -m rasa_nlu.server -c config/chatbot_config.json --server_model_dirs=default
