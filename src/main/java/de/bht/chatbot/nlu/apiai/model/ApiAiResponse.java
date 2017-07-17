@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * @author: Oliver
  * Date: 19.06.17
- *
+ * 
  * ApiAi-specific class of the NLUResponse Interface
  * class which represents the JSON received from ApiAI
  */
@@ -37,7 +37,10 @@ public class ApiAiResponse implements NLUResponse, Serializable {
 
     @Override
     public String getIntent() {
-        return result.getMetadata().getIntentName();
+        //TODO: implement getScore into NLUResponse Interface and move decision to Drools
+        if (result.getScore() <= 0.2 || result.getMetadata().getIntentName() == null) {
+            return "Fallback";
+        } else return result.getMetadata().getIntentName();
     }
 
     @Override
