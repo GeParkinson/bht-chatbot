@@ -38,10 +38,6 @@ public class ApplicationBean implements Application {
      */
     private Properties properties;
 
-    public ApplicationBean() {
-        loadProperties();
-    }
-
     /**
      * Loading defined properties from conf file
      * @return
