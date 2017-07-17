@@ -7,6 +7,8 @@ import de.bht.chatbot.messenger.utils.MessengerUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
@@ -42,13 +44,19 @@ import java.util.regex.Pattern;
 )
 public class FacebookSendAdapter implements MessageListener {
 
+    /**
+     * slf4j Logger
+     */
+    private final Logger logger = LoggerFactory.getLogger(FacebookSendAdapter.class);
+
     @Inject
     private AttachmentStore attachmentStore;
 
     @Inject
     private FacebookUtils facebookUtils;
 
-    /** Send Text Message
+    /**
+     * Send Text Message
      * build a payload from the given message and send it to the facebook url
      */
     private void sendMessage(Long recipient, String messageJson) {
@@ -59,7 +67,7 @@ public class FacebookSendAdapter implements MessageListener {
         String seperator = ", --------------------------";
 
         //split (maybe) long message into multiple messages of sendable size
-        for( String currentMessage : facebookUtils.splitIntoMultipleMessages(messageJson,600,seperateMessages,seperator) ) {
+        for (String currentMessage : facebookUtils.splitIntoMultipleMessages(messageJson, 600, seperateMessages, seperator)) {
             String payload = "{\"recipient\": {\"id\": \"" + recipient + "\"}, \"message\": { \"text\": \"" + currentMessage + "\"}}";
             try {
                 //send message
@@ -71,24 +79,25 @@ public class FacebookSendAdapter implements MessageListener {
 
     }
 
-    /** Send Media Method
+    /**
+     * Send Media Method
      * fill payload with media information and send it to facebook
      */
-    private void sendMedia(BotMessage message,String mediaType){
-        String fileURL=attachmentStore.loadAttachmentPath(message.getAttachments()[0].getId(), AttachmentStoreMode.FILE_URI);
-        String payload = "{recipient: { id: "+message.getSenderID()+" }, message: { attachment: { type: \""+mediaType+"\", payload: { url: \""+fileURL+"\"  } }   }} ";
-        System.out.println("FACEBOOK_SEND:Output:"+payload);
-        String requestUrl = "https://graph.facebook.com/v2.6/me/messages" ;
+    private void sendMedia(BotMessage message, String mediaType) {
+        String fileURL = attachmentStore.loadAttachmentPath(message.getAttachments()[0].getId(), AttachmentStoreMode.FILE_URI);
+        String payload = "{recipient: { id: " + message.getSenderID() + " }, message: { attachment: { type: \"" + mediaType + "\", payload: { url: \"" + fileURL + "\"  } }   }} ";
+        logger.debug("FACEBOOK_SEND:Output:" + payload);
+        String requestUrl = "https://graph.facebook.com/v2.6/me/messages";
         try {
-            facebookUtils.sendPostRequest(requestUrl, payload,facebookUtils.token());
-        }
-        catch(Exception ex){
+            facebookUtils.sendPostRequest(requestUrl, payload, facebookUtils.token());
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-     /**
+    /**
      * receive messages from JMS and forward them to Facebook
+     *
      * @param messageIn message from JMS
      */
     @Override
@@ -115,7 +124,7 @@ public class FacebookSendAdapter implements MessageListener {
                         sendMedia(message, "image");
                         break;
                     case UNKOWN:
-                       sendMessage(message.getSenderID(), "Sorry! I'm just a bot and my developers just implemented audio and voice attachments...");
+                        sendMessage(message.getSenderID(), "Sorry! I'm just a bot and my developers just implemented audio and voice attachments...");
                         break;
                 }
             }

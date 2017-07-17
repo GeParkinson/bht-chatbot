@@ -4,6 +4,8 @@ import de.bht.chatbot.messenger.utils.MessengerUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -15,29 +17,38 @@ import java.util.Properties;
  * Created by oliver on 03.07.2017.
  */
 public class FacebookUtils {
+
+    /**
+     * slf4j Logger
+     */
+    private final Logger logger = LoggerFactory.getLogger(FacebookUtils.class);
+
     /**
      * get and return messaging-token from properties
+     *
      * @return String Facebook-Message token
      */
-    public String token(){
+    public String token() {
         Properties properties = MessengerUtils.getProperties();
         return properties.getProperty("FACEBOOK_BOT_TOKEN");
     }
 
     /**
      * get and return access-token from properties
+     *
      * @return String Facebook-access token
      */
-    public String accessID(){
+    public String accessID() {
         Properties properties = MessengerUtils.getProperties();
         return properties.getProperty("FACEBOOK_ACCESS_TOKEN");
     }
 
     /**
      * get and return url of server
+     *
      * @return String Server URL
      */
-    public String webadress(){
+    public String webadress() {
         Properties properties = MessengerUtils.getProperties();
         return properties.getProperty("WEB_URL");
     }
@@ -56,7 +67,7 @@ public class FacebookUtils {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                sendPostRequest("https://graph.facebook.com/v2.9/me/subscribed_apps","",token());
+                sendPostRequest("https://graph.facebook.com/v2.9/me/subscribed_apps", "", token());
             }
         };
         new Thread(activation).start();
@@ -64,9 +75,10 @@ public class FacebookUtils {
 
     /**
      * uses the FacebookRESTServiceInterface to post the JSON data to Facebook
+     *
      * @param requestUrl the url to send the json to
-     * @param payload string which contains the payload in json structure
-     * @param token facebook API token
+     * @param payload    string which contains the payload in json structure
+     * @param token      facebook API token
      * @return response from web request
      */
     public String sendPostRequest(String requestUrl, String payload, String token) {
@@ -84,7 +96,16 @@ public class FacebookUtils {
 
     }
 
-    public List<String> splitIntoMultipleMessages(String messageJson, int charLimit, Boolean seperateMessages, String seperator){
+    /**
+     * splits a Facebook output messages into smaller messages due to the charlimit set by facebook
+     *
+     * @param messageJson      long input message
+     * @param charLimit        the maximum amount of characters
+     * @param seperateMessages boolean whether you want to split at a specific string
+     * @param seperator        specific string to split message at
+     * @return list of small messages
+     */
+    public List<String> splitIntoMultipleMessages(String messageJson, int charLimit, Boolean seperateMessages, String seperator) {
         List<String> messages = new ArrayList<String>();
 
         //facebook allows a maximum of 640 characters, message must be split if necessary:
@@ -93,13 +114,13 @@ public class FacebookUtils {
         String currentOutput = "";
         for (int i = 0; i < linesOfMessage.length; i++) {
             String line = linesOfMessage[i];
-            if ((currentOutput + "\\n" + line).length() > charLimit || (line.contains(seperator)&&seperateMessages)) {
+            if ((currentOutput + "\\n" + line).length() > charLimit || (line.contains(seperator) && seperateMessages)) {
                 //if appending new line would increase the chars over charLimit, put current output and start new one
                 messages.add(currentOutput);
 
                 //hide seperator if message is split by entries
-                if(line.contains(seperator)&&seperateMessages) {
-                    line="";
+                if (line.contains(seperator) && seperateMessages) {
+                    line = "";
                 }
 
                 //begin a new output with the current line (which was not send because 640 chars would have been reached)

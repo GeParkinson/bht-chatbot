@@ -43,15 +43,14 @@ import java.util.Properties;
 )
 public class ApiAiConnector implements MessageListener {
 
+    private final Logger logger = LoggerFactory.getLogger(ApiAiConnector.class);
     @Inject
     private MessageQueue messageQueue;
-
-    private final Logger logger = LoggerFactory.getLogger(ApiAiConnector.class);
     private ApiAiRESTServiceInterface apiaiProxy;
 
     @PostConstruct
     public void init() {
-        
+
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(UriBuilder.fromPath("https://api.api.ai/api/query"));
         apiaiProxy = target.proxy(ApiAiRESTServiceInterface.class);
@@ -59,6 +58,7 @@ public class ApiAiConnector implements MessageListener {
 
     /**
      * process messages received over the JMS
+     *
      * @param message from JMS which contains the bot message
      */
     @Override
@@ -74,20 +74,19 @@ public class ApiAiConnector implements MessageListener {
             String language = "de";
 
             //create a requests to te API.ai server
-            Response response = apiaiProxy.processText(botMessage.getText(), language, sessionID,"BHT-Chatbot","Bearer " + token);
+            Response response = apiaiProxy.processText(botMessage.getText(), language, sessionID, "BHT-Chatbot", "Bearer " + token);
             String responseAsString = response.readEntity(String.class);
 
             //parse the response into ApiAiResponse
-            ApiAiResponse gs = new Gson().fromJson(responseAsString, ApiAiResponse.class);
+            ApiAiResponse apiAiResponse = new Gson().fromJson(responseAsString, ApiAiResponse.class);
 
             //Create ApiAiMessage
-            ApiAiMessage msg = new ApiAiMessage(botMessage, gs);
+            ApiAiMessage apiAiMessage = new ApiAiMessage(botMessage, apiAiResponse);
 
-            //System.out.println("API.AI RESPONSE:"+responseAsString);
+            //logger.debug("API.AI RESPONSE:"+responseAsString);
 
             //put ApiAiMessage into messageQueue
-            //TODO: reactivate if you want to use api.ai instead of rasa
-            //messageQueue.addMessage(msg, "Drools", "in");
+            messageQueue.addMessage(apiAiMessage, "Drools", "in");
 
         } catch (JMSException e) {
             logger.error("Could not process message.", e);
