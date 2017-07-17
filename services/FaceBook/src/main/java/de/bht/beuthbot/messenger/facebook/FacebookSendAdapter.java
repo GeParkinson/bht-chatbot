@@ -30,7 +30,7 @@ import javax.jms.MessageListener;
                 @ActivationConfigProperty(
                         propertyName = "maxSession", propertyValue = "1"),
                 @ActivationConfigProperty(
-                        propertyName = "messageSelector", propertyValue = "Facebook = 'out'"
+                        propertyName = "messageSelector", propertyValue = "FACEBOOK IS NOT NULL"
                 )
         }
 )

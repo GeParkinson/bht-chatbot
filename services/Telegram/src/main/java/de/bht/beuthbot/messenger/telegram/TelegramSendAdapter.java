@@ -37,7 +37,7 @@ import javax.jms.MessageListener;
             @ActivationConfigProperty(
                     propertyName = "maxSession", propertyValue = "1"),
             @ActivationConfigProperty(
-                    propertyName = "messageSelector", propertyValue = "Telegram = 'out'"
+                    propertyName = "messageSelector", propertyValue = "TELEGRAM IS NOT NULL"
             )
     }
 )
