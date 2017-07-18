@@ -1,7 +1,0 @@
-{
-  "pipeline": "mitie",
-  "language": "de",
-  "mitie_file": "/app/data/de/total_word_feature_extractor.dat",
-  "path": "/app/models",
-  "data": "/app/data/api"
-}
