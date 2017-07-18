@@ -1,0 +1,36 @@
+{
+  "id": "c61797ac-dedc-4881-8863-4c656eb47359",
+  "name": "healthy",
+  "isOverridable": true,
+  "entries": [
+    {
+      "value": "green",
+      "synonyms": [
+        "grün",
+        "gesund",
+        "gesunde",
+        "gesundes",
+        "Gruen"
+      ]
+    },
+    {
+      "value": "red",
+      "synonyms": [
+        "rot",
+        "ungesund",
+        "ungesunde",
+        "Ungesundes",
+        "fettig"
+      ]
+    },
+    {
+      "value": "yellow",
+      "synonyms": [
+        "gelb",
+        "gelbe"
+      ]
+    }
+  ],
+  "isEnum": false,
+  "automatedExpansion": false
+}

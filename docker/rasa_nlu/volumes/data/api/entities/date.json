@@ -1,0 +1,69 @@
+{
+  "id": "7d5ec91f-9608-4a88-aa16-91f02a60ce60",
+  "name": "date",
+  "isOverridable": true,
+  "entries": [
+    {
+      "value": "today",
+      "synonyms": [
+        "today",
+        "heute",
+        "heut",
+        "heutigen"
+      ]
+    },
+    {
+      "value": "tomorrow",
+      "synonyms": [
+        "tomorrow",
+        "morgen"
+      ]
+    },
+    {
+      "value": "dayaftertomorrow",
+      "synonyms": [
+        "übermorgen",
+        "day after tomorrow"
+      ]
+    },
+    {
+      "value": "Montag",
+      "synonyms": [
+        "Montag"
+      ]
+    },
+    {
+      "value": "Dienstag",
+      "synonyms": [
+        "Dienstag"
+      ]
+    },
+    {
+      "value": "Mittwoch",
+      "synonyms": [
+        "Mittwoch"
+      ]
+    },
+    {
+      "value": "Donnerstag",
+      "synonyms": [
+        "Donnerstag"
+      ]
+    },
+    {
+      "value": "Freitag",
+      "synonyms": [
+        "Freitag"
+      ]
+    },
+    {
+      "value": "yesterday",
+      "synonyms": [
+        "gestern",
+        "yesterday"
+      ]
+    }
+  ],
+  "isEnum": false,
+  "automatedExpansion": false
+}
