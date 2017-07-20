@@ -135,7 +135,7 @@ public class FacebookBotMessage implements ProcessQueueMessageProtocol {
 
     @Override
     public Map<String, String> getEntities() {
-        return null;
+        return Collections.emptyMap();
 
     }
 }
