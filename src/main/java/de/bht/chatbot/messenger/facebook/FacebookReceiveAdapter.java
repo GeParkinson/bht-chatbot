@@ -48,18 +48,6 @@ public class FacebookReceiveAdapter {
     @Inject
     private FacebookUtils facebookUtils;
 
-    //---------------------------------------
-    //Testing:
-    //install localtunnel (npm install -g localtunnel) and connect via 'lt --port 8080' *
-    //*doesnt work in some networks like eduroam
-    //
-    //get your accessToken in the messenger product of your facebook app
-    //
-    //create webhook with:
-    //URL:  https://XXXXXXXXXXXXX.localtunnel.me/bht-chatbot/rest/webhook/facebook
-    //token: set in config.properties
-    //---------------------------------------
-
     private String webhookToken = MessengerUtils.getProperties().getProperty("FACEBOOK_WEBHOOK_TOKEN");
 
     /**

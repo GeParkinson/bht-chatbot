@@ -106,6 +106,7 @@ public class FacebookSendAdapter implements MessageListener {
             BotMessage message = messageIn.getBody(BotMessage.class);
 
             // if message has attachment(s), use sendMedia function depending on type
+            //mediaType represents the possible media types for outgoing Facebook Messages
             if (message.hasAttachments()) {
                 switch (message.getAttachments()[0].getAttachmentType()) {
                     case AUDIO:

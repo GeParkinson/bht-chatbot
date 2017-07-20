@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * @author: Oliver
  * Date: 19.06.17
- *
+ * <p>
  * ApiAi-specific class of the NLUResponse Interface
  * class which represents the JSON received from ApiAI
  */
@@ -39,6 +39,7 @@ public class ApiAiResponse implements NLUResponse, Serializable {
     @Override
     public String getIntent() {
         //TODO: implement getScore into NLUResponse Interface and move decision to Drools
+        // the following is not necessary anymore because api.ai should set the fallback event automatically
         if (result.getScore() <= 0.2 || result.getMetadata().getIntentName() == null) {
             return "Fallback";
         } else return result.getMetadata().getIntentName();
@@ -48,8 +49,7 @@ public class ApiAiResponse implements NLUResponse, Serializable {
     public Map<String, String> getEntities() {
         if (result.getParameters() != null) {
             return result.getParameters().getEntities();
-        }
-        else return new HashMap<String, String>();
+        } else return new HashMap<String, String>();
     }
 
     public String getId() {
