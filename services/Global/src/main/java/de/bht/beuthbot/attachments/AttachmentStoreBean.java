@@ -46,7 +46,7 @@ public class AttachmentStoreBean implements AttachmentStore {
      */
     public AttachmentStoreBean() {
         localPath = application.getConfiguration(Configuration.LOCAL_ATTACHMENT_PATH);
-        fileURIPath = application.getConfiguration(Configuration.WEB_URL);
+        fileURIPath = application.getConfiguration(Configuration.WEB_URL) + "/attachments/";
         // make directories
         File file = new File(localPath);
         try {
