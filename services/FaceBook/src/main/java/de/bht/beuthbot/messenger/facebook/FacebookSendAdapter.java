@@ -109,6 +109,7 @@ public class FacebookSendAdapter implements MessageListener {
             ProcessQueueMessageProtocol message = messageIn.getBody(TaskMessage.class);
 
             // if message has attachment(s), use sendMedia function depending on type
+            // mediaType represents the possible media types for outgoing Facebook Messages
             if (message.hasAttachments()) {
                 switch (message.getAttachments().get(0).getAttachmentType()) {
                     case AUDIO:

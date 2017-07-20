@@ -1,5 +1,14 @@
 # Facebook Adapter
 
+<!-- MarkdownTOC -->
+
+- [Framework](#framework)
+- [Setup](#setup)
+- [Structure](#structure)
+- [Used online sources](#used-online-sources)
+
+<!-- /MarkdownTOC -->
+
 ## Framework
 
 - Contrary to the Telegram Adapter, we did not use a Framework for Facebook and implemented the communication with Facebook by ourselves

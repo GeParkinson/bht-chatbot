@@ -39,6 +39,7 @@ public class ApiAiResponse implements NLUResponse, Serializable {
     @Override
     public String getIntent() {
         //TODO: implement getScore into NLUResponse Interface and move decision to Drools
+        // the following is not necessary anymore because api.ai should set the fallback event automatically
         if (result.getScore() <= 0.2 || result.getMetadata().getIntentName() == null) {
             return "Fallback";
         } else return result.getMetadata().getIntentName();
