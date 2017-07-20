@@ -1,0 +1,8 @@
+{
+  "pipeline": "spacy_sklearn",
+  "num_threads": 2,
+  "language": "de",
+  "path": "/app/models",
+  "data": "/app/data/api",
+  "response_log": "/app/logs"
+}

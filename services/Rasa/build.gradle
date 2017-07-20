@@ -1,0 +1,29 @@
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'checkstyle'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':services:Common'),
+            "org.jboss.spec:jboss-javaee-7.0:1.1.0.Final",
+            "com.google.code.gson:gson:2.8.1"
+
+    providedCompile "org.slf4j:slf4j-api:1.7.25",
+                    "org.jboss.resteasy:resteasy-client:3.1.3.Final"
+
+    testCompile "org.jboss.arquillian.junit:arquillian-junit-container:1.1.13.Final",
+                "junit:junit:4.12"
+
+    testRuntime "org.wildfly.arquillian:wildfly-arquillian-container-remote:2.0.2.Final",
+                "org.slf4j:slf4j-simple:1.7.25"
+}
+
+sourceCompatibility = 1.8
+
+war {
+    destinationDir new File(project.rootProject.projectDir, 'docker/wildfly/volumes/deployments/')
+    archiveName "rasa.war"
+}
