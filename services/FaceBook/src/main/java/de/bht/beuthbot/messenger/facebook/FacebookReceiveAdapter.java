@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -29,8 +30,7 @@ import java.util.Map;
 /**
  * Created by Oliver on 14.05.2017.
  */
-
-@Path("/facebook")
+@Path("")
 public class FacebookReceiveAdapter {
 
 
@@ -61,7 +61,15 @@ public class FacebookReceiveAdapter {
     @Inject
     private FacebookUtils facebookUtils;
 
-    private String webhookToken = application.getConfiguration(Configuration.FACEBOOK_WEBHOOK_TOKEN);
+    private String webhookToken;
+
+    /**
+     * Initialize TelegramBot with Token
+     */
+    @PostConstruct
+    public void init() {
+        webhookToken = application.getConfiguration(Configuration.FACEBOOK_WEBHOOK_TOKEN);
+    }
 
     /**
      * listen to POST requests from facebook (which contain the received messages) and react to them
@@ -165,7 +173,7 @@ public class FacebookReceiveAdapter {
 
         String fields = "messages, messaging_postbacks, messaging_optins, message_deliveries, message_reads, messaging_payments, messaging_pre_checkouts, messaging_checkout_updates, messaging_account_linking, messaging_referrals, message_echoes";
 
-        String callback_url = application.getConfiguration(Configuration.WEB_URL) + "/facebook/getUpdates";
+        String callback_url = application.getConfiguration(Configuration.WEB_URL) + "/getUpdates";
         Response response = facebookProxy.sendHook("page", callback_url, fields, webhookToken, access_token);
 
         String responseAsString = response.readEntity(String.class);

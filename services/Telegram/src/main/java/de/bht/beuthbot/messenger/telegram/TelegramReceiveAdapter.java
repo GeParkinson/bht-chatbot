@@ -23,6 +23,7 @@ import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -32,8 +33,7 @@ import java.util.Properties;
 /**
  * @Author: Christopher Kümmel on 5/14/2017.
  */
-
-@Path("/telegram")
+@Path("")
 public class TelegramReceiveAdapter {
 
     /** slf4j Logger */
@@ -55,9 +55,10 @@ public class TelegramReceiveAdapter {
     private TelegramBot bot;
 
     /**
-     * Constructor: Initialize TelegramBot with Token
+     * Initialize TelegramBot with Token
      */
-    public TelegramReceiveAdapter(){
+    @PostConstruct
+    public void init(){
         bot = TelegramBotAdapter.build(application.getConfiguration(Configuration.TELEGRAM_BOT_TOKEN));
     }
 
