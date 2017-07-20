@@ -58,7 +58,8 @@ public class TelegramMessage implements ProcessQueueMessageProtocol{
 
     @Override
     public String getText() {
-        return message.text();
+        if (message.text() != null) return message.text();
+        else return "";
     }
 
     @Override
@@ -68,7 +69,11 @@ public class TelegramMessage implements ProcessQueueMessageProtocol{
 
     @Override
     public List<Attachment> getAttachments() {
-        return attachments;
+        if (hasAttachments()) {
+            return attachments;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @Override
@@ -83,12 +88,14 @@ public class TelegramMessage implements ProcessQueueMessageProtocol{
 
     /**
      * Setter for Attachment[]
-     * @param attachments
+     * @param attachments to store
      */
     public void setAttachments(final Attachment[] attachments){
-        this.attachments = new ArrayList<>(attachments.length);
-        for (Attachment attachment : attachments) {
-           this.attachments.add(attachment);
+        if (attachments != null) {
+            this.attachments = new ArrayList<>(attachments.length);
+            for (Attachment attachment : attachments) {
+                this.attachments.add(attachment);
+            }
         }
     }
 

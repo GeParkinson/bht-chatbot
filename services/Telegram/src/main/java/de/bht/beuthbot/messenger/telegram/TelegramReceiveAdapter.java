@@ -28,7 +28,6 @@ import javax.annotation.Resource;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
-import java.util.Properties;
 
 /**
  * @Author: Christopher Kümmel on 5/14/2017.
@@ -70,11 +69,11 @@ public class TelegramReceiveAdapter {
     @Path("/getUpdates")
     public Response getUpdates(final String msg) {
         try {
-        Update update = BotUtils.parseUpdate(msg);
-        logger.debug("Received new Telegram message: {}", update);
-        TelegramMessage message = new TelegramMessage(update.message());
-        message.setAttachments(getAttachments(update.message()));
-        processQueue.route(new TaskMessage(message));
+            Update update = BotUtils.parseUpdate(msg);
+            logger.debug("Received new Telegram message: {}", update);
+            TelegramMessage message = new TelegramMessage(update.message());
+            message.setAttachments(getAttachments(update.message()));
+            processQueue.route(new TaskMessage(message));
         } catch (Exception e) {
             logger.error("Something went wrong while getting updates from Telegram!", e);
         } finally {
