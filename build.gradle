@@ -51,7 +51,7 @@ task wrapper(type: Wrapper) {
 
 task chatbotRun(type: Exec, dependsOn: war) {
     workingDir 'docker'
-    commandLine 'docker-compose', 'up'
+    commandLine 'docker-compose', 'up', '--build'
 }
 
 task chatbotStop(type: Exec) {
