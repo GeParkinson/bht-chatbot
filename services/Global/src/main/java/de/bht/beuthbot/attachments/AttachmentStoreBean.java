@@ -11,6 +11,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Singleton;
 import java.io.ByteArrayOutputStream;
@@ -42,9 +43,10 @@ public class AttachmentStoreBean implements AttachmentStore {
     private String fileURIPath;
 
     /**
-     * Construtor for path generation.
+     * Initialize AttachmentStore
      */
-    public AttachmentStoreBean() {
+    @PostConstruct
+    public void init(){
         localPath = application.getConfiguration(Configuration.LOCAL_ATTACHMENT_PATH);
         fileURIPath = application.getConfiguration(Configuration.WEB_URL) + "/attachments/";
         // make directories
