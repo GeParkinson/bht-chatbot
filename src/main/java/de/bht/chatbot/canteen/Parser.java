@@ -4,6 +4,7 @@ import de.bht.chatbot.canteen.model.TrafficLight;
 import de.bht.chatbot.canteen.model.Dish;
 import de.bht.chatbot.canteen.model.DishType;
 import de.bht.chatbot.canteen.model.DishCategory;
+import net.jodah.expiringmap.ExpiringMap;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,12 +39,25 @@ public class Parser {
 
     private static final String OPENING_HOURS = "Mo. - Fr. | 09:00 - 14:30";
 
+    private static final String CURRENT_DATA_KEY = "KEY";
+    private static Map<String, CanteenData> currentCanteenData;
+
+    static {
+        currentCanteenData = ExpiringMap.builder().expiration(1, TimeUnit.DAYS)
+                .build();
+    }
+
     /**
      * Creates new CanteenData with all dishes of the current and next week by parsing
      * the canteen url of the beuth university.
      * @return
      */
     public CanteenData parse() {
+
+        if(currentCanteenData.containsKey(CURRENT_DATA_KEY)){
+            logger.debug("Canteen Data already exists in Map.");
+            return currentCanteenData.get(CURRENT_DATA_KEY);
+        }
 
         String canteenName = "";
 
@@ -71,10 +86,17 @@ public class Parser {
              */
             Map<String, String> params = new HashMap<>();
             params.put(PARAM_RESOURCE_ID_NAME, PARAM_RESOURCE_ID_VALUE);
-
             for (String day : dates) {
+
                 params.put(PARAM_DATE_NAME, day);
-                doc = Jsoup.connect(DAYS_DISHES_URL).data(params).userAgent("Mozilla").post();
+
+                try {
+                    doc = Jsoup.connect(DAYS_DISHES_URL).data(params).userAgent("Mozilla").post();
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    logger.debug("Exception while connecting to site: " + DAYS_DISHES_URL, e);
+                    continue;
+                }
 
                 /*
                  * Loop all dish categories of the current page.
@@ -184,10 +206,12 @@ public class Parser {
                 }
             }
         } catch (IOException e) {
-            s("Got Error while parsing site: " + CANTEENS_URL);
+            logger.info("Got Error while parsing site: " + CANTEENS_URL, e);
         }
 
-        return new CanteenData(canteenName, OPENING_HOURS, "", dishes);
+        currentCanteenData.put(CURRENT_DATA_KEY, new CanteenData(canteenName, OPENING_HOURS, "", dishes));
+
+        return currentCanteenData.get(CURRENT_DATA_KEY);
     }
 
     /**
@@ -212,7 +236,4 @@ public class Parser {
         return dates;
     }
 
-    private static void s(final String str) {
-        System.out.println(str);
-    }
 }

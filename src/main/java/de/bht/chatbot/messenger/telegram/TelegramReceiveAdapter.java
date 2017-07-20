@@ -62,12 +62,18 @@ public class TelegramReceiveAdapter {
      */
     @POST
     @Path("/getUpdates")
-    public void getUpdates(final String msg) {
-        Update update = BotUtils.parseUpdate(msg);
-        logger.debug("Received new Telegram message: " + update.message().text());
-        TelegramMessage message = new TelegramMessage(update.message());
-        message.setAttachments(getAttachments(update.message()));
-        messageQueue.addInMessage(message);
+    public Response getUpdates(final String msg) {
+        try {
+            Update update = BotUtils.parseUpdate(msg);
+            logger.debug("Received new Telegram message: {}", update);
+            TelegramMessage message = new TelegramMessage(update.message());
+            message.setAttachments(getAttachments(update.message()));
+            messageQueue.addInMessage(message);
+        } catch (Exception e) {
+            logger.error("Something went wrong while getting updates from Telegram!", e);
+        } finally {
+            return Response.status(HttpStatus.SC_OK).build();
+        }
     }
 
     /**

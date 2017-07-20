@@ -142,21 +142,30 @@ public class Dish {
 
     public final String toString(){
         StringBuilder sb = new StringBuilder();
-        sb.append("--------------------------").append("\n");
-        sb.append(date.format(dtf) + " - " + dishCategory + ":").append("\n");
-        sb.append(name).append("\n");
-        sb.append(price).append("\n");
+        sb.append("\n");
+        //sb.append(date.format(dtf) + " - " + dishCategory + ":").append("\n");
+        sb.append(name);
+        if (dishTypes != null && dishTypes.size() > 0) {
+            sb.append(" " + dishTypes.toString());
+        }
+        sb.append("\n");
+        if(price != null && !price.trim().equals("")) {
+            sb.append(price).append("\n");
+        }
         //sb.append("Studenten-Preis: " + priceStudent + " EUR").append("\n");
         //sb.append("Mitarbeiter-Preis: " + priceEmployee + " EUR").append("\n");
         //sb.append("Gäste-Preis: " + priceGuest + " EUR").append("\n");
-        sb.append("Ampel: " + trafficLight.getText()).append("\n");
-        if (dishTypes != null && dishTypes.size() > 0) {
-            sb.append("Siegel: " + dishTypes.toString()).append("\n");
-        }
+        //sb.append("Ampel: " + trafficLight.getText()).append("\n");
+
+        /*
         if (markings != null && markings.size() > 0) {
             sb.append("Zusätze: " + String.join(", ", markings));
         }
-        sb.append("\n");
+        */
         return sb.toString();
+    }
+
+    public final String showPrice(){
+        return getName() + " kostet: " + getPrice();
     }
 }

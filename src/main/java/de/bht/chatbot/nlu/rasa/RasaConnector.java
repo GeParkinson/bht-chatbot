@@ -36,7 +36,7 @@ import javax.ws.rs.core.UriBuilder;
                         propertyName = "destination",
                         propertyValue = "jms/messages/inbox"),
                 @ActivationConfigProperty(
-                        propertyName = "messageSelector", propertyValue = "NLU = 'in'")
+                        propertyName = "messageSelector", propertyValue = "NLU = 'off'")
         }
 )
 public class RasaConnector implements MessageListener {

@@ -5,7 +5,8 @@ package de.bht.chatbot.message;
  */
 public enum EntityName {
 
-    DATE("date"), DISH_TYPE("dishtype"), HEALTHY("healthy"), INGREDIENTS("ingredients");
+    DATE("date"), DISH_TYPE("dishtype"), HEALTHY("healthy"), INGREDIENTS("ingredients"), DISH_CATEGORY("dishcategory"),
+    DISH_NAME("dishname");
 
     private String text;
 
