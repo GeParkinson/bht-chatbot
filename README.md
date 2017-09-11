@@ -32,6 +32,12 @@ Go to project path and executes the following gradle tasks to start/stop the app
     # Windows
     gradlew.bat chatbotRun
     gradlew.bat chatbotStop
+
+    # MacOS
+    # you need to execute the docker commands directly
+    cd docker
+    docker-compose up --build
+    docker-compose down
  ```
 
 The following ports are mapped to host:
